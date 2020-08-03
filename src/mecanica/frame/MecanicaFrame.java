@@ -1,0 +1,279 @@
+package mecanica.frame;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class MecanicaFrame extends JFrame {
+
+	//botao 1 : Logo Mecanica	 OK
+	//botao 2 : AddClientes		 OK
+	//botao 3 : AddProdutos		 OK
+	//botao 4 : AddFuncionarios  Ok
+	//botao 5 : AddForcedor		 Ok
+	//botao 6 : Ordem de Serviço OK
+	//botao 7 : Caixa
+	//botao 8 : Agendamento		 OK
+	//botao 9: Relatorio
+	
+	
+	private JPanel contentPane;
+	private JPanel centerPanel;
+	private JPanel Tela_Cadastro_Cliente;
+	private JPanel Tela_Cadastro_Produto;
+	private JPanel Tela_Contas_Pagar_E_Vale;
+	private JPanel Tela_Cadastro_Fornecedor;
+	private JPanel Tela_Ordem_Servico;
+	private JPanel Tela_cadastro_Funcionarios;
+	private JPanel Tela_Agendamento;
+	private JPanel Tela_Venda;
+	
+	
+	public MecanicaFrame() throws SQLException {
+		setSize(1920, 1080);
+		setTitle("MECANICA E AUTO PEÇAS");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setResizable(true);
+		initialize();
+	}
+	
+	private void initialize() throws SQLException {		
+		contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
+		setContentPane(contentPane);
+		
+		Tela_Cadastro_Cliente = new Tela_Cadastro_Cliente();
+		Tela_Cadastro_Produto = new Tela_Cadastro_Produto();
+		Tela_Contas_Pagar_E_Vale = new Tela_Contas_Pagar_E_Vale();
+		Tela_Cadastro_Fornecedor = new Tela_Cadastro_Fornecedor();	
+		Tela_Ordem_Servico = new Tela_Ordem_Servico();
+		Tela_cadastro_Funcionarios = new Tela_cadastro_Funcionarios();
+		Tela_Agendamento = new Tela_Agendamento();
+		Tela_Venda = new Tela_Venda();
+		
+		createNorthPanel();
+		centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.setBackground(Color.WHITE);
+		contentPane.add(centerPanel, BorderLayout.CENTER);
+		
+	}
+	
+	private void createNorthPanel() {
+		JPanel northPanel = new JPanel();
+		northPanel.setPreferredSize(new Dimension(1920, 80));
+		northPanel.setBackground(Color.BLACK);
+		
+		
+		JButton logoMecanicaButton = new JButton();
+		logoMecanicaButton.setPreferredSize(new Dimension(150, 60));
+		logoMecanicaButton.setToolTipText("MECANICA E AUTO-PEÇAS");
+		ImageIcon image1 = new ImageIcon(getClass().getResource("/logoMecanica.png"));
+		logoMecanicaButton.setIcon(image1);
+		/*addClientesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listPanel2.updateTable();
+				centerPanel.removeAll();
+				centerPanel.add(addPanel2);
+				centerPanel.revalidate();
+				FarmaciaFrame.this.repaint();
+			}
+		});*/
+			
+		northPanel.add(logoMecanicaButton);
+		
+		JButton addClientesButton = new JButton();
+		addClientesButton.setPreferredSize(new Dimension(60, 60));
+		addClientesButton.setToolTipText("Adicionar Clientes");
+		ImageIcon image2 = new ImageIcon(getClass().getResource("/addCliente.png"));
+		addClientesButton.setIcon(image2);
+		addClientesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Cadastro_Cliente);
+				//Tela_Cadastro_Cliente.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Cadastro_Cliente)Tela_Cadastro_Cliente).Update_Estado();
+				((mecanica.frame.Tela_Cadastro_Cliente)Tela_Cadastro_Cliente).update_tabela();
+				((mecanica.frame.Tela_Cadastro_Cliente)Tela_Cadastro_Cliente).update_Editar_Combo();
+				((mecanica.frame.Tela_Cadastro_Cliente)Tela_Cadastro_Cliente).update_Combo_placa();
+			}
+		});
+			
+		northPanel.add(addClientesButton);
+		
+		JButton addProdutoButton = new JButton();
+		addProdutoButton.setPreferredSize(new Dimension(60, 60));
+		addProdutoButton.setToolTipText("Adicionar Produtos");
+		ImageIcon image3 = new ImageIcon(getClass().getResource("/addProduto.png"));
+		addProdutoButton.setIcon(image3);
+		addProdutoButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+			    centerPanel.add(Tela_Cadastro_Produto);
+				//Tela_Cadastro_Produto.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).data();
+				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).update_tabela();
+			}
+		});
+		northPanel.add(addProdutoButton);
+		
+		JButton addFuncionarioButton = new JButton();
+		addFuncionarioButton.setPreferredSize(new Dimension(60,60));
+		addFuncionarioButton.setToolTipText("Adicionar Funcionario");
+		ImageIcon image11 = new ImageIcon(getClass().getResource("/funcionario.png"));
+		addFuncionarioButton.setIcon(image11);
+		addFuncionarioButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_cadastro_Funcionarios);
+				//Tela_cadastro_Funcionarios.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				
+			}
+		});
+		northPanel.add(addFuncionarioButton);
+		
+		
+		JButton addFornecedorButton = new JButton();
+		addFornecedorButton.setPreferredSize(new Dimension(60, 60));
+		addFornecedorButton.setToolTipText("Adicionar Fornecedor");
+		ImageIcon image4 = new ImageIcon(getClass().getResource("/fornecedor.png"));
+		addFornecedorButton.setIcon(image4);
+		addFornecedorButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Cadastro_Fornecedor);
+				//Tela_Cadastro_Fornecedor.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Cadastro_Fornecedor)Tela_Cadastro_Fornecedor).Update_Estado();
+				((mecanica.frame.Tela_Cadastro_Fornecedor)Tela_Cadastro_Fornecedor).Update_Table_Fornecedor();
+			}
+		});
+		northPanel.add(addFornecedorButton);
+		
+		JButton boletosAndValesButton = new JButton();
+		boletosAndValesButton.setPreferredSize(new Dimension(60, 60));
+		boletosAndValesButton.setToolTipText("Boletos e Vale");
+		ImageIcon image5 = new ImageIcon(getClass().getResource("/boleto.png"));
+		boletosAndValesButton.setIcon(image5);
+		boletosAndValesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Contas_Pagar_E_Vale);
+				//Tela_Contas_Pagar_E_Vale.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_mes();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_vale();
+				
+			}
+		});
+		northPanel.add(boletosAndValesButton);
+		
+		JButton ordemServicoButton = new JButton();
+		ordemServicoButton.setPreferredSize(new Dimension(60, 60));
+		ordemServicoButton.setToolTipText("Ordem de Serviço");
+		ImageIcon image7 = new ImageIcon(getClass().getResource("/ordemServico.png"));
+		ordemServicoButton.setIcon(image7);
+		ordemServicoButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Ordem_Servico);
+				//Tela_Ordem_Servico.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).data();
+			}
+		});
+		northPanel.add(ordemServicoButton);
+		
+		JButton caixaButton = new JButton();
+		caixaButton.setPreferredSize(new Dimension(60, 60));
+		caixaButton.setToolTipText("Vendas");
+		ImageIcon image8 = new ImageIcon(getClass().getResource("/caixaRegistradora.png"));
+		caixaButton.setIcon(image8);
+		caixaButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Venda);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Venda)Tela_Venda).data();
+			}
+		});
+		northPanel.add(caixaButton);
+		
+		JButton agendamentoButton = new JButton();
+		agendamentoButton.setPreferredSize(new Dimension(60,60));
+		agendamentoButton.setToolTipText("Agendamentos");
+		ImageIcon image10 = new ImageIcon(getClass().getResource("/agendamentos.png"));
+		agendamentoButton.setIcon(image10);
+		agendamentoButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				centerPanel.removeAll();
+				centerPanel.add(Tela_Agendamento);
+				//Tela_Agendamento.setBackground(Color.WHITE);
+				centerPanel.revalidate();
+				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Agendamento)Tela_Agendamento).data();
+			}
+		});
+		northPanel.add(agendamentoButton);
+		
+		JButton relatorioButton = new JButton();
+		relatorioButton.setPreferredSize(new Dimension(60, 60));
+		relatorioButton.setToolTipText("Relatório");
+		ImageIcon image9 = new ImageIcon(getClass().getResource("/relatorio.png"));
+		relatorioButton.setIcon(image9);
+		/*addMedicamentoButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listPanel3.updateTable();
+				centerPanel.removeAll();
+				centerPanel.add(addPanel3);
+				centerPanel.revalidate();
+				FarmaciaFrame.this.repaint();
+			}
+		});*/
+		northPanel.add(relatorioButton);
+		
+		contentPane.add(northPanel, BorderLayout.NORTH);
+	}
+	
+	
+	
+}
