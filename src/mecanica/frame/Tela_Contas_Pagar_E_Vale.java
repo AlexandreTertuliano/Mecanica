@@ -3,11 +3,11 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -15,14 +15,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
-import org.postgresql.jdbc2.optional.SimpleDataSource;
+import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Boleto_Add;
+import mecanicaDAOBoletos.BoletosDAO;
 
 public class Tela_Contas_Pagar_E_Vale extends JPanel {
+	
+	private Connection connection;
+	int num = 0;
 
 	
-	public Tela_Contas_Pagar_E_Vale() {
+	public Tela_Contas_Pagar_E_Vale() throws SQLException {
         initComponents();
+        boletoDAO = new BoletosDAO();
+        connection = ConnectionDAO.getConnection();
     }
 	
 	
@@ -37,7 +45,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	        Label_Data_Vencimento = new javax.swing.JLabel("Data Vencimento");
 	        Field_Data_Vencimento = new javax.swing.JFormattedTextField();;
 	        Label_Num_Parcelas = new javax.swing.JLabel("Numeros de Parcelas");
-	        Field_Num_Parcelas = new javax.swing.JFormattedTextField();;
+	        Field_Num_Parcelas = new javax.swing.JFormattedTextField("1");;
 	        Label_Titulo_Pago = new javax.swing.JLabel("Boletos Cadastrados      ");//Deixar com espaços
 	        jSeparator2 = new javax.swing.JSeparator();
 	        ScrollPane_Boletos = new javax.swing.JScrollPane();
@@ -65,6 +73,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	        Label_total_Pagar = new javax.swing.JLabel("Total a Pagar : ");
 	        Label_total_Editavel_Boletos = new javax.swing.JLabel("0.00");
 	        Combo_Nome = new javax.swing.JComboBox<>();
+	        num = Integer.valueOf(Field_Num_Parcelas.getText());
 
 
 	        Label_Titulo_Controle_Boleto.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -307,19 +316,37 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	                            .addComponent(ScrollPane_Vales, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
 	                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 	            );
-	            
+	        //Salvar boleto   
 	        Btn_Salvar_Boleto.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					
+					
+					System.out.println(num);
+					
 						if(Verifica()){
-						Cad_Boleto();
+							
+							if(num == 1 ){
+								Cad_Boleto();
+								Limpa_Campos();
+								Field_Num_Parcelas.setEditable(true);
+							}
+							
+							if(num > 1){
+								if(Verifica()){
+									Cad_Boleto();
+									Field_Num_Parcelas.setText(String.valueOf(num--));
+									Field_Data_Vencimento.requestFocus();
+									Field_Num_Parcelas.setEditable(false);
+								}
+							}
 						}
 					
 			}
 		});    
 	        
+	        //Cancelar Boleto
 	        Btn_Cancelar_Boleto.addActionListener(new ActionListener() {
 				
 				@Override
@@ -329,6 +356,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 				}
 			});
 	        
+	        //Cancelar Vale
 	        Btn_Cancelar_Vale.addActionListener(new ActionListener() {
 				
 				@Override
@@ -339,6 +367,12 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 			});
 
 	    }
+	  
+	  private void Mensagem_data(){
+		  JOptionPane.showMessageDialog(this, "Informe a proxima data de vencimento", "Data", JOptionPane.WARNING_MESSAGE);
+		  Field_Data_Vencimento.requestFocus();
+		  
+	  }
 	  
 	  private boolean Verifica() {
 		 
@@ -369,9 +403,16 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	  }
 	  
 	  private void Cad_Boleto(){
-		  
-		  
-		  
+		 
+		 Boleto_Add boleto = new Boleto_Add();
+		 boleto.setDescricao(Field_Descricao.getText());
+		 boleto.setValor(Double.valueOf(Field_valor.getText()));
+		 boleto.setData_Vencimento(Field_Data_Vencimento.getText());
+		 boleto.setNum_Parcelas(Field_Num_Parcelas.getText());
+		 boletoDAO.Insert(boleto);
+		 
+		 update_Table();
+		 soma_boletos();
 	  }
 	  
 	  private void Limpa_Campos_Vale() {
@@ -435,8 +476,43 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 			data_Atual = data;
 	  }
 	
+	  public void update_Table(){
+		  
+		  DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_Boleto.getModel();
+	    	tablemodel_Cadastrados.setRowCount(0);
+	    	
+	    	for(Boleto_Add boleto : boletoDAO.getAll()){
+	        	Object[] data = {
+	    				boleto.getDescricao(),
+	    				boleto.getData_Vencimento(),
+	    				boleto.getValor()
+	    		};
+	        	
+	    		tablemodel_Cadastrados.addRow(data);
+	    		
+	        	}
+		  
+	  }
+	  
+	  public void soma_boletos(){
+		  
+		  String sql = "select sum (valor) as total from boleto";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				result.next();
+				 Label_total_Editavel_Boletos.setText(String.valueOf(result.getFloat("TOTAL")));
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		  
+		  
+	  }
+	  
+	  
 	 // Variables declaration - do not modify                     
-	  private javax.swing.JButton Btn_Boleto_Cancelado;
+	  	private javax.swing.JButton Btn_Boleto_Cancelado;
 	    private javax.swing.JButton Btn_Boleto_Pago;
 	    private javax.swing.JButton Btn_Cancelar_Boleto;
 	    private javax.swing.JButton Btn_Cancelar_Vale;
@@ -474,6 +550,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JSeparator jSeparator3;
 	    private String data_Atual;
+	    private BoletosDAO boletoDAO;
     // End of variables declaration             
 	
 }

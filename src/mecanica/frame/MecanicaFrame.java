@@ -71,7 +71,7 @@ public class MecanicaFrame extends JFrame {
 	private void createNorthPanel() {
 		JPanel northPanel = new JPanel();
 		northPanel.setPreferredSize(new Dimension(1920, 80));
-		northPanel.setBackground(Color.BLACK);
+		northPanel.setBackground(new Color(45,173,199));
 		
 		
 		JButton logoMecanicaButton = new JButton();
@@ -94,7 +94,7 @@ public class MecanicaFrame extends JFrame {
 		northPanel.add(logoMecanicaButton);
 		
 		JButton addClientesButton = new JButton();
-		addClientesButton.setPreferredSize(new Dimension(60, 60));
+		addClientesButton.setPreferredSize(new Dimension(60,60));
 		addClientesButton.setToolTipText("Adicionar Clientes");
 		ImageIcon image2 = new ImageIcon(getClass().getResource("/addCliente.png"));
 		addClientesButton.setIcon(image2);
@@ -150,6 +150,8 @@ public class MecanicaFrame extends JFrame {
 				//Tela_cadastro_Funcionarios.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_cadastro_Funcionarios)Tela_cadastro_Funcionarios).update_tabela();
+				
 				
 			}
 		});
@@ -192,6 +194,8 @@ public class MecanicaFrame extends JFrame {
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_mes();
 				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_vale();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).update_Table();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).soma_boletos();
 				
 			}
 		});

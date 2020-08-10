@@ -7,7 +7,12 @@ import java.time.LocalDate;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+
+import mecanicaDAO.Agendamento_add;
+import mecanicaDAOAgendamento.AgendamentoDAO;
 
 public class Tela_Agendamento extends JPanel {
 	
@@ -220,21 +225,221 @@ public class Tela_Agendamento extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Label_Edita_serviço, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
-        );
+	
+	);
         
-        Btn_Cancelar.addActionListener(new ActionListener() {
+      //funcao de salvar
+        Btn_Salvar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Limpa_dados();
+				
+				if(Editar == 0 && Verifica()) {
+						Cad_Agendamento();
+				}
+				
+				if(Editar == 1 && Verifica_update()) {
+					if(Field_Placa_Veiculo.getText().equals(Field_Placa_Veiculo.getText())) {
+						Update_Agendamento();
+						update_tabela();
+						Editar = 0;
+					}
+				}
+				
 			}
 		});
         
-    }
+      //Funcao do liberar para editar
+        Btn_excluir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				
+			}
+		});
+        
+      //Funcao procurar o cpf 
+       Btn_informações.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			preenche_campos();		
+		}
+	});
+    
+      //Funcao de cancelar Cadastro
+       Btn_Cancelar.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o agendamento", "Cadastro de Agendamentos", JOptionPane.YES_NO_OPTION);
+			if(resposta == JOptionPane.YES_OPTION) {
+				Limpa_dados();
+				Editar = 0;
+			}
+			
+		}
+	});
+	};
+	private boolean Verifica_update(){
+		
+		
+		if(Field_Placa_Veiculo.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a PLACA DO VEICULO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Placa_Veiculo.requestFocus();
+			return false;
+		}
+		if(Field_Nome_Pessoa.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o NOME", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Nome_Pessoa.requestFocus();
+			return false;
+		}
+		if(Field_Data.getText().trim().isEmpty() || Field_Data.getText().equals("  /  /    ")) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a DATA", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Data.requestFocus();
+			return false;
+		}
+		
+		if(Field_servico.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o SERVICO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_servico.requestFocus();
+			return false;
+		}
+		
+		
+		
+		return true;
+		
+	}
+	
+	
+	private void Update_Agendamento(){
+						
+			Agendamento_add agendamento = new Agendamento_add();
+			agendamento.setPlaca(Field_Placa_Veiculo.getText());
+			agendamento.setNome(Field_Nome_Pessoa.getText());
+			agendamento.setData_Agenda(Field_Data.getText());
+			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
+			agendamento.setServico(Field_servico.getText());
+			
+			agendamentoDAO.update_agendamentos(agendamento);
+			
+			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
+			
+		}
+	
+	public void preenche_campos() {
+		
+		
+		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
+			if(agendamento.getPlaca().equals(Field_Placa_Veiculo.getText())) {
+				Field_Placa_Veiculo.setText(agendamento.getPlaca());
+				Field_Nome_Pessoa.setText(agendamento.getNome());
+				Field_Data.setText(agendamento.getData_Agenda());
+				Field_servico.setText(agendamento.getServico());
+				
+			}
+		}
+		if(Field_Placa_Veiculo.getText().trim().isEmpty() || Field_Placa_Veiculo.getText().equals("        ")) {
+			JOptionPane.showMessageDialog(this, "Placa não cadastrada", "Placa Inválida", JOptionPane.WARNING_MESSAGE);
+		}
+		
+	}
+	
+	public void Mostrar_Cadastro() {
+		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
+			
+				Field_Placa_Veiculo.setText(agendamento.getPlaca());
+				Field_Nome_Pessoa.setText(agendamento.getNome());
+				Field_Data.setText(agendamento.getData_Agenda());
+				//Field_Data.setText(agendamento.getDia_Semana());
+				Field_servico.setText(agendamento.getServico());
+				
+			
+		}
+	}
+	
+	
+	
+	private void Cad_Agendamento() {
+		
+			Agendamento_add agendamento = new Agendamento_add();
+			agendamento.setPlaca(Field_Placa_Veiculo.getText());
+			agendamento.setNome(Field_Nome_Pessoa.getText());
+			agendamento.setData_Agenda(Field_Data.getText());
+			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
+			agendamento.setServico(Field_servico.getText());
+			agendamentoDAO.Insert(agendamento);
+			Limpa_dados();
+			JOptionPane.showMessageDialog(this,agendamento.getNome() + " foi cadastrado"
+	    	+ " com sucesso! \n Verifique na tabela ao lado !","Cadastro concluido",JOptionPane.INFORMATION_MESSAGE);
+			update_tabela();
+		
+		
+	}
+	
+	
+	public void update_tabela() {
+
+    	DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_Agendamento.getModel();
+    	tablemodel_Cadastrados.setRowCount(0);
+    	
+    	for(Agendamento_add agendamento : agendamentoDAO.getAll()){
+        	Object[] data = {
+        			agendamento.getPlaca(),
+        			agendamento.getNome(),
+        			agendamento.getData_Agenda(),
+        			//agendamento.getDia_Semana(),
+        			agendamento.getServico()
+    		};
+        	
+    		tablemodel_Cadastrados.addRow(data);
+    		
+        	}
+    	
+	}
+	
+	private boolean Verifica() {
+		
+		if(Field_Placa_Veiculo.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a PLACA DO VEICULO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Placa_Veiculo.requestFocus();
+			return false;
+		}
+		if(Field_Nome_Pessoa.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o NOME", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Nome_Pessoa.requestFocus();
+			return false;
+		}
+		if(Field_Data.getText().trim().isEmpty() || Field_Data.getText().equals("  /  /    ")) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a DATA", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Data.requestFocus();
+			return false;
+		}
+		
+		if(Field_servico.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o SERVICO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_servico.requestFocus();
+			return false;
+		}
+		
+		
+		
+		return true;
+	}
+	
+	
 	
 	private void Limpa_dados() {
-		Field_servico.setText(" ");
+		Field_Placa_Veiculo.setText(null);
+		Field_Nome_Pessoa.setText(null);
+		Field_Data.setText(null);
+		//Field_Data.setText(null);
+		Field_servico.setText(null);
 	}
+	
+
 	
 	public void data() {
 		
@@ -293,6 +498,8 @@ public class Tela_Agendamento extends JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JFormattedTextField Field_Data;
+    private AgendamentoDAO agendamentoDAO;
+    private int Editar = 0 ;
     // End of variables declaration             
 
 }

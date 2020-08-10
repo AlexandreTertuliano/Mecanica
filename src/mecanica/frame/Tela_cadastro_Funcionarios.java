@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -16,9 +15,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Funcionario_add;
-import mecanicaDAO.Produto_Add;
 import mecanicaDAOFuncionario.FuncionarioDAO;
 
 public class Tela_cadastro_Funcionarios extends JPanel {
@@ -196,6 +193,7 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 					if(Editar == 0 && Verifica()) {
 						Cad_Funcionario();
 						Limpa_campos();
@@ -220,6 +218,7 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 				}
 		});
 		 }
+	    
 		 	 
 		 
 		 private void Update_funcionarios() {
@@ -251,8 +250,16 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 		 
 		 private void Cad_Funcionario() {
 			 
+			 
+			 
 			 Funcionario_add funcionario = new Funcionario_add();
+			 
+			
 			 funcionario.setCpf(Field_Cpf.getText());
+			 if(funcionario.getCpf().equals(Field_Cpf.getText())) {
+				 JOptionPane.showMessageDialog(this, "Cpf já cadastrado, digite outro válido", "Cpf Inválido", JOptionPane.WARNING_MESSAGE);
+				 return;
+				}
 			 funcionario.setNome(Field_Nome.getText());
 			 funcionario.setSenha(Field_senha.getText());		
 			 
@@ -319,10 +326,11 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 						Field_Nome.setText(funcionario.getNome());
 						Field_Cpf.setText(funcionario.getCpf());
 						Field_senha.setText(funcionario.getSenha());
+						Btn_Buscar.setEnabled(false);
 						
 					}
 				}
-				if(Field_Cpf.getText().trim().isEmpty() || Field_Cpf.getText().equals("   .   .   -  ")) {
+				if(Field_Nome.getText().trim().isEmpty() || Field_Nome.getText().equals("   .   .   -  ")) {
 					JOptionPane.showMessageDialog(this, "Funcionario não cadastrado", "Funcionario Inválido", JOptionPane.WARNING_MESSAGE);
 				}
 				

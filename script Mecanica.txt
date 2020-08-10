@@ -70,29 +70,51 @@ create table Produtos(
 );
 
 
-
-
-create table Funcionarios(
-	cpf varchar(14) PRIMARY KEY, 
-	Nome varchar(50) not null,
-	Senha varchar(15) not null,
-	
+create table Fornecedor(
+	Razao_Social varchar (50) not null,
+	Cnpj varchar (20) not null,
+	Tell varchar (20),
+	Estado varchar (20),
+	Cidade varchar (50),
+	Cep varchar (15),
+	Rua varchar (50),
+	Numero varchar (10)
 );
 
 create table Boleto(
 	Descricao varchar (50) not null,
-	valor varchar (20) not null,
+	valor float not null,
 	Data_Vencimento varchar (10) not null,
 	Parcelas varchar (5) not null,
-	Soma_boletos varchar (10) not null
+	Soma_boletos varchar (10)
 ); 
 
+create table Funcionarios(
+	cpf varchar(14) PRIMARY KEY, 
+	Nome varchar(50) not null,
+	Senha varchar(15) not null
+	
+);
+
+create table Agendamentos(
+	Placa varchar (8) not null,
+	Nome varchar (100) not null,
+	Data date ,
+	Dia_Semana varchar (15),
+	Servico varchar (500),
+	
+);
+
+delete from Funcionarios;
 delete from Produtos;
 delete from Placa_Veiculos;
 delete from clientes;
+delete from Fornecedor;
+delete from Boleto;
 delete from Funcionarios;
 delete from fornecedores;
-delete from Boleto;
+delete from Agendamentos
+
 
 
 
