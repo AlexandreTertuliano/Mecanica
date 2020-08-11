@@ -1,0 +1,131 @@
+CREATE TABLE estados (
+  sigla VARCHAR(2) NOT NULL,
+  descricao VARCHAR(30) NOT NULL
+);
+ 
+INSERT INTO estados ("sigla", "descricao")  VALUES ('AC', 'Acre');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('AL', 'Alagoas');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('AP', 'Amapa');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('AM', 'Amazonas');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('BA', 'Bahia');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('CE', 'Ceara');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('DF', 'Distrito Federal');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('ES', 'Espirito Santo');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('GO', 'Goias');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('MA', 'Maranhao');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('MT', 'Mato Grosso');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('MS', 'Mato Grosso do Sul');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('MG', 'Minas Gerais');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('PA', 'Para');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('PB', 'Paraiba');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('PR', 'Parana');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('PE', 'Pernambuco');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('PI', 'Piaui');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('RJ', 'Rio de Janeiro');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('RN', 'Rio Grande do Norte');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('RS', 'Rio Grande do Sul');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('RO', 'Rondonia');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('RR', 'Roraima');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('SC', 'Santa Catarina');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('SP', 'Sao Paulo');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('SE', 'Sergipe');
+INSERT INTO estados ("sigla", "descricao")  VALUES ('TO', 'Tocantins');
+
+
+create table Clientes(
+	cpf varchar(14) PRIMARY KEY, 
+	Nome varchar(50) not null,
+	Rg varchar(15) not null,
+	Cell varchar(15) not null,
+	Fixo varchar (15) not null,
+
+	Estado varchar (20) not null,
+	Cep varchar (20) not null,
+	Bairro varchar (50) not null,
+	Rua varchar (50) not null,
+	Numero varchar (10) not null,
+	Cidade varchar (30) not null,
+	Apt_Casa float,
+
+	Limite float,
+	Bloquear float
+);
+
+create table Placa_Veiculos (
+	placa varchar(10) PRIMARY KEY,
+	cliente varchar (50) not null,
+	Km varchar (50) not null,
+	Modelo varchar (50) not null
+);
+
+create table Produtos(
+	Cod_Barras varchar (15) PRIMARY KEY,
+	Cod_Sistema varchar (6) not null,
+	Descricao varchar (50) not null,
+	Data_Inclusao varchar (10) not null,
+	Fornecedor varchar (50) ,
+	Quantidade varchar (10) not null,
+	Preco_Custo varchar (10) not null,
+	Preco_Venda varchar (10) not null
+);
+
+
+create table Fornecedor(
+	Razao_Social varchar (50) not null,
+	Cnpj varchar (20) not null,
+	Tell varchar (20),
+	Estado varchar (20),
+	Cidade varchar (50),
+	Cep varchar (15),
+	Rua varchar (50),
+	Numero varchar (10)
+);
+
+create table Boleto(
+	Descricao varchar (50) not null,
+	valor float not null,
+	Data_Vencimento Date not null,
+	Parcelas varchar (5) not null
+	
+); 
+
+create table Funcionarios(
+	cpf varchar(14) PRIMARY KEY, 
+	Nome varchar(50) not null,
+	Senha varchar(15) not null
+	
+);
+
+create table Agendamentos(
+	Placa varchar (8) not null,
+	Nome varchar (100) not null,
+	Data_Agenda Date not null,
+	Dia_Semana varchar (15),
+	Servico varchar (500),
+	);
+	
+create table Boletos_pago(
+	Descricao varchar (50) not null,
+	valor float not null,
+	Data_Vencimento varchar (10) not null
+);
+
+delete from Funcionarios;
+delete from Produtos;
+delete from Placa_Veiculos;
+delete from clientes;
+delete from Fornecedor;
+delete from Boleto;
+<<<<<<< HEAD:script Mecanica.txt
+delete from Funcionarios;
+delete from fornecedores;
+delete from Agendamentos
+=======
+delete from boletos_pago;
+
+drop table Funcionarios, Produtos, Placa_Veiculos, clientes, Fornecedor, Boleto, boletos_pago, estados;
+>>>>>>> 7cedbb257bd93d00422984e2e915e9446a761ede:script.txt
+
+
+
+

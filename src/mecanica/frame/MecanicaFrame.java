@@ -130,6 +130,7 @@ public class MecanicaFrame extends JFrame {
 				//Tela_Cadastro_Produto.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).Update_Combo_fornecedor();
 				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).data();
 				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).update_tabela();
 			}
@@ -192,8 +193,8 @@ public class MecanicaFrame extends JFrame {
 				//Tela_Contas_Pagar_E_Vale.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
-				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_mes();
-				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_vale();
+
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data();
 				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).update_Table();
 				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).soma_boletos();
 				
@@ -253,6 +254,7 @@ public class MecanicaFrame extends JFrame {
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Agendamento)Tela_Agendamento).data();
+				((mecanica.frame.Tela_Agendamento) Tela_Agendamento).update_tabela();
 			}
 		});
 		northPanel.add(agendamentoButton);

@@ -32,7 +32,7 @@ public class BoletosDAO {
 			int index = 1;
 				statement.setString(index++, boleto.getDescricao());
 				statement.setDouble(index++, boleto.getValor());
-				statement.setString(index++, boleto.getData_Vencimento());
+				statement.setDate(index++, boleto.getData_Vencimento());
 				statement.setString(index++, boleto.getNum_Parcelas());
 				
 				statement.execute();
@@ -46,7 +46,7 @@ public class BoletosDAO {
 	public List<Boleto_Add> getAll() {
 		List<Boleto_Add> boletos = new ArrayList<Boleto_Add>();
 		
-		String sql = "SELECT * FROM BOLETO ORDER BY DATA_VENCIMENTO DESC";
+		String sql = "SELECT * FROM BOLETO ORDER BY DATA_VENCIMENTO ";
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
@@ -55,7 +55,7 @@ public class BoletosDAO {
 				Boleto_Add boleto = new Boleto_Add();
 				boleto.setDescricao(result.getString("DESCRICAO"));
 				boleto.setValor(result.getDouble("VALOR"));
-				boleto.setData_Vencimento(result.getString("DATA_VENCIMENTO"));
+				boleto.setData_Vencimento(result.getDate("DATA_VENCIMENTO"));
 				boleto.setNum_Parcelas(result.getString("PARCELAS"));
 				boletos.add(boleto);
 			}

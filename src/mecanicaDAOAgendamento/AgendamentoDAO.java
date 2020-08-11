@@ -32,7 +32,7 @@ public void Insert(Agendamento_add agendamento) {
 		int index = 1;
 			statement.setString(index++, agendamento.getPlaca());
 			statement.setString(index++, agendamento.getNome());
-			statement.setString(index++, agendamento.getData_Agenda());
+			statement.setDate(index++, agendamento.getData_Agenda());
 			statement.setString(index++, agendamento.getDia_Semana());
 			statement.setString(index++, agendamento.getServico());
 			statement.execute();
@@ -58,7 +58,7 @@ public List<Agendamento_add> getAll() {
 			Agendamento_add agendamento = new Agendamento_add();
 			agendamento.setPlaca(result.getString("PLACA"));
 			agendamento.setNome(result.getString("NOME"));
-			agendamento.setData_Agenda(result.getString("DATA_AGENDA"));
+			agendamento.setData_Agenda(result.getDate("DATA_AGENDA"));
 			agendamento.setDia_Semana(result.getString("DIA_SEMANA"));
 			agendamento.setServico(result.getString("SERVICO"));
 					

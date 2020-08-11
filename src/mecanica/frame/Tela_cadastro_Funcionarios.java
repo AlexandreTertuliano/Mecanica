@@ -242,6 +242,7 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 					
 				 }
 			 }
+			 
 		 }
 		 
 		 private void erro() {

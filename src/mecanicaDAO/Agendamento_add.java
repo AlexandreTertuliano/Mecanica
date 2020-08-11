@@ -1,9 +1,11 @@
 package mecanicaDAO;
 
+import java.sql.Date;
+
 public class Agendamento_add {
 	private String Placa;
 	private String Nome;
-	private String Data_Agenda;
+	private Date Data_Agenda;
 	private String Dia_Semana;
 	private String Servico;
 	public String getPlaca() {
@@ -18,11 +20,11 @@ public class Agendamento_add {
 	public void setNome(String nome) {
 		Nome = nome;
 	}
-	public String getData_Agenda() {
+	public Date getData_Agenda() {
 		return Data_Agenda;
 	}
-	public void setData_Agenda(String data_Agenda) {
-		Data_Agenda = data_Agenda;
+	public void setData_Agenda(Date date) {
+		Data_Agenda = date;
 	}
 	public String getDia_Semana() {
 		return Dia_Semana;

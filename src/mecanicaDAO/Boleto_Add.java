@@ -1,12 +1,12 @@
 package mecanicaDAO;
 
+import java.sql.Date;
+
 public class Boleto_Add {
 	
 	private String Descricao;
 	private Double Valor;
-	private String Data_Vencimento;
-	private String Num_Parcelas;
-	private String Soma_boletos;
+	private Date Data_Vencimento;
 	public String getDescricao() {
 		return Descricao;
 	}
@@ -19,10 +19,10 @@ public class Boleto_Add {
 	public void setValor(Double valor) {
 		Valor = valor;
 	}
-	public String getData_Vencimento() {
+	public Date getData_Vencimento() {
 		return Data_Vencimento;
 	}
-	public void setData_Vencimento(String data_Vencimento) {
+	public void setData_Vencimento(Date data_Vencimento) {
 		Data_Vencimento = data_Vencimento;
 	}
 	public String getNum_Parcelas() {
@@ -37,7 +37,8 @@ public class Boleto_Add {
 	public void setSoma_boletos(String soma_boletos) {
 		Soma_boletos = soma_boletos;
 	}
+	private String Num_Parcelas;
+	private String Soma_boletos;
 	
-	
-	
-}
+	}
+

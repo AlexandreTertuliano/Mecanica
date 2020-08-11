@@ -3,25 +3,34 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Agendamento_add;
 import mecanicaDAOAgendamento.AgendamentoDAO;
 
 public class Tela_Agendamento extends JPanel {
 	
-	public Tela_Agendamento() {
-        initComponents();
-    }
+	private Connection connection;
+
 	
-	@SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+	public Tela_Agendamento() throws SQLException {
+        initComponents();
+        agendamentoDAO = new AgendamentoDAO();
+        connection = ConnectionDAO.getConnection();
+    }                        
     private void initComponents() {
 
         Label_titulo_Agendamento = new javax.swing.JLabel("Agendamento");
@@ -88,7 +97,16 @@ public class Tela_Agendamento extends JPanel {
         Btn_Group.add(Radio_sabado);
         Btn_Group.add(Radio_domingo);
         
-        try {
+        Vector<String> columnNames = new Vector<String>();
+		columnNames.add("Placa");
+		columnNames.add("Nome");
+		columnNames.add("Data");
+		columnNames.add("Servico");
+		Vector<? extends Vector> vector = new Vector();
+		Table_Agendamento = new JTable(vector,columnNames);
+		Scroll_Agendamento= new JScrollPane(Table_Agendamento);
+       
+		try {
             Field_Data.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
@@ -259,7 +277,8 @@ public class Tela_Agendamento extends JPanel {
 			}
 		});
         
-      //Funcao procurar o cpf 
+        
+        //Funcao de preencher campos 
        Btn_informações.addActionListener(new ActionListener() {
 		
 		@Override
@@ -315,11 +334,15 @@ public class Tela_Agendamento extends JPanel {
 	
 	
 	private void Update_Agendamento(){
-						
+		
+			String Data = Field_Data.getText();
+			String [] DataSeparada = Data.split("/");
+			LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+			
 			Agendamento_add agendamento = new Agendamento_add();
 			agendamento.setPlaca(Field_Placa_Veiculo.getText());
 			agendamento.setNome(Field_Nome_Pessoa.getText());
-			agendamento.setData_Agenda(Field_Data.getText());
+			agendamento.setData_Agenda(Date.valueOf(dia));
 			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
 			agendamento.setServico(Field_servico.getText());
 			
@@ -336,7 +359,7 @@ public class Tela_Agendamento extends JPanel {
 			if(agendamento.getPlaca().equals(Field_Placa_Veiculo.getText())) {
 				Field_Placa_Veiculo.setText(agendamento.getPlaca());
 				Field_Nome_Pessoa.setText(agendamento.getNome());
-				Field_Data.setText(agendamento.getData_Agenda());
+				Field_Data.setValue(agendamento.getData_Agenda());
 				Field_servico.setText(agendamento.getServico());
 				
 			}
@@ -352,7 +375,7 @@ public class Tela_Agendamento extends JPanel {
 			
 				Field_Placa_Veiculo.setText(agendamento.getPlaca());
 				Field_Nome_Pessoa.setText(agendamento.getNome());
-				Field_Data.setText(agendamento.getData_Agenda());
+				Field_Data.setValue(agendamento.getData_Agenda());
 				//Field_Data.setText(agendamento.getDia_Semana());
 				Field_servico.setText(agendamento.getServico());
 				
@@ -364,10 +387,17 @@ public class Tela_Agendamento extends JPanel {
 	
 	private void Cad_Agendamento() {
 		
+		 String Data = Field_Data.getText();
+		 String [] DataSeparada = Data.split("/");
+		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+		 
+		  		 
+		 
+		
 			Agendamento_add agendamento = new Agendamento_add();
 			agendamento.setPlaca(Field_Placa_Veiculo.getText());
 			agendamento.setNome(Field_Nome_Pessoa.getText());
-			agendamento.setData_Agenda(Field_Data.getText());
+			agendamento.setData_Agenda(Date.valueOf(dia));
 			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
 			agendamento.setServico(Field_servico.getText());
 			agendamentoDAO.Insert(agendamento);
