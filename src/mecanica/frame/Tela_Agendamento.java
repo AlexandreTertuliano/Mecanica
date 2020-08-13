@@ -3,20 +3,37 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Agendamento_add;
+import mecanicaDAOAgendamento.AgendamentoDAO;
+import sun.security.util.Length;
 
 public class Tela_Agendamento extends JPanel {
 	
-	public Tela_Agendamento() {
-        initComponents();
-    }
+	private Connection connection;
+
 	
-	@SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+	public Tela_Agendamento() throws SQLException {
+        initComponents();
+        agendamentoDAO = new AgendamentoDAO();
+        connection = ConnectionDAO.getConnection();
+    }                        
     private void initComponents() {
 
         Label_titulo_Agendamento = new javax.swing.JLabel("Agendamento");
@@ -28,13 +45,13 @@ public class Tela_Agendamento extends JPanel {
         Label_Data = new javax.swing.JLabel("Data");
         Field_Data = new javax.swing.JFormattedTextField();
         Label_Data_Semana = new javax.swing.JLabel("Dia da Semana :");
-        Radio_Segunda = new javax.swing.JRadioButton("Segunda");
-        Radio_terça = new javax.swing.JRadioButton("Terça");
-        Radio_Quarta = new javax.swing.JRadioButton("Quarta");
-        Radio_quinta = new javax.swing.JRadioButton("Quinta");
-        Radio_sexta = new javax.swing.JRadioButton("Sexta");
-        Radio_sabado = new javax.swing.JRadioButton("Sabádo");
-        Radio_domingo = new javax.swing.JRadioButton("Domingo");
+        Radio_Segunda = new  javax.swing.JCheckBox("Segunda");
+        Radio_terça = new javax.swing.JCheckBox("Terça");
+        Radio_Quarta = new javax.swing.JCheckBox("Quarta");
+        Radio_quinta = new javax.swing.JCheckBox("Quinta");
+        Radio_sexta = new javax.swing.JCheckBox("Sexta");
+        Radio_sabado = new javax.swing.JCheckBox("Sabádo");
+        Radio_domingo = new javax.swing.JCheckBox("Domingo");
         Btn_Cancelar = new javax.swing.JButton("Cancelar");
         Btn_Salvar = new javax.swing.JButton("Salvar");
         Scroll_Agendamento = new javax.swing.JScrollPane();
@@ -50,6 +67,7 @@ public class Tela_Agendamento extends JPanel {
         Btn_excluir = new javax.swing.JButton("Excluir");
         Label_informacoes = new javax.swing.JLabel("Informações");
         jSeparator2 = new javax.swing.JSeparator();
+        Btn_Gerar_dia = new javax.swing.JButton("Gerar Dia");
 
         Label_titulo_Agendamento.setFont(new java.awt.Font("Arial Black", 0, 11));
         Label_informacoes.setFont(new java.awt.Font("Arial Black", 0, 11));
@@ -74,6 +92,19 @@ public class Tela_Agendamento extends JPanel {
         ImageIcon image_Informacoes= new ImageIcon(getClass().getResource("/project.png"));
         Btn_informações.setIcon(image_Informacoes);
         
+        Btn_Gerar_dia.setBackground(Color.WHITE);
+        Btn_Gerar_dia.setToolTipText("Gerar dia da semana");
+        ImageIcon image_Dia = new ImageIcon(getClass().getResource("/tax.png"));
+        Btn_Gerar_dia.setIcon(image_Dia);
+        
+        Radio_Segunda.setEnabled(false);
+        Radio_terça.setEnabled(false);
+        Radio_Quarta.setEnabled(false);
+        Radio_quinta.setEnabled(false);
+        Radio_sexta.setEnabled(false);
+        Radio_sabado.setEnabled(false);
+        Radio_domingo.setEnabled(false);
+        
         ButtonGroup Btn_Group = new ButtonGroup();
         Btn_Group.add(Radio_Segunda);
         Btn_Group.add(Radio_terça);
@@ -83,14 +114,22 @@ public class Tela_Agendamento extends JPanel {
         Btn_Group.add(Radio_sabado);
         Btn_Group.add(Radio_domingo);
         
-        try {
+        Vector<String> columnNames = new Vector<String>();
+		columnNames.add("Placa");
+		columnNames.add("Nome");
+		columnNames.add("Data");
+		columnNames.add("Servico");
+		Vector<? extends Vector> vector = new Vector();
+		Table_Agendamento = new JTable(vector,columnNames);
+		Scroll_Agendamento= new JScrollPane(Table_Agendamento);
+       
+		try {
             Field_Data.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
         
-        
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,8 +146,43 @@ public class Tela_Agendamento extends JPanel {
                                 .addComponent(Label_Nome, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(Label_Servico))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSeparator1)
-                        .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jSeparator1)
+                                .addContainerGap())
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(Field_servico, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(Radio_domingo)
+                                            .addComponent(Radio_sabado)
+                                            .addComponent(Radio_sexta)
+                                            .addComponent(Radio_Segunda)
+                                            .addComponent(Radio_terça)
+                                            .addComponent(Radio_quinta)
+                                            .addComponent(Radio_Quarta)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(Btn_Cancelar)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Btn_Salvar)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Btn_excluir))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(Field_Nome_Pessoa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(Field_Placa_Veiculo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(Field_Data, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(Btn_Gerar_dia)))
+                                        .addGap(0, 248, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(Scroll_Agendamento, javax.swing.GroupLayout.PREFERRED_SIZE, 620, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(Label_Seleciona_Linha)
+                                    .addComponent(Btn_informações))
+                                .addGap(99, 99, 99))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Label_Dia_editavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -119,38 +193,7 @@ public class Tela_Agendamento extends JPanel {
                                 .addComponent(Label_informacoes)
                                 .addGap(18, 18, 18)
                                 .addComponent(jSeparator2)))
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(111, 111, 111)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(Field_servico, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(Radio_domingo)
-                                        .addComponent(Radio_sabado)
-                                        .addComponent(Radio_sexta)
-                                        .addComponent(Field_Nome_Pessoa, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
-                                        .addComponent(Field_Placa_Veiculo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(Radio_Segunda)
-                                        .addComponent(Radio_terça)
-                                        .addComponent(Radio_quinta)
-                                        .addComponent(Radio_Quarta)
-                                        .addComponent(Field_Data))
-                                    .addGap(316, 316, 316)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(Btn_Salvar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(Btn_Cancelar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Btn_excluir)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Scroll_Agendamento, javax.swing.GroupLayout.PREFERRED_SIZE, 620, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Label_Seleciona_Linha)
-                            .addComponent(Btn_informações))
-                        .addGap(99, 99, 99))))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,21 +202,22 @@ public class Tela_Agendamento extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Label_titulo_Agendamento))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Label_Placa)
-                            .addComponent(Field_Placa_Veiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(Field_Placa_Veiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Label_Nome)
-                            .addComponent(Field_Nome_Pessoa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(Label_Data)
-                            .addComponent(Field_Data, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(Field_Nome_Pessoa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(13, 13, 13)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Label_Data)
+                            .addComponent(Field_Data, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Btn_Gerar_dia))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(Label_Data_Semana)
                             .addComponent(Radio_Segunda))
@@ -192,20 +236,19 @@ public class Tela_Agendamento extends JPanel {
                         .addGap(9, 9, 9)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Label_Servico)
-                            .addComponent(Field_servico, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(Btn_Cancelar)
-                            .addComponent(Btn_Salvar)
-                            .addComponent(Btn_excluir)))
+                            .addComponent(Field_servico, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(Scroll_Agendamento, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(Btn_Cancelar)
+                        .addComponent(Btn_Salvar)
+                        .addComponent(Btn_excluir))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(Scroll_Agendamento, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Label_Seleciona_Linha)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Btn_informações)))
-                .addGap(2, 2, 2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(Label_informacoes)
                     .addGroup(layout.createSequentialGroup()
@@ -219,22 +262,262 @@ public class Tela_Agendamento extends JPanel {
                 .addComponent(Label_Dia_editavel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Label_Edita_serviço, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         
-        Btn_Cancelar.addActionListener(new ActionListener() {
+      //funcao de salvar
+        Btn_Salvar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Limpa_dados();
+				
+				if(Editar == 0 && Verifica()) {
+						Cad_Agendamento();
+				}
+				
+				if(Editar == 1 && Verifica_update()) {
+					if(Field_Placa_Veiculo.getText().equals(Field_Placa_Veiculo.getText())) {
+						Update_Agendamento();
+						update_tabela();
+						Editar = 0;
+					}
+				}
+				
 			}
 		});
         
-    }
+       //Funcao de gerar dia
+        Btn_Gerar_dia.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+				String data = Field_Data.getText();
+				String result;
+				
+				try {
+					java.util.Date date = formatter.parse(data);
+					data = String.valueOf(date);
+				} catch (Exception e2) {
+					
+				}
+				result = data.substring(0,3);
+				if(result.equals("Mon")) Radio_Segunda.setSelected(true);
+				if(result.equals("Tue")) Radio_terça.setSelected(true);
+				if(result.equals("Wed")) Radio_Quarta.setSelected(true);
+				if(result.equals("Thu")) Radio_quinta.setSelected(true);
+				if(result.equals("Fri")) Radio_sexta.setSelected(true);
+				if(result.equals("Sad")) Radio_sabado.setSelected(true);
+				if(result.equals("Sun")) Radio_domingo.setSelected(true);
+				
+			}
+
+			
+		});
+        
+      //Funcao do liberar para editar
+        Btn_excluir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				
+			}
+		});
+        
+        
+        //Funcao de preencher campos 
+       Btn_informações.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			preenche_campos();		
+		}
+	});
+    
+      //Funcao de cancelar Cadastro
+       Btn_Cancelar.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o agendamento", "Cadastro de Agendamentos", JOptionPane.YES_NO_OPTION);
+			if(resposta == JOptionPane.YES_OPTION) {
+				Limpa_dados();
+				Editar = 0;
+			}
+			
+		}
+	});
+	};
+	private boolean Verifica_update(){
+		
+		
+		if(Field_Placa_Veiculo.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a PLACA DO VEICULO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Placa_Veiculo.requestFocus();
+			return false;
+		}
+		if(Field_Nome_Pessoa.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o NOME", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Nome_Pessoa.requestFocus();
+			return false;
+		}
+		if(Field_Data.getText().trim().isEmpty() || Field_Data.getText().equals("  /  /    ")) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a DATA", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Data.requestFocus();
+			return false;
+		}
+		
+		if(Field_servico.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o SERVICO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_servico.requestFocus();
+			return false;
+		}
+		
+		
+		
+		return true;
+		
+	}
+	
+	
+	private void Update_Agendamento(){
+		
+			String Data = Field_Data.getText();
+			String [] DataSeparada = Data.split("/");
+			LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+			
+			Agendamento_add agendamento = new Agendamento_add();
+			agendamento.setPlaca(Field_Placa_Veiculo.getText());
+			agendamento.setNome(Field_Nome_Pessoa.getText());
+			agendamento.setData_Agenda(Date.valueOf(dia));
+			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
+			agendamento.setServico(Field_servico.getText());
+			
+			agendamentoDAO.update_agendamentos(agendamento);
+			
+			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
+			
+		}
+	
+	public void preenche_campos() {
+		
+		
+		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
+			if(agendamento.getPlaca().equals(Field_Placa_Veiculo.getText())) {
+				Field_Placa_Veiculo.setText(agendamento.getPlaca());
+				Field_Nome_Pessoa.setText(agendamento.getNome());
+				Field_Data.setValue(agendamento.getData_Agenda());
+				Field_servico.setText(agendamento.getServico());
+				
+			}
+		}
+		if(Field_Placa_Veiculo.getText().trim().isEmpty() || Field_Placa_Veiculo.getText().equals("        ")) {
+			JOptionPane.showMessageDialog(this, "Placa não cadastrada", "Placa Inválida", JOptionPane.WARNING_MESSAGE);
+		}
+		
+	}
+	
+	public void Mostrar_Cadastro() {
+		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
+			
+				Field_Placa_Veiculo.setText(agendamento.getPlaca());
+				Field_Nome_Pessoa.setText(agendamento.getNome());
+				Field_Data.setValue(agendamento.getData_Agenda());
+				//Field_Data.setText(agendamento.getDia_Semana());
+				Field_servico.setText(agendamento.getServico());
+				
+			
+		}
+	}
+	
+	
+	
+	private void Cad_Agendamento() {
+		
+		 String Data = Field_Data.getText();
+		 String [] DataSeparada = Data.split("/");
+		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+		 
+		  		 
+		 
+		
+			Agendamento_add agendamento = new Agendamento_add();
+			agendamento.setPlaca(Field_Placa_Veiculo.getText());
+			agendamento.setNome(Field_Nome_Pessoa.getText());
+			agendamento.setData_Agenda(Date.valueOf(dia));
+			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
+			agendamento.setServico(Field_servico.getText());
+			agendamentoDAO.Insert(agendamento);
+			Limpa_dados();
+			JOptionPane.showMessageDialog(this,agendamento.getNome() + " foi cadastrado"
+	    	+ " com sucesso! \n Verifique na tabela ao lado !","Cadastro concluido",JOptionPane.INFORMATION_MESSAGE);
+			update_tabela();
+		
+		
+	}
+	
+	
+	public void update_tabela() {
+
+    	DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_Agendamento.getModel();
+    	tablemodel_Cadastrados.setRowCount(0);
+    	
+    	for(Agendamento_add agendamento : agendamentoDAO.getAll()){
+        	Object[] data = {
+        			agendamento.getPlaca(),
+        			agendamento.getNome(),
+        			agendamento.getData_Agenda(),
+        			//agendamento.getDia_Semana(),
+        			agendamento.getServico()
+    		};
+        	
+    		tablemodel_Cadastrados.addRow(data);
+    		
+        	}
+    	
+	}
+	
+	private boolean Verifica() {
+		
+		if(Field_Placa_Veiculo.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a PLACA DO VEICULO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Placa_Veiculo.requestFocus();
+			return false;
+		}
+		if(Field_Nome_Pessoa.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o NOME", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Nome_Pessoa.requestFocus();
+			return false;
+		}
+		if(Field_Data.getText().trim().isEmpty() || Field_Data.getText().equals("  /  /    ")) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha a DATA", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Data.requestFocus();
+			return false;
+		}
+		
+		if(Field_servico.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o SERVICO", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_servico.requestFocus();
+			return false;
+		}
+		
+		
+		
+		return true;
+	}
+	
+	
 	
 	private void Limpa_dados() {
-		Field_servico.setText(" ");
+		Field_Placa_Veiculo.setText(null);
+		Field_Nome_Pessoa.setText(null);
+		Field_Data.setText(null);
+		//Field_Data.setText(null);
+		Field_servico.setText(null);
 	}
+	
+
 	
 	public void data() {
 		
@@ -281,18 +564,21 @@ public class Tela_Agendamento extends JPanel {
     private java.awt.Label Label_editavel_nome;
     private javax.swing.JLabel Label_informacoes;
     private javax.swing.JLabel Label_titulo_Agendamento;
-    private javax.swing.JRadioButton Radio_Quarta;
-    private javax.swing.JRadioButton Radio_Segunda;
-    private javax.swing.JRadioButton Radio_domingo;
-    private javax.swing.JRadioButton Radio_quinta;
-    private javax.swing.JRadioButton Radio_sabado;
-    private javax.swing.JRadioButton Radio_sexta;
-    private javax.swing.JRadioButton Radio_terça;
+    private javax.swing.JCheckBox Radio_Quarta;
+    private javax.swing.JCheckBox Radio_Segunda;
+    private javax.swing.JCheckBox Radio_domingo;
+    private javax.swing.JCheckBox Radio_quinta;
+    private javax.swing.JCheckBox Radio_sabado;
+    private javax.swing.JCheckBox Radio_sexta;
+    private javax.swing.JCheckBox Radio_terça;
     private javax.swing.JScrollPane Scroll_Agendamento;
     private javax.swing.JTable Table_Agendamento;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JFormattedTextField Field_Data;
+    private javax.swing.JButton Btn_Gerar_dia;
+    private AgendamentoDAO agendamentoDAO;
+    private int Editar = 0 ;
     // End of variables declaration             
 
 }

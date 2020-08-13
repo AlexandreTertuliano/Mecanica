@@ -8,7 +8,7 @@ import java.util.Properties;
 public class ConnectionDAO {
 	
 	private static final String USER = "postgres";
-	private static final String PASSWORD = "123456";
+	private static final String PASSWORD = "abc123";
 	
 	public static Connection getConnection() throws SQLException {
 		//PORTA LINUX 5433

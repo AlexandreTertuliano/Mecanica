@@ -3,20 +3,35 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Cliente_add;
 
 public class Tela_Ordem_Servico extends JPanel {
-
-	public Tela_Ordem_Servico() {
+	private Connection connection;
+	Double Total = 0.00;
+	int contador_Table = 0;
+	public Tela_Ordem_Servico() throws SQLException {
         initComponents();
+        connection = ConnectionDAO.getConnection();
     }
 	
 	
 	@SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+                     
     private void initComponents() {
 
         Label_Titulo_Ordem = new javax.swing.JLabel("Ordem de Serviço");
@@ -42,12 +57,12 @@ public class Tela_Ordem_Servico extends JPanel {
         Label_Selecione_Linha_ou_Cod = new javax.swing.JLabel("Selecione uma linha ou digite o codigo");
         Field_Cod_aberto = new javax.swing.JFormattedTextField();
         Btn_Busca_Senha = new javax.swing.JButton("Buscar Venda");
-        textArea1 = new java.awt.TextArea();
+        textArea1 = new javax.swing.JFormattedTextField();
         Label_valor = new javax.swing.JLabel("Valor Total do serviço : R$");
         Btn_gerar = new javax.swing.JButton("Gerar");
         Btn_Cancelar = new javax.swing.JButton("Cancelar");
         Label_Placa = new javax.swing.JLabel("Placa do Carro");
-        textField1 = new javax.swing.JFormattedTextField();
+        Combo_Placa = new javax.swing.JComboBox<>();
         Btn_Remover = new javax.swing.JButton("Remover");
         Label_Quantidade = new javax.swing.JLabel("Quantidade");
         Field_Quantidade = new javax.swing.JFormattedTextField();
@@ -59,7 +74,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Field_Valor_serviço = new javax.swing.JFormattedTextField();
         Btn_Imprimir = new javax.swing.JButton("Imprimir");
         Label_valor_Produto = new javax.swing.JLabel("Valor");
-        Field_Valor_Produto = new java.awt.TextField();
+        Field_Valor_Produto = new java.awt.TextField("0,00");
 
         Label_Titulo_Ordem.setFont(new java.awt.Font("Arial Black", 0, 12));
         Label_Cod_Servico.setFont(new java.awt.Font("Tahoma", 0, 12));
@@ -83,7 +98,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Btn_Busca_Senha.setIcon(image_Buscar);
         
         Btn_Cancelar.setBackground(Color.WHITE);
-        Btn_Cancelar.setToolTipText("Cancelar");
+        Btn_Cancelar.setToolTipText("Cancelar serviço");
         ImageIcon image_Cancel = new ImageIcon(getClass().getResource("/close.png"));
         Btn_Cancelar.setIcon(image_Cancel);
         
@@ -116,6 +131,16 @@ public class Tela_Ordem_Servico extends JPanel {
         Btn_Selecionar.setToolTipText("Cancelar");
         Btn_Selecionar.setIcon(image_Cancel);
         
+        //Coloca as especificações nos campos da tabela de serviços
+        Vector<String> columnNames = new Vector<String>();
+		columnNames.add("Produto");
+		columnNames.add("Valor do produto");
+		columnNames.add("Qtd prod");
+		columnNames.add("Serviço");
+		columnNames.add("Valor Serviço");
+		Vector<? extends Vector> vector = new Vector();
+		Table_add_Prod_Serv = new JTable(vector,columnNames);
+		ScrollPane_add_Produto_Servico = new JScrollPane(Table_add_Prod_Serv);
         
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -148,7 +173,7 @@ public class Tela_Ordem_Servico extends JPanel {
                                                 .addComponent(Btn_gerar))
                                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                 .addGap(116, 116, 116)
-                                                .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 921, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 1100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createSequentialGroup()
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                 .addGroup(layout.createSequentialGroup()
@@ -189,7 +214,7 @@ public class Tela_Ordem_Servico extends JPanel {
                                                 .addGroup(layout.createSequentialGroup()
                                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                                         .addComponent(Field_Valor_serviço, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                                        .addComponent(textField1, javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(Combo_Placa, javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addComponent(Field_Quantidade))
                                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                     .addComponent(Label_valor_Produto)))))
@@ -225,7 +250,7 @@ public class Tela_Ordem_Servico extends JPanel {
                         .addComponent(Label_Cliente)
                         .addComponent(Combo_Nome_Cliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(Label_Placa)
-                        .addComponent(textField1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(Combo_Placa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -294,7 +319,51 @@ public class Tela_Ordem_Servico extends JPanel {
                             .addComponent(Btn_Imprimir))
                         .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );
+            );           
+            //Botao de remover item da table servico / produtos
+            Btn_Remover.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Verica_Linha();
+				}
+			});
+            
+            //Botao de adicionar serviço / produtos
+            Btn_Adicionar.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(Verifica()){
+						Bloq_Campos();
+						update_tabela();
+						soma_valor_serv_prod();
+						Limpa_Dados();
+						Combo_Produto.setSelectedItem("Seleciona");
+					}
+					
+				}
+			});
+            
+            //Funcao da combo box produto
+            Combo_Produto.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Mostra_Valor_Produto();
+					
+				}
+			});
+            
+            //Funcao da combo box cliente
+            Combo_Nome_Cliente.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Mostrar_placa();
+					
+				}
+			});
             
             //Botao do primeiro cancelar
             Btn_Selecionar.addActionListener(new ActionListener() {
@@ -306,15 +375,226 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 			});
             
+            //Botao de apagar todas as linhas da tabela
             Btn_Cancelar.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Limpa_Dados();
+					if(contador_Table == 0)erro();
+					else Limpa_tabela();
 					
 				}
 			});
-        }            
+        }      
+	
+	private void erro() {
+		JOptionPane.showMessageDialog(this, "Nenhum produto ou serviço foi adicionado", "Erro", JOptionPane.WARNING_MESSAGE);
+	}
+	
+	private void Verica_Linha(){
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+		int Numero_linha = Table_add_Prod_Serv.getSelectedRow();
+		 if(Numero_linha == -1) {
+			  JOptionPane.showMessageDialog(this, "Linha não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+		 }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+				  if(Numero_linha >= 0){
+					  
+					  Double produto = Double.valueOf((String) Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 1));
+					  Double Qtd = Double.valueOf((String)Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 2));
+					  Double servico = Double.valueOf((String)Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 4));
+					  Total = Total - ((produto * Qtd ) + servico);
+					  field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
+					  tablemodel_Cadastrados.removeRow(Numero_linha);
+					  contador_Table --;
+					  
+					  if(contador_Table == 0 ) Lib_Campos();
+				  }
+				}
+		 }
+	}
+	
+	private void Limpa_tabela() {
+			 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja as Informações da tabela ?", "Excluir", JOptionPane.YES_NO_OPTION);
+			
+			 if(resposta == JOptionPane.YES_OPTION){
+				 tablemodel_Cadastrados.setRowCount(0);
+				}
+			 
+			 contador_Table = 0;
+			 field_editavel_total.setText("0.00");
+			 Lib_Campos();
+		 }
+		
+	
+	
+	private void Bloq_Campos(){
+		Combo_Nome_Cliente.setEnabled(false);
+		Combo_Placa.setEnabled(false);
+		Combo_Funcionario.setEnabled(false);
+	}
+	private void Lib_Campos(){
+		Combo_Nome_Cliente.setEnabled(true);
+		Combo_Placa.setEnabled(true);
+		Combo_Funcionario.setEnabled(true);
+		Combo_Nome_Cliente.setSelectedItem("Seleciona");
+		Combo_Placa.setSelectedItem("Seleciona");
+		Combo_Funcionario.setSelectedItem("Seleciona");
+		Combo_Produto.setSelectedItem("Seleciona");
+	}
+	
+	private void soma_valor_serv_prod(){
+		
+		Double produto = Double.valueOf(Field_Valor_Produto.getText());
+		Double Qtd = Double.valueOf(Field_Quantidade.getText());
+		Double servico = Double.valueOf(Field_Valor_serviço.getText());
+		Total = Total + ((produto * Qtd ) + servico);
+		field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
+		
+	}
+	
+	
+	private boolean Verifica(){
+		
+		if(Combo_Nome_Cliente.getSelectedItem().equals("Seleciona")) {
+			JOptionPane.showMessageDialog(this, "Por favor, Selecione um Cliente valido", "Erro", JOptionPane.WARNING_MESSAGE);
+			Combo_Nome_Cliente.requestFocus();
+			return false;
+		}
+		if(Combo_Produto.getSelectedItem().equals("Seleciona")) {
+			JOptionPane.showMessageDialog(this, "Por favor, Selecione um Produto valido", "Erro", JOptionPane.WARNING_MESSAGE);
+			Combo_Produto.requestFocus();
+			return false;
+		}
+		if(Combo_Placa.getSelectedItem().equals("Seleciona")) {
+			JOptionPane.showMessageDialog(this, "Por favor, Selecione uma Placa valido", "Erro", JOptionPane.WARNING_MESSAGE);
+			Combo_Placa.requestFocus();
+			return false;
+		}
+		if(Combo_Funcionario.getSelectedItem().equals("Seleciona")) {
+			JOptionPane.showMessageDialog(this, "Por favor, Selecione um Funcionario valido", "Erro", JOptionPane.WARNING_MESSAGE);
+			Combo_Funcionario.requestFocus();
+			return false;
+		}
+		if(textArea1.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o Serviço", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			textArea1.requestFocus();
+			return false;
+		}
+		if(Field_Valor_serviço.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o Valor do Serviço", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+			Field_Valor_serviço.requestFocus();
+			return false;
+		}
+		return true;
+	}
+	
+	private void Mostra_Valor_Produto(){
+		
+			String sql = "SELECT * FROM produtos where descricao = '" + Combo_Produto.getSelectedItem() +"'" ;
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+					Field_Valor_Produto.setText(result.getString("preco_venda"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			
+			
+		}
+	}
+	
+	private void update_tabela() {
+
+    	DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+    	tablemodel_Cadastrados.setRowCount(contador_Table);
+    	
+    	
+        	Object[] data = {
+    				Combo_Produto.getSelectedItem(),
+    				Field_Valor_Produto.getText(),
+    				Field_Quantidade.getText(),
+    				textArea1.getText(),
+    				Field_Valor_serviço.getText()
+    				
+    		};
+        	
+    		tablemodel_Cadastrados.addRow(data);
+    		contador_Table ++;
+	}
+	
+	private void Mostrar_placa(){
+		Combo_Placa.removeAllItems();
+		Combo_Placa.addItem("Seleciona");	
+		
+		
+			String sql = "SELECT * FROM placa_veiculos where cliente = '" + Combo_Nome_Cliente.getSelectedItem() +"'" ;
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+					Combo_Placa.addItem(result.getString("placa"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			
+			
+		}
+	}
+	
+public void update_combo_funcionarios(){
+		
+		Combo_Funcionario.removeAllItems();
+		Combo_Funcionario.addItem("Seleciona");	
+		 
+		 String sql = "SELECT * FROM funcionarios ORDER BY nome";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+					Combo_Funcionario.addItem(result.getString("nome"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		
+	}
+	
+	
+	public void Update_Combo_Produto(){
+		Combo_Produto.removeAllItems();
+		Combo_Produto.addItem("Seleciona");	
+		 
+		 String sql = "SELECT * FROM produtos ORDER BY descricao";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+					Combo_Produto.addItem(result.getString("Descricao"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	}
+	
+	public void Update_Combo_Cliente(){
+		Combo_Nome_Cliente.removeAllItems();
+		Combo_Nome_Cliente.addItem("Seleciona");	
+		 
+		 String sql = "SELECT * FROM clientes ORDER BY nome";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+				Combo_Nome_Cliente.addItem(result.getString("Nome"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	}
 
 	private void Limpa_Dados() {
 		
@@ -346,9 +626,11 @@ public class Tela_Ordem_Servico extends JPanel {
 		
 		Label_Editavel_data.setText(data);
 	}
+	
+	
 
     // Variables declaration - do not modify                     
-	 private javax.swing.JButton Btn_Adicionar;
+		private javax.swing.JButton Btn_Adicionar;
 	    private javax.swing.JButton Btn_Busca_Senha;
 	    private javax.swing.JButton Btn_Cancelar;
 	    private javax.swing.JButton Btn_Editar;
@@ -387,8 +669,8 @@ public class Tela_Ordem_Servico extends JPanel {
 	    private javax.swing.JFormattedTextField field_editavel_total;
 	    private javax.swing.JSeparator jSeparator1;
 	    private javax.swing.JSeparator jSeparator3;
-	    private java.awt.TextArea textArea1;
-	    private javax.swing.JFormattedTextField textField1;
+	    private javax.swing.JFormattedTextField  textArea1;
+	    private javax.swing.JComboBox<String> Combo_Placa;
     // End of variables declaration   
 	
 }
