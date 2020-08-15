@@ -74,8 +74,7 @@ public class Tela_Cadastro_Produto extends JPanel {
      Field_Fornecedor_CNPJ =new javax.swing.JFormattedTextField();
      Label_Data = new javax.swing.JLabel("Data da Inclusão");
      Field_Data = new javax.swing.JFormattedTextField();
-     Editar = 0 ;
-
+     Btn_salvarEdit = new javax.swing.JButton("Editar");
     
      Label_Cadastrados.setFont(new java.awt.Font("Arial Black", 0, 12)); 
      Label_Titulo_Produto.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -88,11 +87,17 @@ public class Tela_Cadastro_Produto extends JPanel {
      Field_Fornecedor_CNPJ.setEditable(false);
      Field_Fornecedor_Tell.setEditable(false);
      Field_Cod_Sistema.setEditable(false);
+     Btn_salvarEdit.setEnabled(false);
      
      Btn_Cancelar.setBackground(Color.WHITE);
      Btn_Cancelar.setToolTipText("Cancelar");
      ImageIcon image_Cancel = new ImageIcon(getClass().getResource("/close.png"));
      Btn_Cancelar.setIcon(image_Cancel);
+     
+     Btn_salvarEdit.setBackground(Color.WHITE);
+     Btn_salvarEdit.setToolTipText("Salvar");
+     ImageIcon image_edit = new ImageIcon(getClass().getResource("/pencil.png"));
+     Btn_salvarEdit.setIcon(image_edit);
      
      Btn_Pesquisar.setBackground(Color.WHITE);
      Btn_Pesquisar.setToolTipText("Pesquisar");
@@ -215,6 +220,8 @@ public class Tela_Cadastro_Produto extends JPanel {
                      .addComponent(Separador_Fornecedor))
                  .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                      .addGap(0, 0, Short.MAX_VALUE)
+                     .addComponent(Btn_salvarEdit)
+                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                      .addComponent(Btn_Cancelar)
                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                      .addComponent(Btn_Salvar)))
@@ -278,7 +285,8 @@ public class Tela_Cadastro_Produto extends JPanel {
              .addGap(17, 17, 17)
              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                  .addComponent(Btn_Salvar)
-                 .addComponent(Btn_Cancelar))
+                 .addComponent(Btn_Cancelar)
+                 .addComponent(Btn_salvarEdit))
              .addGap(18, 18, 18)
              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                  .addComponent(Label_Cadastrados)
@@ -296,7 +304,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o cadastro", "Cadastro de Produto", JOptionPane.YES_NO_OPTION);
 			if(resposta == JOptionPane.YES_OPTION) {
 				Limpa_campos();
-				Editar = 0;
+				
 			}
 			
 		}
@@ -318,17 +326,12 @@ public class Tela_Cadastro_Produto extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
-				if(Editar == 0 && Verifica()) {
+				if( Verifica()) {
 					Cad_Produto();
 					Limpa_campos();
 					update_tabela();
 			}
-				if(Editar == 1 && Verifica_update() ) {
-					Update_produtos();
-					update_tabela();
-					Editar = 0 ;
-					Limpa_campos();
-				}
+				
 		}
 	});
     
@@ -339,10 +342,12 @@ public class Tela_Cadastro_Produto extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if (Field_Cod_Barras.getText().trim().isEmpty() ) {
 				erro();
-				 Editar = 0;
+				 
 			}else {
-				Mostra_cadastro();
-				Editar = 1 ;
+				if(Mostra_cadastro()){
+				Btn_salvarEdit.setEnabled(true);
+				Field_Cod_Barras.setEnabled(false);
+				}
 			}
 			
 		}
@@ -353,10 +358,53 @@ public class Tela_Cadastro_Produto extends JPanel {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Mostra_Inf_Fornecedor();			
+				if(Combo_Fornecedor.getSelectedItem().equals("Seleciona")) {
+					Field_Fornecedor_CNPJ.setText(null);
+					Field_Fornecedor_Tell.setText(null);
+				}else {
+					 for(Fornecedor_add fornecedor : fornecedorDAO.getAll()){
+						 if(Combo_Fornecedor.getSelectedItem().equals(fornecedor.getRazão_Social())){
+							 Field_Fornecedor_CNPJ.setText(fornecedor.getCnpj());
+							 Field_Fornecedor_Tell.setText(fornecedor.getTell());
+						 }
+						 
+					 }
+				}
+			
 		}
 	});
 	 
+	 //Funcao de update cadastro
+	 Btn_salvarEdit.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			 Update_produto();
+			 Btn_Cancelar.setEnabled(true);
+			 Btn_Salvar.setEnabled(true);
+			 Btn_salvarEdit.setEnabled(false);
+			 Limpa_campos();
+			 update_tabela();
+			 Field_Cod_Barras.setEnabled(true);
+		}
+	});
+	 }
+	 
+	 private void Update_produto(){
+		 
+		 Produto_Add produto = new Produto_Add();
+		 produto.setCod_Sistema(Field_Cod_Sistema.getText());
+		 produto.setCod_Barras(Field_Cod_Barras.getText());
+		 produto.setDescricao(Field_Descricao.getText());		
+		 produto.setData(Field_Data.getText());
+		 produto.setQuantidade(Field_Quantidade.getText());
+		 produto.setPreco_custo(Field_Preco_Custo.getText());
+		 produto.setPreco_Venda(Field_Preco_Venda.getText());
+		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
+		 produtoDAO.update_produto(produto);
+		 
+		 JOptionPane.showMessageDialog(this, "Produto Atualizado com sucesso! \n Verifique a tabela a baixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+
 	 }
 	 
 	 private boolean Verifica_update(){
@@ -416,7 +464,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 
 	 }
 	 
-	 private void Mostra_cadastro() {
+	 private boolean Mostra_cadastro() {
 		 for(Produto_Add produto : produtoDAO.getAll()) {
 			 if(produto.getCod_Barras().equals(Field_Cod_Barras.getText())) {
 				Field_Cod_Sistema.setText(produto.getCod_Sistema());
@@ -427,19 +475,30 @@ public class Tela_Cadastro_Produto extends JPanel {
 				Field_Preco_Venda.setText(produto.getPreco_Venda());
 				Field_Quantidade.setText(produto.getQuantidade());
 				Combo_Fornecedor.setSelectedItem(produto.getFornecedor());
-				Mostra_Inf_Fornecedor();
 			 }
 		 }
 		 if(Field_Descricao.getText().trim().isEmpty()) {
 			 JOptionPane.showMessageDialog(this, "Produto não cadastrado", "Codigo Inválido", JOptionPane.WARNING_MESSAGE);
+			 Field_Cod_Barras
+			 .requestFocus();
+			 return false;
 		 }
+		 
+		 Btn_Cancelar.setEnabled(false);
+		 Btn_Salvar.setEnabled(false);
+		 return true;
 	 }
 	 
 	 private void erro() {
 		 JOptionPane.showMessageDialog(this, "Por favor, preencha o Campo ao lado", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+		 Field_Cod_Barras.requestFocus();
 	 }
 	 
 	 private void Cad_Produto() {
+		 
+		 //System.out.println(Field_Preco_Custo.getText());
+		 //Field_Preco_Custo.getText().replace(",", ".");
+		 //System.out.println(Field_Preco_Custo.getText());
 		 
 		 Produto_Add produto = new Produto_Add();
 		 produto.setCod_Sistema(Field_Cod_Sistema.getText());
@@ -447,8 +506,8 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 produto.setDescricao(Field_Descricao.getText());		
 		 produto.setData(Field_Data.getText());
 		 produto.setQuantidade(Field_Quantidade.getText());
-		 produto.setPreco_custo(Field_Preco_Custo.getText());
-		 produto.setPreco_Venda(Field_Preco_Venda.getText());
+		 produto.setPreco_custo(Field_Preco_Custo.getText().replace(",", "."));
+		 produto.setPreco_Venda(Field_Preco_Venda.getText().replace(",", "."));
 		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
 		 produtoDAO.Insert(produto);
 		 
@@ -607,17 +666,9 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 
 	 }
 	 
-	 private void Mostra_Inf_Fornecedor(){
-		 
-		 for(Fornecedor_add fornecedor : fornecedorDAO.getAll()){
-			 if(Combo_Fornecedor.getSelectedItem().equals(fornecedor.getRazão_Social())){
-				 Field_Fornecedor_CNPJ.setText(fornecedor.getCnpj());
-				 Field_Fornecedor_Tell.setText(fornecedor.getTell());
-			 }
-		 }
+
 		 
 		 
-	 }
 	 
 
 	 //Variables declaration - do not modify                     
@@ -655,9 +706,9 @@ public class Tela_Cadastro_Produto extends JPanel {
 	    private javax.swing.JTable Table_Cadastrados;
 	    private javax.swing.JSeparator jSeparator1;
 	    private javax.swing.JSeparator jSeparator2;
+	    private javax.swing.JButton Btn_salvarEdit;
 	    private ProdutoDAO produtoDAO;
 	    private FornecedoresDAO fornecedorDAO;
-	    private int Editar = 0;
 	 //End of variables declaration       
 
 }

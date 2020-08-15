@@ -21,8 +21,7 @@ public FuncionarioDAO() throws SQLException {
 	
 	
 public void Insert(Funcionario_add funcionario) {
-		
-		
+			
 	String sql = "INSERT INTO FUNCIONARIOS ( CPF, NOME, SENHA)" +
 			"VALUES (?,?,?)";
 		
