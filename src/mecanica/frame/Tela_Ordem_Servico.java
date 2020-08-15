@@ -16,9 +16,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.TabableView;
 
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Cliente_add;
+import mecanicaDAO.Funcionario_add;
+import mecanicaDAO.Servico_Add;
+import mecanicaDAOServico.ServicoDAO;
 
 public class Tela_Ordem_Servico extends JPanel {
 	private Connection connection;
@@ -27,6 +31,7 @@ public class Tela_Ordem_Servico extends JPanel {
 	public Tela_Ordem_Servico() throws SQLException {
         initComponents();
         connection = ConnectionDAO.getConnection();
+        servicoDAO = new ServicoDAO();
     }
 	
 	
@@ -84,7 +89,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Label_valor.setFont(new java.awt.Font("Arial Black", 0, 14));
         Field_Quantidade.setText("1");
         field_editavel_total.setPreferredSize(new java.awt.Dimension(70, 30));
-        Field_Editavel_Cod_Servico.setEnabled(false);
+        Field_Editavel_Cod_Servico.setEnabled(true);
         
         
         Btn_Adicionar.setBackground(Color.WHITE);
@@ -141,6 +146,16 @@ public class Tela_Ordem_Servico extends JPanel {
 		Vector<? extends Vector> vector = new Vector();
 		Table_add_Prod_Serv = new JTable(vector,columnNames);
 		ScrollPane_add_Produto_Servico = new JScrollPane(Table_add_Prod_Serv);
+		
+		 //Coloca as especificações nos campos da tabela de serviços em aberto
+        Vector<String> columnNames1 = new Vector<String>();
+		columnNames1.add("Numero");
+		columnNames1.add("Cliente");
+		columnNames1.add("Valor");
+		columnNames1.add("Status");
+		Vector<? extends Vector> vector1 = new Vector();
+		Table_servico_aberto = new JTable(vector1,columnNames1);
+		ScrollPane_Serv_abert = new JScrollPane(Table_servico_aberto);
         
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -319,7 +334,25 @@ public class Tela_Ordem_Servico extends JPanel {
                             .addComponent(Btn_Imprimir))
                         .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );           
+            );    
+            
+            //Botao de gerar
+            Btn_gerar.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(Cad_Servico()) {
+						 update_tabela_Servico_Aberto();
+						 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+						 tablemodel_Cadastrados.setRowCount(0);
+						 contador_Table = 0;
+						 field_editavel_total.setText("0.00");
+						 Lib_Campos();
+					}
+					
+				}
+			});
+            
             //Botao de remover item da table servico / produtos
             Btn_Remover.addActionListener(new ActionListener() {
 				
@@ -386,6 +419,24 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 			});
         }      
+
+	public void update_tabela_Servico_Aberto() {
+		
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_servico_aberto.getModel();
+    	tablemodel_Cadastrados.setRowCount(0);
+    	
+    	for(Servico_Add servico : servicoDAO.getAll()){
+        	Object[] data = {
+    				servico.getCod_Serv(),
+    				servico.getCliente(),
+    				servico.getValor_Total(),
+    				"A"
+        			
+    		};
+    		tablemodel_Cadastrados.addRow(data);
+        	}
+    	
+	}
 	
 	private void erro() {
 		JOptionPane.showMessageDialog(this, "Nenhum produto ou serviço foi adicionado", "Erro", JOptionPane.WARNING_MESSAGE);
@@ -408,11 +459,54 @@ public class Tela_Ordem_Servico extends JPanel {
 					  field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
 					  tablemodel_Cadastrados.removeRow(Numero_linha);
 					  contador_Table --;
-					  
 					  if(contador_Table == 0 ) Lib_Campos();
 				  }
 				}
 		 }
+	}
+	
+	private boolean Cad_Servico() {
+		
+		Servico_Add servico = new Servico_Add();
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+		
+		if(contador_Table == 1 ) {
+			servico.setCod_Serv(Field_Editavel_Cod_Servico.getText());
+			servico.setCliente(Combo_Nome_Cliente.getSelectedItem().toString());
+			servico.setPlaca_Carro(Combo_Placa.getSelectedItem().toString());
+			servico.setFuncionario(Combo_Funcionario.getSelectedItem().toString());
+			servico.setProduto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 0)));
+			servico.setValor_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 1)));
+			servico.setQtd_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 2)));
+			servico.setServico(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 3)));
+			servico.setValor_servico(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 4)));
+			servico.setValor_Total(Double.valueOf(field_editavel_total.getText().replace(",", ".")));
+			servicoDAO.Insert(servico);
+			JOptionPane.showMessageDialog(this, "Serviço cadastrado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		}else if(contador_Table > 1) {
+				while(contador_Table != 0) {
+				servico.setCod_Serv(Field_Editavel_Cod_Servico.getText());
+				servico.setCliente(Combo_Nome_Cliente.getSelectedItem().toString());
+				servico.setPlaca_Carro(Combo_Placa.getSelectedItem().toString());
+				servico.setFuncionario(Combo_Funcionario.getSelectedItem().toString());
+				servico.setProduto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 0)));
+				servico.setValor_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 1)));
+				servico.setQtd_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 2)));
+				servico.setServico(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 3)));
+				servico.setValor_servico(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 4)));
+				servico.setValor_Total(Double.valueOf(field_editavel_total.getText().replace(",", ".")));
+				servicoDAO.Insert(servico);
+				tablemodel_Cadastrados.removeRow(0);
+				contador_Table --;
+				
+			}
+			JOptionPane.showMessageDialog(this, "Serviço cadastrado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		}else if(contador_Table == 0) {
+			erro();
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private void Limpa_tabela() {
@@ -671,6 +765,7 @@ public void update_combo_funcionarios(){
 	    private javax.swing.JSeparator jSeparator3;
 	    private javax.swing.JFormattedTextField  textArea1;
 	    private javax.swing.JComboBox<String> Combo_Placa;
+	    private ServicoDAO servicoDAO;
     // End of variables declaration   
 	
 }

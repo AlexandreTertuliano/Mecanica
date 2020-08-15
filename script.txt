@@ -116,6 +116,31 @@ create table Vale(
 	
 ); 
 
+
+	private String Cod_Serv;
+	private String Cliente;
+	private String Placa_Carro;
+	private String Funcionario;
+	private String Produto;
+	private String Valor_Produto;
+	private String Qtd_Produto;
+	private String servico;
+	private String Valor_servico;
+	
+create table Ordem_Servico(
+	Cod_Serv varchar (4) not null,
+	Cliente varchar (50) not null,
+	Placa_Carro varchar (10) not null,
+	Funcionario varchar (50) not null,
+	Produto varchar (50),
+	Valor_Produto varchar (10) ,
+	Qtd_Prod varchar (5),
+	servico varchar (100) not null,
+	valor_servico varchar (10) not null,
+	Valor_total float not null	
+
+);
+
 delete from Funcionarios;
 delete from Produtos;
 delete from Placa_Veiculos;
