@@ -71,7 +71,7 @@ public class MecanicaFrame extends JFrame {
 	private void createNorthPanel() {
 		JPanel northPanel = new JPanel();
 		northPanel.setPreferredSize(new Dimension(1920, 80));
-		northPanel.setBackground(Color.BLACK);
+		northPanel.setBackground(new Color(45,173,199));
 		
 		
 		JButton logoMecanicaButton = new JButton();
@@ -94,7 +94,7 @@ public class MecanicaFrame extends JFrame {
 		northPanel.add(logoMecanicaButton);
 		
 		JButton addClientesButton = new JButton();
-		addClientesButton.setPreferredSize(new Dimension(60, 60));
+		addClientesButton.setPreferredSize(new Dimension(60,60));
 		addClientesButton.setToolTipText("Adicionar Clientes");
 		ImageIcon image2 = new ImageIcon(getClass().getResource("/addCliente.png"));
 		addClientesButton.setIcon(image2);
@@ -127,9 +127,10 @@ public class MecanicaFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				centerPanel.removeAll();
 			    centerPanel.add(Tela_Cadastro_Produto);
-				//Tela_Cadastro_Produto.setBackground(Color.WHITE);
+				//Tela_Cadastro_Produto.setBackground(Color.green);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).Update_Combo_fornecedor();
 				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).data();
 				((mecanica.frame.Tela_Cadastro_Produto) Tela_Cadastro_Produto).update_tabela();
 			}
@@ -150,7 +151,7 @@ public class MecanicaFrame extends JFrame {
 				//Tela_cadastro_Funcionarios.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
-				
+				((mecanica.frame.Tela_cadastro_Funcionarios)Tela_cadastro_Funcionarios).update_tabela();
 			}
 		});
 		northPanel.add(addFuncionarioButton);
@@ -190,9 +191,11 @@ public class MecanicaFrame extends JFrame {
 				//Tela_Contas_Pagar_E_Vale.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
-				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_mes();
-				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data_vale();
-				
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).data();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).update_Table();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).soma_boletos();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).Update_combo_vale();
+				((mecanica.frame.Tela_Contas_Pagar_E_Vale) Tela_Contas_Pagar_E_Vale).update_Table_Vale();
 			}
 		});
 		northPanel.add(boletosAndValesButton);
@@ -208,10 +211,12 @@ public class MecanicaFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				centerPanel.removeAll();
 				centerPanel.add(Tela_Ordem_Servico);
-				//Tela_Ordem_Servico.setBackground(Color.WHITE);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).data();
+				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Update_Combo_Cliente();
+				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Update_Combo_Produto();
+				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).update_combo_funcionarios();
 			}
 		});
 		northPanel.add(ordemServicoButton);
@@ -249,6 +254,8 @@ public class MecanicaFrame extends JFrame {
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Agendamento)Tela_Agendamento).data();
+				((mecanica.frame.Tela_Agendamento) Tela_Agendamento).update_tabela();
+				
 			}
 		});
 		northPanel.add(agendamentoButton);
