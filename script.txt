@@ -115,17 +115,6 @@ create table Vale(
 	Valor varchar (10) not null
 	
 ); 
-
-
-	private String Cod_Serv;
-	private String Cliente;
-	private String Placa_Carro;
-	private String Funcionario;
-	private String Produto;
-	private String Valor_Produto;
-	private String Qtd_Produto;
-	private String servico;
-	private String Valor_servico;
 	
 create table Ordem_Servico(
 	Cod_Serv varchar (4) not null,
@@ -141,6 +130,21 @@ create table Ordem_Servico(
 
 );
 
+
+create table Vendas(
+	Cliente_venda varchar (50) not null,
+	Cod_venda varchar (10) not null,
+	Cpf_venda varchar (12) not null,
+	Cod_barras varchar (100) not null,
+	Valor_venda varchar (20) not null,
+	Quant varchar (20) not null,
+	Placa varchar (8) not null,
+	Data_venda Date not null,
+	Num_os varchar (20) not null,
+	Valor_Total Double not null
+
+);
+
 delete from Funcionarios;
 delete from Produtos;
 delete from Placa_Veiculos;
@@ -148,8 +152,9 @@ delete from clientes;
 delete from Fornecedor;
 delete from Boleto;
 delete from boletos_pago;
+delete from Vendas;
 
-drop table Funcionarios, Produtos, Placa_Veiculos, clientes, Fornecedor, Boleto, boletos_pago, estados;
+drop table Funcionarios, Produtos, Placa_Veiculos, clientes, Fornecedor, Boleto, boletos_pago, estados, Vendas;
 
 
 

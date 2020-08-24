@@ -592,6 +592,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 		  try {
 	    		Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

@@ -217,7 +217,6 @@ public class MecanicaFrame extends JFrame {
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Update_Combo_Cliente();
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Update_Combo_Produto();
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).update_combo_funcionarios();
-				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).update_tabela_Servico_Aberto();
 			}
 		});
 		northPanel.add(ordemServicoButton);
@@ -256,6 +255,7 @@ public class MecanicaFrame extends JFrame {
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Agendamento)Tela_Agendamento).data();
 				((mecanica.frame.Tela_Agendamento) Tela_Agendamento).update_tabela();
+				
 			}
 		});
 		northPanel.add(agendamentoButton);
