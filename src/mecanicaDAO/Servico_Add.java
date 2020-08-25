@@ -1,5 +1,7 @@
 package mecanicaDAO;
 
+import java.util.Date;
+
 public class Servico_Add {
 	
 	private String Cod_Serv;
@@ -12,6 +14,7 @@ public class Servico_Add {
 	private String servico;
 	private String Valor_servico;
 	private Double Valor_Total;
+	private Date data;
 	
 	
 	public String getCod_Serv() {
@@ -73,6 +76,12 @@ public class Servico_Add {
 	}
 	public void setValor_Total(Double valor_Total) {
 		Valor_Total = valor_Total;
+	}
+	public Date getData() {
+		return data;
+	}
+	public void setData(Date data) {
+		this.data = data;
 	}
 	
 	

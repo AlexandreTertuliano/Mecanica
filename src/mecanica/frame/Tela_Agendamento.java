@@ -5,7 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Agendamento_add;
@@ -45,11 +49,11 @@ public class Tela_Agendamento extends JPanel {
         Label_Data = new javax.swing.JLabel("Data");
         Field_Data = new javax.swing.JFormattedTextField();
         Label_Data_Semana = new javax.swing.JLabel("Dia da Semana :");
-        Radio_Segunda = new  javax.swing.JCheckBox("Segunda");
-        Radio_terça = new javax.swing.JCheckBox("Terça");
-        Radio_Quarta = new javax.swing.JCheckBox("Quarta");
-        Radio_quinta = new javax.swing.JCheckBox("Quinta");
-        Radio_sexta = new javax.swing.JCheckBox("Sexta");
+        Radio_Segunda = new  javax.swing.JCheckBox("Segunda - Feira");
+        Radio_terça = new javax.swing.JCheckBox("Terça - Feira");
+        Radio_Quarta = new javax.swing.JCheckBox("Quarta - Feira");
+        Radio_quinta = new javax.swing.JCheckBox("Quinta - Feira");
+        Radio_sexta = new javax.swing.JCheckBox("Sexta - Feira");
         Radio_sabado = new javax.swing.JCheckBox("Sabádo");
         Radio_domingo = new javax.swing.JCheckBox("Domingo");
         Btn_Cancelar = new javax.swing.JButton("Cancelar");
@@ -59,11 +63,11 @@ public class Tela_Agendamento extends JPanel {
         Label_Seleciona_Linha = new javax.swing.JLabel("Selecione uma linha e clique no botao para ver as informações");
         Btn_informações = new javax.swing.JButton("Serviço");
         Label_Servico = new javax.swing.JLabel("Serviço");
-        Field_servico = new java.awt.TextField();
-        Label_Edita_serviço = new java.awt.Label("Troca de oleo, alinhamento, motor");
-        Label_editavel_nome = new java.awt.Label("Vinicius");
-        Label_data_editavel = new javax.swing.JLabel("Data : 01/08/2020");
-        Label_Dia_editavel = new javax.swing.JLabel("Dia: Sábado");
+        Field_servico = new javax.swing.JFormattedTextField();
+        Label_Edita_serviço = new javax.swing.JLabel("Serviço");
+        Label_editavel_nome = new javax.swing.JLabel("Cliente");
+        Label_data_editavel = new javax.swing.JLabel("Data");
+        Label_Dia_editavel = new javax.swing.JLabel("Dia da Semana");
         Btn_excluir = new javax.swing.JButton("Excluir");
         Label_informacoes = new javax.swing.JLabel("Informações");
         jSeparator2 = new javax.swing.JSeparator();
@@ -265,29 +269,35 @@ public class Tela_Agendamento extends JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         
-      //funcao de salvar
-        Btn_Salvar.addActionListener(new ActionListener() {
+       //funcao de salvar
+       Btn_Salvar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				if(Editar == 0 && Verifica()) {
 						Cad_Agendamento();
+						data();
+						update_tabela();
 				}
 				
 				if(Editar == 1 && Verifica_update()) {
-					if(Field_Placa_Veiculo.getText().equals(Field_Placa_Veiculo.getText())) {
+					if(Verifica_update()){
 						Update_Agendamento();
-						update_tabela();
+						Field_Placa_Veiculo.setEnabled(true);
 						Editar = 0;
+						update_tabela();
+						Limpa_dados();
+						data();
 					}
+					
 				}
 				
 			}
 		});
         
        //Funcao de gerar dia
-        Btn_Gerar_dia.addActionListener(new ActionListener() {
+       Btn_Gerar_dia.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -315,27 +325,32 @@ public class Tela_Agendamento extends JPanel {
 			
 		});
         
-      //Funcao do liberar para editar
-        Btn_excluir.addActionListener(new ActionListener() {
+       //Funcao do liberar para editar
+       Btn_excluir.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				if(Verifica_Delete()){
+					SQL_Delete();
+					update_tabela();
+					Editar = 0;
+				}
 				
 			}
 		});
-        
         
         //Funcao de preencher campos 
        Btn_informações.addActionListener(new ActionListener() {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			preenche_campos();		
+			preenche_campos();	
+			Editar =1;
+			Field_Placa_Veiculo.setEnabled(false);
 		}
 	});
     
-      //Funcao de cancelar Cadastro
+       //Funcao de cancelar Cadastro
        Btn_Cancelar.addActionListener(new ActionListener() {
 		
 		@Override
@@ -344,11 +359,49 @@ public class Tela_Agendamento extends JPanel {
 			if(resposta == JOptionPane.YES_OPTION) {
 				Limpa_dados();
 				Editar = 0;
+				Field_Placa_Veiculo.setEnabled(true);
 			}
 			
 		}
 	});
-	};
+	
+    };
+	
+	private void SQL_Delete(){
+		
+	      int Numero_linha = Table_Agendamento.getSelectedRow();
+		  String placa = (String)Table_Agendamento.getModel().getValueAt(Numero_linha, 0);
+		  Date Data = (Date) Table_Agendamento.getModel().getValueAt(Numero_linha, 2);
+		 
+		  
+		  String sql = "delete from agendamentos where placa = '" + placa + "' and Data_agenda = '" + Data + "'";
+		  		
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			 JOptionPane.showMessageDialog(this, "Agendamento da placa : "  + placa + " foi deletado da Tabela", "Excluído", JOptionPane.WARNING_MESSAGE);
+			 
+	}
+	
+	private boolean Verifica_Delete(){
+		 int Numero_linha = Table_Agendamento.getSelectedRow();
+		 if(Numero_linha == -1) {
+			  JOptionPane.showMessageDialog(this, "Agendamento não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+		 }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir o Agendamento?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+				  if(Numero_linha >= 0){
+					  return true;
+				  }
+				}
+		 }
+		return false;
+	}
+	
 	private boolean Verifica_update(){
 		
 		
@@ -380,18 +433,26 @@ public class Tela_Agendamento extends JPanel {
 		
 	}
 	
-	
 	private void Update_Agendamento(){
 		
 			String Data = Field_Data.getText();
 			String [] DataSeparada = Data.split("/");
 			LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+			String Dia = null;
+			 if(Radio_Segunda.isSelected()) Dia = "Segunda - Feira"; 		 
+			 if(Radio_terça.isSelected()) Dia = "Terça - Feira";
+			 if(Radio_Quarta.isSelected()) Dia = "Quarta - Feira";
+			 if(Radio_quinta.isSelected()) Dia = "Quinta - Feira";
+			 if(Radio_sexta.isSelected()) Dia = "Sexta - Feira";
+			 if(Radio_sabado.isSelected()) Dia = "Sábado";
+			 if(Radio_domingo.isSelected()) Dia = "Domingo";
+			
 			
 			Agendamento_add agendamento = new Agendamento_add();
 			agendamento.setPlaca(Field_Placa_Veiculo.getText());
 			agendamento.setNome(Field_Nome_Pessoa.getText());
 			agendamento.setData_Agenda(Date.valueOf(dia));
-			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
+			agendamento.setDia_Semana(Dia);
 			agendamento.setServico(Field_servico.getText());
 			
 			agendamentoDAO.update_agendamentos(agendamento);
@@ -402,61 +463,60 @@ public class Tela_Agendamento extends JPanel {
 	
 	public void preenche_campos() {
 		
+		int Numero_linha = Table_Agendamento.getSelectedRow();
+		String placa = (String)Table_Agendamento.getModel().getValueAt(Numero_linha, 0);
+		Date Data = (Date) Table_Agendamento.getModel().getValueAt(Numero_linha, 2);
 		
-		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
-			if(agendamento.getPlaca().equals(Field_Placa_Veiculo.getText())) {
-				Field_Placa_Veiculo.setText(agendamento.getPlaca());
-				Field_Nome_Pessoa.setText(agendamento.getNome());
-				Field_Data.setValue(agendamento.getData_Agenda());
-				Field_servico.setText(agendamento.getServico());
-				
+		String sql = "Select * from agendamentos where placa ='"
+				+ placa +"' and data_agenda ='"
+				+ Data +"'";
+		
+		try {
+    		Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()){
+			Field_Placa_Veiculo.setText(result.getString("PLACA"));
+			Label_editavel_nome.setText(result.getString("NOME"));
+			Field_Nome_Pessoa.setText(result.getString("NOME"));
+			Label_data_editavel.setText(result.getString("DATA_AGENDA"));
+			Label_Dia_editavel.setText(result.getString("DIA_SEMANA"));
+			Label_Edita_serviço.setText(result.getString("SERVICO"));
+			Field_servico.setText(result.getString("SERVICO"));
+			Field_Data.setText(null);
 			}
-		}
-		if(Field_Placa_Veiculo.getText().trim().isEmpty() || Field_Placa_Veiculo.getText().equals("        ")) {
-			JOptionPane.showMessageDialog(this, "Placa não cadastrada", "Placa Inválida", JOptionPane.WARNING_MESSAGE);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		
 	}
-	
-	public void Mostrar_Cadastro() {
-		for(Agendamento_add agendamento : agendamentoDAO.getAll()) {
-			
-				Field_Placa_Veiculo.setText(agendamento.getPlaca());
-				Field_Nome_Pessoa.setText(agendamento.getNome());
-				Field_Data.setValue(agendamento.getData_Agenda());
-				//Field_Data.setText(agendamento.getDia_Semana());
-				Field_servico.setText(agendamento.getServico());
-				
-			
-		}
-	}
-	
-	
 	
 	private void Cad_Agendamento() {
 		
 		 String Data = Field_Data.getText();
 		 String [] DataSeparada = Data.split("/");
 		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
-		 
-		  		 
-		 
-		
-			Agendamento_add agendamento = new Agendamento_add();
-			agendamento.setPlaca(Field_Placa_Veiculo.getText());
-			agendamento.setNome(Field_Nome_Pessoa.getText());
-			agendamento.setData_Agenda(Date.valueOf(dia));
-			//agendamento.setDia_Semana(Field_Dia_Semana.getText());
-			agendamento.setServico(Field_servico.getText());
-			agendamentoDAO.Insert(agendamento);
-			Limpa_dados();
-			JOptionPane.showMessageDialog(this,agendamento.getNome() + " foi cadastrado"
-	    	+ " com sucesso! \n Verifique na tabela ao lado !","Cadastro concluido",JOptionPane.INFORMATION_MESSAGE);
-			update_tabela();
-		
+		 String Dia = null;
+		 if(Radio_Segunda.isSelected()) Dia = "Segunda - Feira"; 		 
+		 if(Radio_terça.isSelected()) Dia = "Terça - Feira";
+		 if(Radio_Quarta.isSelected()) Dia = "Quarta - Feira";
+		 if(Radio_quinta.isSelected()) Dia = "Quinta - Feira";
+		 if(Radio_sexta.isSelected()) Dia = "Sexta - Feira";
+		 if(Radio_sabado.isSelected()) Dia = "Sábado";
+		 if(Radio_domingo.isSelected()) Dia = "Domingo";
+		 		
+		Agendamento_add agendamento = new Agendamento_add();
+		agendamento.setPlaca(Field_Placa_Veiculo.getText());
+		agendamento.setNome(Field_Nome_Pessoa.getText());
+		agendamento.setData_Agenda(Date.valueOf(dia));
+		agendamento.setDia_Semana(Dia);
+		agendamento.setServico(Field_servico.getText());
+		agendamentoDAO.Insert(agendamento);
+		Limpa_dados();
+		JOptionPane.showMessageDialog(this,agendamento.getNome() + " foi cadastrado"
+	    + " com sucesso! \n Verifique na tabela ao lado !","Cadastro concluido",JOptionPane.INFORMATION_MESSAGE);
+		update_tabela();
 		
 	}
-	
 	
 	public void update_tabela() {
 
@@ -507,8 +567,6 @@ public class Tela_Agendamento extends JPanel {
 		return true;
 	}
 	
-	
-	
 	private void Limpa_dados() {
 		Field_Placa_Veiculo.setText(null);
 		Field_Nome_Pessoa.setText(null);
@@ -516,8 +574,6 @@ public class Tela_Agendamento extends JPanel {
 		//Field_Data.setText(null);
 		Field_servico.setText(null);
 	}
-	
-
 	
 	public void data() {
 		
@@ -551,17 +607,17 @@ public class Tela_Agendamento extends JPanel {
     private javax.swing.JButton Btn_informações;
     private java.awt.TextField Field_Nome_Pessoa;
     private java.awt.TextField Field_Placa_Veiculo;
-    private java.awt.TextField Field_servico;
+    private javax.swing.JFormattedTextField Field_servico;
     private javax.swing.JLabel Label_Data;
     private javax.swing.JLabel Label_Data_Semana;
     private javax.swing.JLabel Label_Dia_editavel;
-    private java.awt.Label Label_Edita_serviço;
+    private javax.swing.JLabel Label_Edita_serviço;
     private javax.swing.JLabel Label_Nome;
     private javax.swing.JLabel Label_Placa;
     private javax.swing.JLabel Label_Seleciona_Linha;
     private javax.swing.JLabel Label_Servico;
     private javax.swing.JLabel Label_data_editavel;
-    private java.awt.Label Label_editavel_nome;
+    private javax.swing.JLabel Label_editavel_nome;
     private javax.swing.JLabel Label_informacoes;
     private javax.swing.JLabel Label_titulo_Agendamento;
     private javax.swing.JCheckBox Radio_Quarta;

@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -59,7 +61,7 @@ public class Tela_Ordem_Servico extends JPanel {
         jSeparator3 = new javax.swing.JSeparator();
         ScrollPane_Serv_abert = new javax.swing.JScrollPane();
         Table_servico_aberto = new javax.swing.JTable();
-        Label_Selecione_Linha_ou_Cod = new javax.swing.JLabel("Selecione uma linha ou digite o codigo");
+        Label_Selecione_Linha_ou_Cod = new javax.swing.JLabel("Digite o Codigo do serviço :");
         Field_Cod_aberto = new javax.swing.JFormattedTextField();
         Btn_Busca_Senha = new javax.swing.JButton("Buscar Venda");
         textArea1 = new javax.swing.JFormattedTextField();
@@ -80,6 +82,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Btn_Imprimir = new javax.swing.JButton("Imprimir");
         Label_valor_Produto = new javax.swing.JLabel("Valor");
         Field_Valor_Produto = new java.awt.TextField("0,00");
+        Btn_Cancela_Busca = new javax.swing.JButton("Cancela Busca");
 
         Label_Titulo_Ordem.setFont(new java.awt.Font("Arial Black", 0, 12));
         Label_Cod_Servico.setFont(new java.awt.Font("Tahoma", 0, 12));
@@ -136,6 +139,11 @@ public class Tela_Ordem_Servico extends JPanel {
         Btn_Selecionar.setToolTipText("Cancelar");
         Btn_Selecionar.setIcon(image_Cancel);
         
+        Btn_Cancela_Busca.setBackground(Color.WHITE);
+        Btn_Cancela_Busca.setToolTipText("Cancelar a Busca");
+        Btn_Cancela_Busca.setEnabled(false);
+   
+        
         //Coloca as especificações nos campos da tabela de serviços
         Vector<String> columnNames = new Vector<String>();
 		columnNames.add("Produto");
@@ -151,190 +159,233 @@ public class Tela_Ordem_Servico extends JPanel {
         Vector<String> columnNames1 = new Vector<String>();
 		columnNames1.add("Numero");
 		columnNames1.add("Cliente");
+		columnNames1.add("Placa do Carro");
 		columnNames1.add("Valor");
 		columnNames1.add("Status");
 		Vector<? extends Vector> vector1 = new Vector();
 		Table_servico_aberto = new JTable(vector1,columnNames1);
 		ScrollPane_Serv_abert = new JScrollPane(Table_servico_aberto);
         
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(Label_Titulo_Ordem)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jSeparator1))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(Label_Titulo_ordem_Aberto)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jSeparator3))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(288, 288, 288)
-                                                .addComponent(Label_valor)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(field_editavel_total, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 255, Short.MAX_VALUE)
-                                                .addComponent(Btn_Cancelar)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(Btn_gerar))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                                .addGap(116, 116, 116)
-                                                .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 1100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addGap(235, 235, 235)
-                                                    .addComponent(Label_Produto))
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(Label_Data)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(Label_Editavel_data)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(Label_Cliente)
-                                                        .addComponent(Label_Serviço)))
-                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                    .addComponent(Label_Cod_Servico)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(Field_Editavel_Cod_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addGap(66, 66, 66)))
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(Combo_Nome_Cliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(Combo_Produto, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(textArea1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE))
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(Btn_Adicionar)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(Btn_Remover)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(Btn_Selecionar)))
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(Label_valor_Serviço)
-                                                .addComponent(Label_Quantidade)
-                                                .addComponent(Label_Placa)
-                                                .addComponent(Label_funcionario))
-                                            .addGap(24, 24, 24)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(Combo_Funcionario, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                        .addComponent(Field_Valor_serviço, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                                        .addComponent(Combo_Placa, javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(Field_Quantidade))
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(Label_valor_Produto)))))
-                                    .addGap(4, 4, 4)
-                                    .addComponent(Field_Valor_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(0, 0, Short.MAX_VALUE)))
-                            .addContainerGap())
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 769, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(36, 36, 36)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(Label_Selecione_Linha_ou_Cod, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(41, 41, 41)
-                                    .addComponent(Btn_Busca_Senha))
-                                .addComponent(Field_Cod_aberto))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(Btn_fazer_venda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(Btn_Editar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(Btn_Imprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGap(29, 29, 29))))
-            );
-            layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Label_Titulo_Ordem))
-                    .addGap(18, 18, 18)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(Label_Cliente)
-                        .addComponent(Combo_Nome_Cliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Label_Placa)
-                        .addComponent(Combo_Placa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(Label_Produto)
-                            .addComponent(Combo_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Label_Quantidade)
-                            .addComponent(Field_Quantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Label_valor_Produto)
-                            .addComponent(Field_Valor_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(10, 10, 10)
-                                    .addComponent(textArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(Label_Titulo_Ordem)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jSeparator1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(Label_Titulo_ordem_Aberto)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jSeparator3))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(Field_Editavel_Cod_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(Label_Cod_Servico))
-                                    .addGap(11, 11, 11)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(Label_Serviço)
-                                        .addComponent(Label_Data)
-                                        .addComponent(Label_Editavel_data))))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(Btn_Selecionar)
-                                .addComponent(Btn_Adicionar)
-                                .addComponent(Btn_Remover)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(13, 13, 13)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(Label_valor_Serviço)
-                                .addComponent(Field_Valor_serviço, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(Combo_Funcionario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(Label_funcionario))))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(18, 18, 18)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(288, 288, 288)
+                                            .addComponent(Label_valor)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(field_editavel_total, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 255, Short.MAX_VALUE)
+                                            .addComponent(Btn_Cancelar)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(Btn_gerar))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                            .addGap(116, 116, 116)
+                                            .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 921, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(235, 235, 235)
+                                                .addComponent(Label_Produto))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(Label_Data)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Label_Editavel_data)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(Label_Cliente)
+                                                    .addComponent(Label_Serviço)))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(Label_Cod_Servico)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(Field_Editavel_Cod_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(66, 66, 66)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(Combo_Nome_Cliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(Combo_Produto, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(textArea1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(Btn_Adicionar)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Btn_Remover)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(Btn_Selecionar)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(Label_valor_Serviço)
+                                            .addComponent(Label_Quantidade)
+                                            .addComponent(Label_Placa)
+                                            .addComponent(Label_funcionario))
+                                        .addGap(24, 24, 24)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(Combo_Funcionario, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                    .addComponent(Field_Valor_serviço, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                                    .addComponent(Combo_Placa, javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(Field_Quantidade))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(Label_valor_Produto)))))
+                                .addGap(4, 4, 4)
+                                .addComponent(Field_Valor_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 769, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(Label_Selecione_Linha_ou_Cod, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Field_Cod_aberto)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(41, 41, 41)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(Btn_Busca_Senha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(Btn_Cancela_Busca, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(Btn_fazer_venda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Btn_Editar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Btn_Imprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(29, 29, 29))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Label_Titulo_Ordem))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Label_Cliente)
+                    .addComponent(Combo_Nome_Cliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Label_Placa)
+                    .addComponent(Combo_Placa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(Label_valor)
-                        .addComponent(Btn_gerar)
-                        .addComponent(Btn_Cancelar)
-                        .addComponent(field_editavel_total, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(18, 18, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    		.addComponent(Label_Titulo_ordem_Aberto)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Label_Produto)
+                        .addComponent(Combo_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Label_Quantidade)
+                        .addComponent(Field_Quantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(Label_Selecione_Linha_ou_Cod)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(Btn_Editar)
-                                .addComponent(Field_Cod_aberto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(Btn_Busca_Senha)
-                                .addComponent(Btn_fazer_venda))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(Btn_Imprimir))
-                        .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            );    
+                        .addComponent(Label_valor_Produto)
+                        .addComponent(Field_Valor_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(textArea1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(Field_Editavel_Cod_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(Label_Cod_Servico))
+                                .addGap(11, 11, 11)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(Label_Serviço)
+                                    .addComponent(Label_Data)
+                                    .addComponent(Label_Editavel_data))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Btn_Selecionar)
+                            .addComponent(Btn_Adicionar)
+                            .addComponent(Btn_Remover)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Label_valor_Serviço)
+                            .addComponent(Field_Valor_serviço, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Combo_Funcionario, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Label_funcionario))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(ScrollPane_add_Produto_Servico, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Label_valor)
+                    .addComponent(Btn_gerar)
+                    .addComponent(Btn_Cancelar)
+                    .addComponent(field_editavel_total, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Label_Titulo_ordem_Aberto)
+                    .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Label_Selecione_Linha_ou_Cod)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Btn_Editar)
+                            .addComponent(Field_Cod_aberto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Btn_Busca_Senha)
+                            .addComponent(Btn_fazer_venda))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Btn_Imprimir)
+                            .addComponent(Btn_Cancela_Busca)))
+                    .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        	//Botao de confirmar servico
+        Btn_fazer_venda.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Gerar_pedido_venda();
+				update_tabela_Servico_Aberto();
+			}
+		});
+        
+        	//Botao de cancelar a busca
+        	Btn_Cancela_Busca.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Lib_All_Campos();
+					
+				}
+			});
+        
+            //Botao de editar servico
+            Btn_Editar.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Update_servico();
+				}
+			});
+            
+            //Botao de pegar codigo
+            Btn_Busca_Senha.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					
+					Pega_num_Servico();
+				}
+			});
             
             //Botao de gerar
             Btn_gerar.addActionListener(new ActionListener() {
@@ -419,23 +470,198 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 			});
         }      
+	
+	private void Gerar_pedido_venda(){
+		  int Numero_linha = 0;
+		  String Linha = (String)Table_servico_aberto.getModel().getValueAt(Numero_linha, 0);
+		
+		
+		 String sql = "insert into ordem_servico_finalizado select * from ordem_servico"
+		 		+ " where cod_serv = '"+Linha+"';"
+		 		+ " Delete from ordem_servico "
+			    + " where cod_serv = '"+Linha+"'";
+				 
+			  
+			  try {
+		    		Statement statement = connection.createStatement();
+					ResultSet result = statement.executeQuery(sql);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			  
+			 
+				 JOptionPane.showMessageDialog(this, "Venda foi Finalizada ", "Concluído", JOptionPane.WARNING_MESSAGE);
+
+		
+	}
+	
+	private void Update_servico(){
+		String sql = "delete from ordem_servico where cod_serv = '" + Field_Cod_aberto.getText() + "'";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			 JOptionPane.showMessageDialog(this, "Ordem de serviço " + Field_Cod_aberto.getText() +" sera editada", "Atualizar", JOptionPane.WARNING_MESSAGE);
+			 data();
+			 update_tabela_Servico_Aberto();
+			 Lib_All_update();
+	}
+	
+	
+	private void Pega_num_Servico(){
+		int Cad = 0;
+		int verifica = 0;
+    	
+		if(Field_Cod_aberto.getText().trim().isEmpty()){
+			JOptionPane.showMessageDialog(this, "Nenhum Número de serviço foi informado", "Erro", JOptionPane.WARNING_MESSAGE);
+		}else{
+			while(verifica != 1){
+				if((Table_servico_aberto.getModel().getValueAt(Cad, 0)).equals(Field_Cod_aberto.getText())){
+					completa_Table();
+					Bloq_All_Campos(); 
+					verifica = 1;
+				}
+				Cad ++;
+			}
+		}
+	}
+	
+	private void Bloq_All_Campos(){
+		Combo_Nome_Cliente.setEnabled(false);
+		Combo_Placa.setEnabled(false);
+		Combo_Funcionario.setEnabled(false);
+		Table_add_Prod_Serv.setEnabled(false);
+		Field_Editavel_Cod_Servico.setEnabled(false);
+		textArea1.setEnabled(false);
+		Combo_Produto.setEnabled(false);
+		Field_Quantidade.setEnabled(false);
+		Field_Valor_serviço.setEnabled(false);
+		Field_Valor_Produto.setEnabled(false);
+		Btn_Adicionar.setEnabled(false);
+		Btn_Cancelar.setEnabled(false);
+		Btn_fazer_venda.setEnabled(false);
+		Btn_gerar.setEnabled(false);
+		Btn_Imprimir.setEnabled(false);
+		Btn_Remover.setEnabled(false);
+		Btn_Selecionar.setEnabled(false);
+		Btn_Cancela_Busca.setEnabled(true);
+		Btn_Busca_Senha.setEnabled(false);
+	}
+	
+	private void Lib_All_Campos(){
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+		Combo_Nome_Cliente.setEnabled(true);
+		Combo_Placa.setEnabled(true);
+		Combo_Funcionario.setEnabled(true);
+		Table_add_Prod_Serv.setEnabled(true);
+		Field_Editavel_Cod_Servico.setEnabled(true);
+		textArea1.setEnabled(true);
+		Combo_Produto.setEnabled(true);
+		Field_Quantidade.setEnabled(true);
+		Field_Valor_serviço.setEnabled(true);
+		Field_Valor_Produto.setEnabled(true);
+		Btn_Adicionar.setEnabled(true);
+		Btn_Cancelar.setEnabled(true);
+		Btn_fazer_venda.setEnabled(true);
+		Btn_gerar.setEnabled(true);
+		Btn_Imprimir.setEnabled(true);
+		Btn_Remover.setEnabled(true);
+		Btn_Selecionar.setEnabled(true);
+		Btn_Cancela_Busca.setEnabled(false);
+		Btn_Busca_Senha.setEnabled(true);
+		Limpa_Dados();
+		Lib_Campos();
+		contador_Table = 0;
+		field_editavel_total.setText("0.00");
+		tablemodel_Cadastrados.setRowCount(0);
+		Field_Cod_aberto.setText(null);
+		Field_Editavel_Cod_Servico.setText(null);
+		data();
+		update_tabela_Servico_Aberto();
+	}
+	
+	private void Lib_All_update(){
+		Bloq_Campos();
+		Table_add_Prod_Serv.setEnabled(true);
+		Field_Editavel_Cod_Servico.setEnabled(true);
+		textArea1.setEnabled(true);
+		Combo_Produto.setEnabled(true);
+		Field_Quantidade.setEnabled(true);
+		Field_Valor_serviço.setEnabled(true);
+		Field_Valor_Produto.setEnabled(true);
+		Btn_Adicionar.setEnabled(true);
+		Btn_Cancelar.setEnabled(true);
+		Btn_fazer_venda.setEnabled(true);
+		Btn_gerar.setEnabled(true);
+		Btn_Imprimir.setEnabled(true);
+		Btn_Remover.setEnabled(true);
+		Btn_Selecionar.setEnabled(true);
+		Btn_Cancela_Busca.setEnabled(false);
+		Btn_Busca_Senha.setEnabled(true);
+	}
+	
+	private void completa_Table(){
+		
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+		tablemodel_Cadastrados.setRowCount(0);
+		String Cod = Field_Cod_aberto.getText();
+		for(Servico_Add servico : servicoDAO.getGroup_Tabela(Cod)){
+        	
+    		Object[] data = {
+    				
+    				servico.getProduto(),
+    				servico.getValor_Produto(),
+    				servico.getQtd_Produto(),
+    				servico.getServico(),
+    				servico.getValor_servico()
+        			
+    		};
+    		contador_Table ++;
+    			tablemodel_Cadastrados.addRow(data);
+    			 
+    	}  
+		
+		for(Servico_Add servico : servicoDAO.getGroup_Combo_Fields(Cod)){
+			
+			Field_Editavel_Cod_Servico.setText(servico.getCod_Serv());
+			field_editavel_total.setText(String.valueOf(servico.getValor_Total()));
+			Combo_Nome_Cliente.setSelectedItem(servico.getCliente().toString());
+			Combo_Placa.setSelectedItem(servico.getPlaca_Carro().toString());
+			Combo_Funcionario.setSelectedItem(servico.getFuncionario().toString());
+			String data ;
+			data = String.valueOf(servico.getData());
+			Label_Editavel_data.setText(data);
+		}
+		
+		
+		
+	}
 
 	public void update_tabela_Servico_Aberto() {
 		
 		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_servico_aberto.getModel();
     	tablemodel_Cadastrados.setRowCount(0);
-    	
-    	for(Servico_Add servico : servicoDAO.getAll()){
-        	Object[] data = {
-    				servico.getCod_Serv(),
-    				servico.getCliente(),
-    				servico.getValor_Total(),
-    				"A"
-        			
-    		};
-    		tablemodel_Cadastrados.addRow(data);
-        	}
-    	
+    	//int i = 1;
+    	//String cad = (String) Table_add_Prod_Serv.getModel().getValueAt(i, 0);
+    
+        	for(Servico_Add servico : servicoDAO.getGroup()){
+            	
+            		Object[] data = {
+            				servico.getCod_Serv(),
+            				servico.getCliente(),
+            				servico.getPlaca_Carro(),
+            				servico.getValor_Total(),
+            				"A"
+                			
+            		};
+            			tablemodel_Cadastrados.addRow(data);
+            
+            	}   
+        	
+        	
 	}
 	
 	private void erro() {
@@ -469,12 +695,17 @@ public class Tela_Ordem_Servico extends JPanel {
 		
 		Servico_Add servico = new Servico_Add();
 		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
+		String Data = Label_Editavel_data.getText();
+		String [] DataSeparada = Data.split("/");
+		LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+		 
 		
 		if(contador_Table == 1 ) {
 			servico.setCod_Serv(Field_Editavel_Cod_Servico.getText());
 			servico.setCliente(Combo_Nome_Cliente.getSelectedItem().toString());
 			servico.setPlaca_Carro(Combo_Placa.getSelectedItem().toString());
 			servico.setFuncionario(Combo_Funcionario.getSelectedItem().toString());
+			servico.setData(Date.valueOf(dia));
 			servico.setProduto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 0)));
 			servico.setValor_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 1)));
 			servico.setQtd_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 2)));
@@ -489,6 +720,7 @@ public class Tela_Ordem_Servico extends JPanel {
 				servico.setCliente(Combo_Nome_Cliente.getSelectedItem().toString());
 				servico.setPlaca_Carro(Combo_Placa.getSelectedItem().toString());
 				servico.setFuncionario(Combo_Funcionario.getSelectedItem().toString());
+				servico.setData(Date.valueOf(dia));
 				servico.setProduto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 0)));
 				servico.setValor_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 1)));
 				servico.setQtd_Produto(String.valueOf(Table_add_Prod_Serv.getModel().getValueAt(0, 2)));
@@ -511,7 +743,7 @@ public class Tela_Ordem_Servico extends JPanel {
 	
 	private void Limpa_tabela() {
 			 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
-			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja as Informações da tabela ?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja as Excluir Informações da tabela ?", "Excluir", JOptionPane.YES_NO_OPTION);
 			
 			 if(resposta == JOptionPane.YES_OPTION){
 				 tablemodel_Cadastrados.setRowCount(0);
@@ -733,6 +965,7 @@ public void update_combo_funcionarios(){
 	    private javax.swing.JButton Btn_Selecionar;
 	    private javax.swing.JButton Btn_fazer_venda;
 	    private javax.swing.JButton Btn_gerar;
+	    private javax.swing.JButton Btn_Cancela_Busca;
 	    private javax.swing.JComboBox<String> Combo_Funcionario;
 	    private javax.swing.JComboBox<String> Combo_Nome_Cliente;
 	    private javax.swing.JComboBox<String> Combo_Produto;

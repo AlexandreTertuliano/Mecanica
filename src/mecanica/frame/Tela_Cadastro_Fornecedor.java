@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Fornecedor_add;
 import mecanicaDAO.Produto_Add;
 import mecanicaDAOFornecedores.FornecedoresDAO;
@@ -103,8 +104,16 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	            Field_Cnpj.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###.###/####-##")));
 	        } catch (java.text.ParseException ex) {
 	            ex.printStackTrace();
-	        }try {
+	        }
+	        
+	        try {
 	            Field_telefone.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##)#####-####")));
+	        } catch (java.text.ParseException ex) {
+	            ex.printStackTrace();
+	        }
+	        
+	        try {
+	            Field_Cep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###-###")));
 	        } catch (java.text.ParseException ex) {
 	            ex.printStackTrace();
 	        }
@@ -379,6 +388,15 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				Field_Numero.requestFocus();
 				return false;
 		 }
+		 for(Fornecedor_add fornecedor_msm_CNPJ : fornecedorDAO.getAll()) {
+	    		if(Field_Cnpj.getText().equals(fornecedor_msm_CNPJ.getCnpj())) {
+	    			JOptionPane.showMessageDialog(this, "CNPJ ja foi Cadastrado", "Erro", JOptionPane.WARNING_MESSAGE);
+	    			Field_Cnpj.requestFocus();
+	    			return false;
+	    		}
+	    	}
+		 
+		 
 		 return true;
 	 }
 	 

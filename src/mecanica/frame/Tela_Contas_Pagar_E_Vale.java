@@ -450,6 +450,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 					
 				}
 			});
+	        
 	    }
 	  
 		private boolean Verifica_Cancelamento_Vales(){
