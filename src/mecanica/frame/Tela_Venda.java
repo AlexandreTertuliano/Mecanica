@@ -18,8 +18,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Servico_Add;
 import mecanicaDAO.Venda_add;
+import mecanicaDAOCliente.ClienteDAO;
+import mecanicaDAOProduto.ProdutoDAO;
 import mecanicaDAOVenda.VendaDAO;
 
 public class Tela_Venda extends JPanel{
@@ -32,6 +33,8 @@ public class Tela_Venda extends JPanel{
 	public Tela_Venda() throws SQLException {
         initComponents();
         vendaDAO = new VendaDAO();
+        produtoDAO = new ProdutoDAO();
+        clienteDAO = new ClienteDAO();
         connection = ConnectionDAO.getConnection();
     }
 	
@@ -75,8 +78,6 @@ public class Tela_Venda extends JPanel{
 	        Label_Ordem = new javax.swing.JLabel("Numero da Ordem de Serviço");
 	        Field_Ordem = new javax.swing.JFormattedTextField();
 	        Btn_Ordem = new javax.swing.JButton("Gerar");
-	        Field_Codigo.setEnabled(false);
-	        
 	        Label_Titulo.setFont(new java.awt.Font("Arial Black", 0, 12));
 	        Label_Total.setFont(new java.awt.Font("Arial Black", 0, 12));
 	        jLabel1.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -300,6 +301,8 @@ public class Tela_Venda extends JPanel{
 						 contador_Table = 0;
 						 Field_Preco_Venda.setText("0.00");
 						 Lib_Campos();
+						 update_quantidade();
+						 Total =0.0;
 					}
 					
 				}
@@ -314,6 +317,7 @@ public class Tela_Venda extends JPanel{
 					else 
 						Limpa_tabela();
 						Limpa_Dados();
+						Total =0.0;
 					
 				}
 			});
@@ -363,7 +367,7 @@ public class Tela_Venda extends JPanel{
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Mostra_Valor_Produto();
+					Mostra_Produto();
 					
 				}
 			});
@@ -416,6 +420,8 @@ private void soma_valor_serv_prod(){
 		Field_Cod_Barras.setText(null);
 		Field_Quantidade.setText("1");
 		Field_Preco_Venda.setText("0.00");
+		Field_Codigo.setText(null);
+		Field_Placa.setText(null);
 		
 	}
 	
@@ -447,13 +453,12 @@ private void soma_valor_serv_prod(){
 		  Combo_Cadastrado.removeAllItems();
 		  Combo_Cadastrado.addItem("Selecionar");
 		  
-		  String sql = "Select * from clientes ORDER BY nome";
-		  
-		  try {
+		  String sql = "SELECT * FROM clientes ORDER BY nome";
+	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
 				while(result.next()){
-				Combo_Cadastrado.addItem(result.getString("NOME"));
+				Combo_Cadastrado.addItem(result.getString("Nome"));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -461,17 +466,17 @@ private void soma_valor_serv_prod(){
 		  
 	  }
 	 
+	 
 	 public void Update_combo_produto(){
 		  Combo_Produto.removeAllItems();
 		  Combo_Produto.addItem("Seleciona");
 		  
-		  String sql = "Select * from produtos ORDER BY descricao";
-		  
-		  try {
+		  String sql = "SELECT * FROM produtos ORDER BY descricao";
+	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
 				while(result.next()){
-					Combo_Produto.addItem(result.getString("PRODUTO"));
+					Combo_Produto.addItem(result.getString("Descricao"));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -553,7 +558,7 @@ private void soma_valor_serv_prod(){
 				return false;
 			}
 			if(Field_Codigo.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Valor do Serviço", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Codigo", "Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Codigo.requestFocus();
 				return false;
 			}
@@ -579,14 +584,17 @@ private void soma_valor_serv_prod(){
 		}
 	
 	 
-	 private void Mostra_Valor_Produto(){
+	 private void Mostra_Produto(){
 			
-			String sql = "SELECT * FROM produtos where descricao = '" + Combo_Produto.getSelectedItem() +"'" ;
+			String sql = "SELECT * FROM produtos where Descricao = '" + Combo_Produto.getSelectedItem() +"'" ;
 	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
 				while(result.next()){
 					Field_Preco_Venda.setText(result.getString("preco_venda"));
+					Field_Cod_Barras.setText(result.getString("cod_barras"));
+					Field_Codigo.setText(result.getString("cod_sistema"));
+					
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -595,10 +603,7 @@ private void soma_valor_serv_prod(){
 		}
 	}
 	 
-	 private void Mostrar_Cliente(){
-			Combo_Cadastrado.removeAllItems();
-			Combo_Cadastrado.addItem("Seleciona");	
-			
+	 private void Mostrar_Cliente(){	
 			
 				String sql = "SELECT * FROM placa_veiculos where cliente = '" + Combo_Cadastrado.getSelectedItem() +"'" ;
 		    	try {
@@ -606,6 +611,7 @@ private void soma_valor_serv_prod(){
 					ResultSet result = statement.executeQuery(sql);
 					while(result.next()){
 						Combo_Cadastrado.addItem(result.getString("placa"));
+						
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -613,6 +619,26 @@ private void soma_valor_serv_prod(){
 				
 			}
 		}
+	 
+	 
+	 
+	 public void update_quantidade() {
+			String sql = "UPDATE produtos SET quantidade = quantidade - retquant WHERE Descricao'"+Combo_Produto.getSelectedItem()+"'";
+			try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+					Combo_Cadastrado.addItem(result.getString("placa"));
+					
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			
+			
+		}
+		}
+	 
+	 
 	 
 	 private void Limpa_tabela() {
 		 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
@@ -688,6 +714,8 @@ private void soma_valor_serv_prod(){
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JTable jTable1;
 	    private VendaDAO vendaDAO;
+	    private ProdutoDAO produtoDAO;
+	    private ClienteDAO clienteDAO;
 	    
     // End of variables declaration 
 }

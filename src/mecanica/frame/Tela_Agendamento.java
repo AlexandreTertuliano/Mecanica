@@ -8,7 +8,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Vector;
@@ -21,12 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
-
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Agendamento_add;
 import mecanicaDAOAgendamento.AgendamentoDAO;
-import sun.security.util.Length;
 
 public class Tela_Agendamento extends JPanel {
 	

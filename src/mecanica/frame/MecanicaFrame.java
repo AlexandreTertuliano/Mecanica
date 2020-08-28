@@ -240,6 +240,8 @@ public class MecanicaFrame extends JFrame {
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
 				((mecanica.frame.Tela_Venda)Tela_Venda).data();
+				((mecanica.frame.Tela_Venda)Tela_Venda).Update_combo_cliente();
+				((mecanica.frame.Tela_Venda)Tela_Venda).Update_combo_produto();
 			}
 		
 		});
