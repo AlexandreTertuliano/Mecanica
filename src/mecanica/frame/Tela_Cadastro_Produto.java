@@ -413,7 +413,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 produto.setData(Field_Data.getText());
 		 produto.setQuantidade(Field_Quantidade.getText());
 		 produto.setPreco_custo(Field_Preco_Custo.getText());
-		 produto.setPreco_Venda(Field_Preco_Venda.getText());
+		 produto.setPreco_Venda(Field_Preco_Venda.getText().replace(",", "."));
 		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
 		 produtoDAO.update_produto(produto);
 		 

@@ -40,7 +40,7 @@ public class Tela_Ordem_Servico extends JPanel {
 	@SuppressWarnings("unchecked")
                      
     private void initComponents() {
-
+	
         Label_Titulo_Ordem = new javax.swing.JLabel("Ordem de Serviço");
         jSeparator1 = new javax.swing.JSeparator();
         Label_Cod_Servico = new javax.swing.JLabel("Codigo do Serviço : ");
@@ -81,7 +81,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Field_Valor_serviço = new javax.swing.JFormattedTextField();
         Btn_Imprimir = new javax.swing.JButton("Imprimir");
         Label_valor_Produto = new javax.swing.JLabel("Valor");
-        Field_Valor_Produto = new java.awt.TextField("0,00");
+        Field_Valor_Produto = new java.awt.TextField("0.00");
         Btn_Cancela_Busca = new javax.swing.JButton("Cancela Busca");
 
         Label_Titulo_Ordem.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -348,6 +348,17 @@ public class Tela_Ordem_Servico extends JPanel {
                     .addComponent(ScrollPane_Serv_abert, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+        
+        Btn_Imprimir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Imprimir();
+				
+			}
+		});
+		
+		
         	//Botao de confirmar servico
         Btn_fazer_venda.addActionListener(new ActionListener() {
 			
@@ -470,6 +481,10 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 			});
         }      
+	
+	private void Imprimir(){
+		
+	}
 	
 	private void Gerar_pedido_venda(){
 		  int Numero_linha = 0;
@@ -773,9 +788,9 @@ public class Tela_Ordem_Servico extends JPanel {
 	
 	private void soma_valor_serv_prod(){
 		
-		Double produto = Double.valueOf(Field_Valor_Produto.getText());
-		Double Qtd = Double.valueOf(Field_Quantidade.getText());
-		Double servico = Double.valueOf(Field_Valor_serviço.getText());
+		Double produto = Double.valueOf(Field_Valor_Produto.getText().replace(",", "."));
+		Double Qtd = Double.valueOf(Field_Quantidade.getText().replace(",", "."));
+		Double servico = Double.valueOf(Field_Valor_serviço.getText().replace(",", "."));
 		Total = Total + ((produto * Qtd ) + servico);
 		field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
 		

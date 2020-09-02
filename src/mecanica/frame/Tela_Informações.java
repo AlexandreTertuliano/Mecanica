@@ -1,10 +1,23 @@
 package mecanica.frame;
 
+import java.sql.SQLException;
+
 import javax.swing.JPanel;
+
+import mecanicaDAO.Cliente_add;
+import mecanicaDAO.Produto_Add;
+import mecanicaDAOCliente.ClienteDAO;
+import mecanicaDAOProduto.ProdutoDAO;
 
 public class Tela_Informações extends JPanel {
 	
-	 public Tela_Informações() {
+	
+	
+	 public Tela_Informações() throws SQLException {
+		 	cliente_add = new Cliente_add();
+		 	produtos_add = new Produto_Add();
+		 	clienteDAO = new ClienteDAO();
+		 	produtosDAO = new ProdutoDAO();
 	        initComponents();
 	    }
 	 
@@ -27,26 +40,18 @@ public class Tela_Informações extends JPanel {
 	        Label_titulos_3 = new javax.swing.JLabel();
 	        jSeparator3 = new javax.swing.JSeparator();
 
-	        Label_Titulos.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
-	        Label_Titulos.setText("jLabel1");
+	        Label_Titulos.setFont(new java.awt.Font("Arial Black", 0, 14)); 
+	        Label_Titulos.setText("Clientes");
 
-	        Label_Qtd_Clientes.setText("Quantidade de clientes Cadastrados : ");
-
-	        Label_Edt_Qtd_Clientes.setText("jLabel1");
-
+	        Label_Qtd_Clientes.setText("Quantidade de clientes Cadastrados : ");   
 	        Label_sem_movimentacao.setText("Clientes sem movimentação durante 1 mês :  ");
 
-	        Label_Edt_Qtd_sem_movimento.setText("jLabel1");
-
-	        Label_Titulo_2.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
-	        Label_Titulo_2.setText("jLabel1");
+	        Label_Titulo_2.setFont(new java.awt.Font("Arial Black", 0, 14)); 
+	        Label_Titulo_2.setText("Produtos");
 
 	        Label_qtd_prod.setText("Quantidades de Produtos : ");
-
-	        Label_qtd_edt_prd.setText("jLabel1");
-
 	        Label_titulos_3.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
-	        Label_titulos_3.setText("jLabel1");
+	        Label_titulos_3.setText("Clientes em atraso");
 
 	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 	        this.setLayout(layout);
@@ -118,6 +123,29 @@ public class Tela_Informações extends JPanel {
 	        );
 	    }                 
 
+	 
+	 	public void conta_clientes(){
+	 		int Qtd_clientes = 0;
+	    	
+			for(Cliente_add cliente_add : clienteDAO.getAll()) {
+				Qtd_clientes++;
+				Label_Edt_Qtd_Clientes.setText(Integer.toString(Qtd_clientes));	
+			}
+	 			 		
+	 	}
+	 	
+	 	public void Conta_Prd(){
+	 		int Qtd_prod = 0 ;
+	 		
+	 		for(Produto_Add produto_Add : produtosDAO.getAll()){
+	 			Qtd_prod ++;
+	 			Label_qtd_edt_prd.setText(Integer.toString(Qtd_prod));
+	 		}
+	 	}
+	 	
+	 	public void Total_Devedor(){
+	 		
+	 	}
 
 	    // Variables declaration - do not modify                     
 	    private javax.swing.JLabel Label_Edt_Qtd_Clientes;
@@ -132,6 +160,10 @@ public class Tela_Informações extends JPanel {
 	    private javax.swing.JSeparator jSeparator1;
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JSeparator jSeparator3;
+	    private Cliente_add cliente_add;
+	    private Produto_Add produtos_add;
+	    private ClienteDAO clienteDAO;
+	    private ProdutoDAO produtosDAO;
 	    // End of variables declaration               
 
 }

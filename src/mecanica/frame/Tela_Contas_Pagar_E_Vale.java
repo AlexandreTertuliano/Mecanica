@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.sun.xml.internal.fastinfoset.util.ValueArrayResourceException;
+
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Boleto_Add;
 import mecanicaDAO.Boleto_Pago_add;
@@ -629,16 +631,19 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	  }
 	  
 	  private void Cad_Boleto() {
-	
-		 
+		  
+		 Double Valor = 0.0;
+		 String Valor_Edt = Field_valor.getText().replace(",", ".");
+		 Valor = Double.valueOf(Valor_Edt);
+		 Valor_Edt = String.format("%.2f", Double.parseDouble(String.valueOf(Valor))).replace(",", ".");
+		 		 
 		 String Data = Field_Data_Vencimento.getText();
 		 String [] DataSeparada = Data.split("/");
 		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
-		 
 		  		 
 		 Boleto_Add boleto = new Boleto_Add();
 		 boleto.setDescricao(Field_Descricao.getText());
-		 boleto.setValor(Double.valueOf(Field_valor.getText()));
+		 boleto.setValor(Double.valueOf(Valor_Edt));
 		 boleto.setData_Vencimento(Date.valueOf(dia));
 		 boleto.setNum_Parcelas(Field_Num_Parcelas.getText());
 		 boletoDAO.Insert(boleto);

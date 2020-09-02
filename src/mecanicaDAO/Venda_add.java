@@ -92,5 +92,4 @@ public class Venda_add {
 	public void setQuant_prod(int quant_prod) {
 		this.quant_prod = quant_prod;
 	}
-	
 }
