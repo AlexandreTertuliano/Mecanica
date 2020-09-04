@@ -145,6 +145,21 @@ create table Ordem_Servico_Finalizado(
 	Valor_total float not null	
 );
 
+create table vendas(
+Cod_venda varchar (10) not null,
+Cliente_venda varchar(50) not null,
+Cpf_venda varchar(15) not null,
+Cod_barras varchar(20) not null,
+Valor_venda varchar (10) not null,
+Placa varchar (20) not null,
+Data_venda Date not null,
+Num_os varchar(20) not null,
+Quant varchar (10) not null,
+Produto  varchar(50) not null,
+Valor_total float not null
+);
+
+
 delete from Funcionarios;
 delete from Produtos;
 delete from Placa_Veiculos;

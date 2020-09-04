@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -18,7 +19,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Servico_Add;
 import mecanicaDAO.Venda_add;
 import mecanicaDAOVenda.VendaDAO;
 
@@ -513,9 +513,12 @@ private void Limpa_Dados() {
 			vendas.setProduto(String.valueOf(jTable1.getModel().getValueAt(0, 0)));
 			vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
 			vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+			vendas.setCpf_venda(String.valueOf(Field_Cpf.getText().replace("-", ".")));
+			vendas.setCod_barras(String.valueOf(Field_Cod_Barras.getText()));
+			vendas.setPlaca(Field_Placa.getSelectedItem().toString());
 			vendas.setValor_Total(Double.valueOf(Field_Total.getText().replace(",", ".")));
 			vendaDAO.Insert(vendas);
-			JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "Sucesso", JOptionPane.WARNING_MESSAGE);
 		}else if(contador_Table > 1) {
 				while(contador_Table != 0) {
 					vendas.setCod_venda(Field_Codigo.getText());
@@ -524,13 +527,17 @@ private void Limpa_Dados() {
 					vendas.setProduto(String.valueOf(jTable1.getModel().getValueAt(0, 0)));
 					vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
 					vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+					vendas.setPlaca(Field_Placa.getSelectedItem().toString());
+					vendas.setCod_barras(String.valueOf(Field_Cod_Barras.getText()));
+					vendas.setCpf_venda(String.valueOf(Field_Cpf.getText().replace("-", ".")));
+					vendas.setCod_barras(String.valueOf(Field_Cod_Barras.getText().replace("-", ".")));
 					vendas.setValor_Total(Double.valueOf(Field_Total.getText().replace(",", ".")));
 					vendaDAO.Insert(vendas);
 				tablemodel_Cadastrados.removeRow(0);
 				contador_Table --;
 				
 			}
-			JOptionPane.showMessageDialog(this, "Serviço cadastrado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Serviço cadastrado com sucesso!", "Sucesso", JOptionPane.WARNING_MESSAGE);
 		}else if(contador_Table == 0) {
 			erro();
 			return false;

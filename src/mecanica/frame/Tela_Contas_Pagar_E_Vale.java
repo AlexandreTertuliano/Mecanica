@@ -8,8 +8,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat.Field;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Vector;
 
@@ -20,18 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import com.sun.xml.internal.fastinfoset.util.ValueArrayResourceException;
-
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Boleto_Add;
 import mecanicaDAO.Boleto_Pago_add;
-import mecanicaDAO.Cliente_add;
-import mecanicaDAO.Funcionario_add;
 import mecanicaDAO.Vale_add;
 import mecanicaDAOBoletos.BoletosDAO;
 import mecanicaDAOBoletosPagos.Boletos_pagoDAO;
 import mecanicaDAOVale.ValeDAO;
-import sun.text.resources.cldr.FormatData;
 
 public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	

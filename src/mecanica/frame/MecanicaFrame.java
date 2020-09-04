@@ -48,13 +48,10 @@ public class MecanicaFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		setResizable(true);
-		setIcon();
 		initialize();
 	}
 	
-	public void setIcon(){
-			setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/mechanic.png")));
-		}
+
 	
 	private void initialize() throws SQLException {		
 		contentPane = new JPanel();

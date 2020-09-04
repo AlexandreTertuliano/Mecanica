@@ -16,9 +16,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Cliente_add;
-import mecanicaDAO.Contas_add;
-import mecanicaDAOContas.ContasDAO;
+import mecanicaDAO.Conta_Add;
+import mecanicaDAOConta.ContaDAO;
 
 public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	
@@ -26,8 +25,8 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	
 	 public Tela_Cliente_receber_valor_marcado() throws SQLException  {
 		 connection = ConnectionDAO.getConnection();
-		 conta_add = new Contas_add();
-		 contaDAO = new ContasDAO();
+		 conta_add = new Conta_Add();
+		 contaDAO = new ContaDAO();
 	     initComponents();
 	    }
 	 
@@ -99,7 +98,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	           
 	        Btn_Bloquear.setBackground(Color.WHITE);
 	        Btn_Bloquear.setToolTipText("Bloquear");
-	        ImageIcon image_bloquear = new ImageIcon(getClass().getResource("/blocked.png"));
+	        ImageIcon image_bloquear = new ImageIcon(getClass().getResource("/accepted.png"));
 	        Btn_Bloquear.setIcon(image_bloquear);
 	        
 	        Btn_Receber.setBackground(Color.WHITE);
@@ -210,7 +209,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if(Verifica_cliente()){
-						Preenche_tabela();
+						
 						soma_total();
 					}
 				}
@@ -243,26 +242,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	    
 	 }
 	 
-	 private void Preenche_tabela(){
-		 
-			 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
-	    	tablemodel_Cadastrados.setRowCount(0);
-	    	
-	    	 for(Contas_add conta : contaDAO.getAll_table(Field_Cpf.getText())) {
-	        	Object[] data = {
-	    				conta.getCod_servico(),
-	    				conta.getNome_cliente(),
-	    				conta.getPlaca_carro(),
-	    				conta.getQuant_prod(),
-	    				conta.getValor_venda()
-	    				
-	    		};
-	        	
-	    		tablemodel_Cadastrados.addRow(data);
-	    		
-	        	}
-	    	
-	 }
+	 
 	 
 
 	 // Variables declaration - do not modify                     
@@ -289,7 +269,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JTable jTable1;
 	    private javax.swing.JTable jTable2;
-	    private Contas_add conta_add;
-	    private ContasDAO contaDAO;
+	    private Conta_Add conta_add;
+	    private ContaDAO contaDAO;
 	    // End of variables declaration                     
 }
