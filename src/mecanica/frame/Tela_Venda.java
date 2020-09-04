@@ -3,13 +3,19 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.attribute.GroupPrincipal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.Vector;
+import java.util.function.DoubleToLongFunction;
+import java.time.LocalDate;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -75,10 +81,14 @@ public class Tela_Venda extends JPanel{
 	        Label_Ordem = new javax.swing.JLabel("Numero da Ordem de Serviço");
 	        Field_Ordem = new javax.swing.JFormattedTextField();
 	        Btn_Ordem = new javax.swing.JButton("Gerar");
-	        jRadioButton1 = new javax.swing.JRadioButton("Dinheiro");
-	        jRadioButton2 = new javax.swing.JRadioButton("Em conta");
-	        jRadioButton3 = new javax.swing.JRadioButton("Cartão");
-	        Field_Codigo.setEnabled(false);
+	        jRadioButton1 = new javax.swing.JCheckBox("Dinheiro");
+	        jRadioButton2 = new javax.swing.JCheckBox("Em conta");
+	        jRadioButton3 = new javax.swing.JCheckBox("Cartão");
+	        
+	        ButtonGroup Btn_Grupo = new ButtonGroup();
+	        Btn_Grupo.add(jRadioButton1);
+	        Btn_Grupo.add(jRadioButton2);
+	        Btn_Grupo.add(jRadioButton3);
 	        
 	        Label_Titulo.setFont(new java.awt.Font("Arial Black", 0, 12));
 	        Label_Total.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -117,6 +127,7 @@ public class Tela_Venda extends JPanel{
 	      //Coloca as especificações nos campos da tabela
 	     	Vector<String> columnVenda = new Vector<String>();
 	     	columnVenda.add("Produto");
+	     	columnVenda.add("Cod Barras");
 	     	columnVenda.add("Quantidade");
 	     	columnVenda.add("Valor");
 			Vector<? extends Vector> vector = new Vector();
@@ -308,22 +319,21 @@ public class Tela_Venda extends JPanel{
                 .addGap(22, 22, 22))
         );
            
-        Btn_Finalizar.addActionListener(new ActionListener() {
+Btn_Finalizar.addActionListener(new ActionListener() {
 			
         	@Override
 			public void actionPerformed(ActionEvent e) {
-				if(Cad_Servico()) {
-					 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
-					 tablemodel_Cadastrados.setRowCount(0);
-					 contador_Table = 0;
-					 Field_Preco_Venda.setText("0.00");
-					 Lib_Campos();
-					 update_quantidade();
-					 Total =0.0;
-				}
-				
-			}
-				
+			
+					if(Cad_Servico()) {
+						 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
+						 tablemodel_Cadastrados.setRowCount(0);
+						 contador_Table = 0;
+						 Field_Preco_Venda.setText("0.00");
+						 Lib_Campos();
+						 update_quantidade();
+						 Total =0.0;
+					}
+			}	
 	});    
         
         Btn_Cancelar.addActionListener(new ActionListener() {
@@ -402,8 +412,9 @@ public class Tela_Venda extends JPanel{
 
 private void Bloq_Campos(){
 	Combo_Cadastrado.setEnabled(false);
-	
 }
+
+
 
 private void update_tabela() {
 
@@ -412,7 +423,8 @@ private void update_tabela() {
 	
 	
     	Object[] data = {
-				Combo_Cadastrado.getSelectedItem(),
+				Combo_Produto.getSelectedItem(),
+				Field_Cod_Barras.getText(),
 				Field_Quantidade.getText(),
 				Field_Preco_Venda.getText()
 				
@@ -437,8 +449,6 @@ private void Limpa_Dados() {
 	Field_Cod_Barras.setText(null);
 	Field_Quantidade.setText("1");
 	Field_Preco_Venda.setText("0.00");
-	Field_Codigo.setText(null);
-	//Field_Placa.setText(null);
 	
 }
 
@@ -501,40 +511,64 @@ private void Limpa_Dados() {
 	  
   }
  
+
  private boolean Cad_Servico() {
+	 
+	 	 String tipo = "venda";
+	 	 if(jRadioButton1.isSelected()) tipo = "Dinheiro";
+	 	 if(jRadioButton2.isSelected()) tipo = "Conta";
+	 	 if(jRadioButton3.isSelected()) tipo = "Cartao";
+	 	 
+	 	 if(tipo.equals("venda")){
+	 		JOptionPane.showMessageDialog(this, "Selecione uma forma de pagamento", "Erro", JOptionPane.WARNING_MESSAGE);
+	 		return false;
+	 	 }	 
+	 	 
+		 Venda_add vendas = new Venda_add();
+		 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
 		
-		Venda_add vendas = new Venda_add();
-		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
-		
+		 String Data = Label_Editavel_data.getText();
+		 String [] DataSeparada = Data.split("/");
+		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+
+		 
 		if(contador_Table == 1 ) {
 			vendas.setCod_venda(Field_Codigo.getText());
 			vendas.setCliente_venda(Combo_Cadastrado.getSelectedItem().toString());
-			vendas.setProduto(Combo_Produto.getSelectedItem().toString());
 			vendas.setProduto(String.valueOf(jTable1.getModel().getValueAt(0, 0)));
-			vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
-			vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+			vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+			vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 3)));
+			vendas.setCpf_venda(String.valueOf(Field_Cpf.getText()));
+			vendas.setCod_barras(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
+			vendas.setPlaca(Field_Placa.getSelectedItem().toString());
+			vendas.setNum_os(tipo);
 			vendas.setValor_Total(Double.valueOf(Field_Total.getText().replace(",", ".")));
+			vendas.setData_venda(java.sql.Date.valueOf(dia));
 			vendaDAO.Insert(vendas);
-			JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Venda Finalizada!", "Sucesso", JOptionPane.WARNING_MESSAGE);
 		}else if(contador_Table > 1) {
 				while(contador_Table != 0) {
 					vendas.setCod_venda(Field_Codigo.getText());
 					vendas.setCliente_venda(Combo_Cadastrado.getSelectedItem().toString());
-					vendas.setProduto(Combo_Produto.getSelectedItem().toString());
 					vendas.setProduto(String.valueOf(jTable1.getModel().getValueAt(0, 0)));
-					vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
-					vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+					vendas.setQuant(String.valueOf(jTable1.getModel().getValueAt(0, 2)));
+					vendas.setValor_venda(String.valueOf(jTable1.getModel().getValueAt(0, 3)));
+					vendas.setCpf_venda(String.valueOf(Field_Cpf.getText()));
+					vendas.setCod_barras(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
+					vendas.setPlaca(Field_Placa.getSelectedItem().toString());
+					vendas.setNum_os(tipo);
 					vendas.setValor_Total(Double.valueOf(Field_Total.getText().replace(",", ".")));
+					vendas.setData_venda(java.sql.Date.valueOf(dia));
 					vendaDAO.Insert(vendas);
 				tablemodel_Cadastrados.removeRow(0);
 				contador_Table --;
-				
 			}
-			JOptionPane.showMessageDialog(this, "Serviço cadastrado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Venda Finalizada!", "Sucesso", JOptionPane.WARNING_MESSAGE);
 		}else if(contador_Table == 0) {
-			erro();
+			erro();				
 			return false;
 		}
+		
 		
 		return true;
 	}
@@ -655,19 +689,19 @@ private void Limpa_Dados() {
  
  
  public void update_quantidade() {
-		String sql = "UPDATE produtos SET quantidade = quantidade - retquant WHERE Descricao'"+Combo_Produto.getSelectedItem()+"'";
+		/*String sql = "UPDATE produtos SET quantidade = quantidade - retquant WHERE descricao'"+Combo_Produto.getSelectedItem()+"'";
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 			while(result.next()){
 				Combo_Cadastrado.addItem(result.getString("placa"));
-				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		
 		
 	}
+	*/
 	}
  
  
@@ -707,6 +741,7 @@ private void Limpa_Dados() {
 		 }
 	}
 	
+	
 	// Variables declaration - do not modify                     
 	 	private javax.swing.JButton Btn_Add_Produto;
 	    private javax.swing.JButton Btn_Cancelar;
@@ -745,9 +780,9 @@ private void Limpa_Dados() {
 	    private javax.swing.JSeparator jSeparator1;
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JTable jTable1;
-	    private javax.swing.JRadioButton jRadioButton1;
-	    private javax.swing.JRadioButton jRadioButton2;
-	    private javax.swing.JRadioButton jRadioButton3;
+	    private javax.swing.JCheckBox jRadioButton1;
+	    private javax.swing.JCheckBox jRadioButton2;
+	    private javax.swing.JCheckBox jRadioButton3;
 	    private VendaDAO vendaDAO;
 	    
     // End of variables declaration 

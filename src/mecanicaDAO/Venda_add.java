@@ -3,10 +3,11 @@ package mecanicaDAO;
 import java.util.Date;
 
 public class Venda_add {
+	
 	private String cliente_venda;
 	private String Placa;
 	private String cod_venda;
-	private java.sql.Date data_venda;
+	private Date   data_venda;
 	private String num_os;
 	private String cpf_venda;
 	private String cod_barras;
@@ -71,10 +72,10 @@ public class Venda_add {
 	public String getCod_barras() {
 		return cod_barras;
 	}
-	public java.sql.Date getData_venda() {
+	public Date getData_venda() {
 		return data_venda;
 	}
-	public void setData_venda(java.sql.Date data_venda) {
+	public void setData_venda(Date data_venda) {
 		this.data_venda = data_venda;
 	}
 	public void setCod_barras(String cod_barras) {

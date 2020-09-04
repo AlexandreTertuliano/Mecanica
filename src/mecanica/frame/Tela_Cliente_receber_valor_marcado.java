@@ -228,15 +228,16 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	 
 	 private void soma_total(){
 		 
-		 String sql = "select sum (valor_venda) as valor_venda "
+		 String sql = "select sum (valor_total) as valor_total "
 					+ "from vendas "
 	    			+ "where cpf_venda = '"
-	    			+ Field_Cpf.getText() + "'" ;
+	    			+ Field_Cpf.getText() + "'"
+	    			+ "and num_os ='Conta'" ;
 	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
 				result.next();
-				Label_Ed_Total.setText(String.valueOf(result.getDouble("valor_venda")));
+				Label_Ed_Total.setText(String.valueOf(result.getDouble("valor_total")));
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

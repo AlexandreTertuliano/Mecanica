@@ -22,13 +22,13 @@ public class ContasDAO {
 	public List<Contas_add> getAll_table(String cpf) {
 		List<Contas_add> contas = new ArrayList<Contas_add>();
 		
-		String sql = "SELECT SUM (VALOR_VENDA) AS VALOR_VENDA, "
-				+ "SUM (QUANT_PROD) AS QUANT_PROD, "
-				+ "cod_venda, cliente_venda, placa "
+		String sql = "select cod_venda, cliente_venda, placa, valor_total "
 				+ "from vendas "
-				+ "where cpf_venda = '"+cpf+"' "
-				+ "group by cod_venda, cliente_venda, placa "
-				+ "order by cod_venda;";
+				+ "where cpf_venda = '"+cpf+"' and num_os = 'Conta' "
+				+ "group by cod_venda, cliente_venda, placa,  valor_total "
+				+ "order by cod_venda; ";
+				//+ "group by cod_venda, cliente_venda, placa "
+				//+ "order by cod_venda;";
 		
 		try {
 			Statement statement = connection.createStatement();
@@ -39,8 +39,8 @@ public class ContasDAO {
 				conta.setCod_servico(result.getString("COD_VENDA"));
 				conta.setNome_cliente(result.getString("CLIENTE_VENDA"));
 				conta.setPlaca_carro(result.getString("PLACA"));
-				conta.setValor_venda(String.valueOf(result.getString("VALOR_VENDA")));
-				conta.setQuant_prod(result.getString("QUANT_PROD"));
+				conta.setValor_venda(String.valueOf(result.getString("VALOR_TOTAL")));
+				//conta.setQuant_prod(result.getString("QUANT_PROD"));
 				contas.add(conta);
 			}
 			

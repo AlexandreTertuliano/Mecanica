@@ -1,6 +1,7 @@
 package mecanicaDAOVenda;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Boleto_Add;
 import mecanicaDAO.Venda_add;
 
 public class VendaDAO {
@@ -24,8 +24,8 @@ public class VendaDAO {
 public void Insert(Venda_add venda){
 		
 		
-		String sql = " insert into vendas ( cod_venda, cliente_venda, cpf_venda, cod_barras, valor_venda, "
-				+ "placa, data_venda, num_os, quant, produto, valor_total)"  
+		String sql = " INSERT INTO VENDAS ( cod_venda, cliente_venda, cpf_venda, cod_barras, valor_venda, placa, "
+				+ "num_os, quant, produto, valor_total, data_venda)"  
 			+	"values (?,?,?,?,?,?,?,?,?,?,?)";
 		
 		try {
@@ -37,12 +37,11 @@ public void Insert(Venda_add venda){
 				statement.setString(index++, venda.getCod_barras());
 				statement.setString(index++, venda.getValor_venda());
 				statement.setString(index++, venda.getPlaca());
-				statement.setDate(index++, venda.getData_venda());
 				statement.setString(index++, venda.getNum_os());
 				statement.setString(index++, venda.getQuant());
 				statement.setString(index++, venda.getProduto());
 				statement.setDouble(index++, venda.getValor_Total());
-				
+				statement.setDate  (index++, (Date)venda.getData_venda());
 				statement.execute();
 				
 			} catch (SQLException e) {

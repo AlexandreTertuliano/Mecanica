@@ -26,7 +26,8 @@ public class ServicoDAO {
 	public void Insert(Servico_Add servico) {
 		
 		String sql = 
-		"INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario, Produto, Valor_Produto, Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)"
+		"INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario, Produto, Valor_Produto, "
+		+ "Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)"
 		+ " VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
 		
 		try {
