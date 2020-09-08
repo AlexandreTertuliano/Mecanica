@@ -4,21 +4,31 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.crypto.Data;
+
+import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Contas_add;
+import mecanicaDAO.Recebidos_Add;
+import mecanicaDAO.Servico_Add;
+import mecanicaDAOCliente.ClienteDAO;
 import mecanicaDAOContas.ContasDAO;
+import mecanicaDAORecebidos.RecebidosDAO;
 
 public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	
@@ -28,6 +38,9 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 		 connection = ConnectionDAO.getConnection();
 		 conta_add = new Contas_add();
 		 contaDAO = new ContasDAO();
+		 cliente_add = new Cliente_add();
+		 clienteDAO = new ClienteDAO();
+		 recebidosDAO = new RecebidosDAO();
 	     initComponents();
 	    }
 	 
@@ -44,7 +57,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	        Label_Placa = new javax.swing.JLabel("Digite a placa do Carro");
 	        Field_Placa = new javax.swing.JFormattedTextField();
 	        Btn_Busca_Placa = new javax.swing.JButton("Buscar");
-	        Btn_Cancelar_Venda = new javax.swing.JButton("Cancelar");
+	        Btn_Cancelar_Venda = new javax.swing.JButton("Excluir");
 	        Label_Ed_Total = new javax.swing.JLabel("0.00");
 	        Label_Total = new javax.swing.JLabel("Total");
 	        Label_Titulo_Venda = new javax.swing.JLabel("Controle");
@@ -77,7 +90,6 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	     	columnBoleto.add("Cod Venda");
 	     	columnBoleto.add("Nome");
 	     	columnBoleto.add("Placa do Carro");
-	     	columnBoleto.add("Quantidade de Produto");
 	     	columnBoleto.add("Valor da Venda");
 			Vector<? extends Vector> vector = new Vector();
 			jTable1 = new JTable(vector,columnBoleto);
@@ -93,9 +105,9 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	        Btn_Busca_Placa.setIcon(image_Lupa);
 	        
 	        Btn_Cancelar_Venda.setBackground(Color.WHITE);
-	        Btn_Cancelar_Venda.setToolTipText("Cancelar");
-	        ImageIcon image_cancelar = new ImageIcon(getClass().getResource("/close.png"));
-	        Btn_Cancelar_Venda.setIcon(image_cancelar);
+	        Btn_Cancelar_Venda.setToolTipText("Excluir Venda");
+	        ImageIcon image_Excluir = new ImageIcon(getClass().getResource("/delete.png"));
+	        Btn_Cancelar_Venda.setIcon(image_Excluir);
 	           
 	        Btn_Bloquear.setBackground(Color.WHITE);
 	        Btn_Bloquear.setToolTipText("Bloquear");
@@ -212,18 +224,185 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 					if(Verifica_cliente()){
 						Preenche_tabela();
 						soma_total();
+						Valor_Total_devedor();
 					}
 				}
 			});
+
+	        Btn_Busca_Placa.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Preenche_tabela_placa();
+					soma_total_Placa();
+					Valor_Total_devedor();
+				}
+			});
 	        
-	    }
+	        Btn_Receber.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Cad_recebido();
+					//Valor_Total_devedor();
+					Subtrai();
+					Mensagem_recebido();
+				}
+			});
+	        
+	        Btn_Cancelar_Venda.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					Verifica_Linha();
+					Valor_Total_devedor();
+				}
+			});
+	        
+	        Btn_Movimento_1Mes.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sql_gerar();
+					
+				}
+			});
+	 }
+	 
+	 public void sql_gerar(){
+		 
+		 String data = data();
+		 
+		 String sql = "select * from vendas"
+		 		+ "where data_venda > '"+data+"'";
+		 	
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			 JOptionPane.showMessageDialog(this, "Nenhuma "
+			 		+ ""
+			 		+ ""
+			 		+ ""
+			 		+ "", "Excluído", JOptionPane.WARNING_MESSAGE);
+
+		 
+		 
+		 
+	 }
+	 
+	 private void Mensagem_recebido() {
+		 JOptionPane.showMessageDialog(this, "Valor recebido! "
+		 		+ "Verifique senão ficou negativo o valor TOTAL", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		 Field_Cpf.setText(null);
+		 Field_Placa.setText(null);
+		 //Label_Ed_Total.setText("0.00");
+	 }
+	 
+	 private void Cad_recebido() {
+		 
+		String Data = data();
+		String [] DataSeparada = Data.split("/");
+		LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+		
+		String cpf ;
+		String placa;
+		
+		if(Field_Cpf.getText().trim().isEmpty() || Field_Cpf.getText().equals("   .   .   -  ")){
+		String senha = JOptionPane.showInputDialog(null, "Informe o Cpf desta placa :");
+		Field_Cpf.setText(senha);
+		}
+		
+		Recebidos_Add recebidos = new Recebidos_Add();
+		recebidos.setCpf(Field_Cpf.getText());
+		recebidos.setData(Date.valueOf(dia));
+		recebidos.setPlaca(Field_Placa.getText());
+		recebidos.setValor(Double.valueOf(Field_Valor_Pago.getText()));
+		recebidosDAO.Insert(recebidos);
+		
+	 }
+	 
+	 private void Valor_Total_devedor() {
+		 
+		 Double valor_Pago = 0.00;
+		 String valor_devedor = Label_Ed_Total.getText();
+		 
+		 String sql = "select sum (valor_recebido) as valor from recebidos where cpf_recebido = '"+Field_Cpf.getText()+"'";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while (result.next()){
+				valor_Pago = result.getDouble("VALOR");
+				 }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		  
+		Double total = (Double.valueOf(Label_Ed_Total.getText())) - valor_Pago;  
+		Label_Ed_Total.setText(String.valueOf(total));
+
+	 }
+	 
+	 private void Subtrai() {
+		 
+		 Double total = (Double.valueOf(Label_Ed_Total.getText())) - (Double.valueOf(Field_Valor_Pago.getText())) ;  
+			Label_Ed_Total.setText(String.valueOf(total));
+		 
+	 }
+ 
+	 private void Verifica_Linha() {
+		
+		 int Numero_linha = jTable1.getSelectedRow();
+		 if(Numero_linha == -1) {
+			  JOptionPane.showMessageDialog(this, "Conta não encontrada", "Erro", JOptionPane.WARNING_MESSAGE);
+		 }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir a Conta?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+				  if(Numero_linha >= 0){
+					 Sql_delete();
+					 soma_total();
+					 Preenche_tabela();
+				  }
+				}
+		 }
+		 
+	 }
+	 
+	 private void Sql_delete() {
+	
+		 int Numero_linha = jTable1.getSelectedRow();
+		  String Cod = (String)jTable1.getModel().getValueAt(Numero_linha, 0);
+		  String Cpf = Field_Cpf.getText();
+		  
+		  String sql = "delete from vendas where cod_venda = '" + Cod + "' and cpf_venda ='"+Cpf+"'";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			 JOptionPane.showMessageDialog(this, "Codigo " + Cod +" deletado da Tabela", "Excluído", JOptionPane.WARNING_MESSAGE);
+
+		 
+		 
+		 
+	 }
 	 
 	 private boolean Verifica_cliente(){
+
+		 for(Cliente_add cliente_msm_Cpf : clienteDAO.getAll()) {
+	    		if(Field_Cpf.getText().equals(cliente_msm_Cpf.getCpf())) {
+	    			return true;
+	    		}
+	    	}
 		 
-		 
-		 
-		 
-		 return true;
+		 JOptionPane.showMessageDialog(this, "Cpf não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+			Field_Cpf.requestFocus();
+				return false;
 	 }
 	 
 	 private void soma_total(){
@@ -254,7 +433,6 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	    				conta.getCod_servico(),
 	    				conta.getNome_cliente(),
 	    				conta.getPlaca_carro(),
-	    				conta.getQuant_prod(),
 	    				conta.getValor_venda()
 	    				
 	    		};
@@ -265,6 +443,73 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	    	
 	 }
 	 
+	 private void Preenche_tabela_placa(){
+		 
+		 if(Field_Cpf.getText().trim().isEmpty() || Field_Cpf.getText().equals("   .   .   -  ")){
+				String senha = JOptionPane.showInputDialog(null, "Informe o Cpf desta placa :");
+				Field_Cpf.setText(senha);
+				}
+				
+		 
+		 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
+    	tablemodel_Cadastrados.setRowCount(0);
+    	
+    	 for(Contas_add conta : contaDAO.getAll_table_placa(Field_Placa.getText())) {
+        	Object[] data = {
+    				conta.getCod_servico(),
+    				conta.getNome_cliente(),
+    				conta.getPlaca_carro(),
+    				conta.getValor_venda()
+    				
+    		};
+        	
+    		tablemodel_Cadastrados.addRow(data);
+    		
+        	}
+    	
+ }
+	 
+	 private void soma_total_Placa(){
+		 
+		 String sql = "select sum (valor_total) as valor_total "
+					+ "from vendas "
+	    			+ "where placa = '"
+	    			+ Field_Placa.getText() + "'"
+	    			+ "and num_os ='Conta'" ;
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				result.next();
+				Label_Ed_Total.setText(String.valueOf(result.getDouble("valor_total")));
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    
+	 }
+	 
+	 private String data() {
+		 LocalDate atual_data = LocalDate.now();
+		 
+		    String data;
+			int mes = atual_data.getMonthValue();
+			int dia = atual_data.getDayOfMonth();
+			
+			
+			if(dia < 10){
+				data = "0" + String.valueOf(dia) + "/";
+			} else {
+				data = String.valueOf(dia) + "/";
+			}
+			if(mes < 10) {
+				data = data + "0" + String.valueOf(mes) +  "/";
+			} else {
+				data = data +  String.valueOf(mes) + "/";
+			}
+			
+			data = data + String.valueOf(atual_data.getYear());
+			
+			return data;
+	 }
 
 	 // Variables declaration - do not modify                     
 	    private javax.swing.JButton Btn_Bloquear;
@@ -292,5 +537,8 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	    private javax.swing.JTable jTable2;
 	    private Contas_add conta_add;
 	    private ContasDAO contaDAO;
+	    private ClienteDAO clienteDAO;
+	    private Cliente_add cliente_add;
+	    private RecebidosDAO recebidosDAO;
 	    // End of variables declaration                     
 }

@@ -86,7 +86,6 @@ public class Tela_Cadastro_Produto extends JPanel {
      Field_Porcentagem.setText("0");
      Field_Fornecedor_CNPJ.setEditable(false);
      Field_Fornecedor_Tell.setEditable(false);
-     Field_Cod_Sistema.setEditable(false);
      Btn_salvarEdit.setEnabled(false);
      
      Btn_Cancelar.setBackground(Color.WHITE);

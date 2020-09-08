@@ -433,6 +433,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 				}
 			});
 
+	        //Zerar vale
 	        Btn_Zerar_Vale.addActionListener(new ActionListener() {
 				
 				@Override
@@ -455,7 +456,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	        
 	    }
 	  
-		private boolean Verifica_Cancelamento_Vales(){
+	  private boolean Verifica_Cancelamento_Vales(){
 			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir o/os Vales?", "Excluir", JOptionPane.YES_NO_OPTION);
 			 if(resposta == JOptionPane.YES_OPTION){
 					JOptionPane.showMessageDialog(this, "Vales Zerados com sucesso", "Concluído", JOptionPane.INFORMATION_MESSAGE);
@@ -486,7 +487,6 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 		  return true;
 		  
 	  }
-	  
 	  
 	  public void Update_combo_vale(){
 		  Combo_Nome.removeAllItems();

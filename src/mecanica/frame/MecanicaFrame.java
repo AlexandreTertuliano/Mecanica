@@ -84,6 +84,9 @@ public class MecanicaFrame extends JFrame {
 		northPanel.setPreferredSize(new Dimension(1920, 80));
 		northPanel.setBackground(new Color(45,173,199));
 		
+		JButton suporte = new JButton();
+		suporte.setPreferredSize(new Dimension(60, 60));
+		northPanel.add(suporte);
 		
 		JButton logoMecanicaButton = new JButton();
 		logoMecanicaButton.setPreferredSize(new Dimension(150, 60));

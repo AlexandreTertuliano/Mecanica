@@ -145,6 +145,13 @@ create table Ordem_Servico_Finalizado(
 	Valor_total float not null	
 );
 
+create table recebidos(
+	data_recebido Date,
+	valor_recebido float,
+	cpf_recebido varchar (15),
+	placa_carro_recebido varchar (10)
+);
+
 delete from Funcionarios;
 delete from Produtos;
 delete from Placa_Veiculos;

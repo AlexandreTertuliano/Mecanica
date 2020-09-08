@@ -694,9 +694,13 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	
 	private void Update_cliente(){
 			Double apt_Casa = 0.0;
+			Double block = 0.0;
 			
 			if(jRadioButton1.isSelected()) apt_Casa = 0.0;
-			if(Radio_Casa.isSelected()) apt_Casa = 1.0;		
+			if(Radio_Casa.isSelected()) apt_Casa = 1.0;	
+			
+			if(Check_Bloquear.isSelected()) block = 1.0;
+			else block = 0.0;
 		
 			Cliente_add cliente = new Cliente_add();
 			cliente.setNome(Field_Nome.getText());
@@ -711,6 +715,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setRua(Field_Rua.getText());
 			cliente.setApt_Casa(apt_Casa);
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(block);
 			clienteDAO.update_cliente(cliente);
 			
 			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
@@ -736,6 +741,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Numero.setText(cliente.getNumero());
 				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);
 				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
 			Combo_Edi_Nome.setEnabled(false);
 		}
@@ -764,6 +771,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Numero.setText(cliente.getNumero());
 				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);;
 				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);;
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
 		}
 	}
@@ -810,6 +819,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setRua(Field_Rua.getText());
 			cliente.setApt_Casa(Double.valueOf(C_APt));
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(0.00);
 			clienteDAO.Insert(cliente);
 			Limpa_dados();
 			JOptionPane.showMessageDialog(this,cliente.getNome() + " foi cadastrado"

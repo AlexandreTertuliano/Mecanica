@@ -330,7 +330,6 @@ Btn_Finalizar.addActionListener(new ActionListener() {
 						 contador_Table = 0;
 						 Field_Preco_Venda.setText("0.00");
 						 Lib_Campos();
-						 update_quantidade();
 						 Total =0.0;
 					}
 			}	
@@ -480,7 +479,9 @@ private void Limpa_Dados() {
 	  Combo_Cadastrado.removeAllItems();
 	  Combo_Cadastrado.addItem("Seleciona");
 	  
-	  String sql = "SELECT * FROM clientes ORDER BY nome";
+	  String sql = "SELECT * FROM clientes "
+	  		+ "where bloquear = '0'"
+	  		+ " ORDER BY nome ";
     	try {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
@@ -546,6 +547,7 @@ private void Limpa_Dados() {
 			vendas.setData_venda(java.sql.Date.valueOf(dia));
 			vendaDAO.Insert(vendas);
 			JOptionPane.showMessageDialog(this, "Venda Finalizada!", "Sucesso", JOptionPane.WARNING_MESSAGE);
+			update_quantidade();
 		}else if(contador_Table > 1) {
 				while(contador_Table != 0) {
 					vendas.setCod_venda(Field_Codigo.getText());
@@ -556,11 +558,13 @@ private void Limpa_Dados() {
 					vendas.setCpf_venda(String.valueOf(Field_Cpf.getText()));
 					vendas.setCod_barras(String.valueOf(jTable1.getModel().getValueAt(0, 1)));
 					vendas.setPlaca(Field_Placa.getSelectedItem().toString());
+					vendas.setValor_Total(Double.valueOf((String) jTable1.getModel().getValueAt(0, 3)) * 
+							Double.valueOf((String) jTable1.getModel().getValueAt(0, 2)));
 					vendas.setNum_os(tipo);
-					vendas.setValor_Total(Double.valueOf(Field_Total.getText().replace(",", ".")));
 					vendas.setData_venda(java.sql.Date.valueOf(dia));
 					vendaDAO.Insert(vendas);
 				tablemodel_Cadastrados.removeRow(0);
+				update_quantidade();
 				contador_Table --;
 			}
 			JOptionPane.showMessageDialog(this, "Venda Finalizada!", "Sucesso", JOptionPane.WARNING_MESSAGE);
@@ -683,25 +687,32 @@ private void Limpa_Dados() {
 				} catch (SQLException a) {
 					a.printStackTrace();
 				}
+			
 		}
 	
  
  
  
- public void update_quantidade() {
-		/*String sql = "UPDATE produtos SET quantidade = quantidade - retquant WHERE descricao'"+Combo_Produto.getSelectedItem()+"'";
+ public void update_quantidade(){
+	 
+	 String qtd = "0";
+	 String cod = (String) jTable1.getModel().getValueAt(0, 1);
+	 Double total_novo = 0.0;
+	 
+		String sql = "SELECT QUANTIDADE FROM PRODUTOS"
+				+ " WHERE COD_BARRAS = '"+cod+"';";
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 			while(result.next()){
-				Combo_Cadastrado.addItem(result.getString("placa"));
+				qtd = result.getString("QUANTIDADE");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		
-		
 	}
-	*/
+		
+		total_novo = Double.valueOf(qtd) - Double.valueOf((String) jTable1.getModel().getValueAt(0,2)); 
+		
 	}
  
  
@@ -729,10 +740,11 @@ private void Limpa_Dados() {
 			 if(resposta == JOptionPane.YES_OPTION){
 				  if(Numero_linha >= 0){
 					  
-					  Double produto = Double.valueOf((String) jTable1.getModel().getValueAt(Numero_linha, 1));
+					  Double produto = Double.valueOf((String) jTable1.getModel().getValueAt(Numero_linha, 3));
 					  Double Qtd = Double.valueOf((String)jTable1.getModel().getValueAt(Numero_linha, 2));
-					  Total = Total - (produto * Qtd);
-					  Field_Total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
+					  Total = (produto * Qtd);
+					 double total_venda = Double.valueOf(Field_Total.getText().replace(",", "."));
+					  Field_Total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(total_venda - Total))));
 					  tablemodel_Cadastrados.removeRow(Numero_linha);
 					  contador_Table --;
 					  if(contador_Table == 0 ) Lib_Campos();
