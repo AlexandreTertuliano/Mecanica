@@ -51,7 +51,7 @@ private Connection connection;
 	public List<Produto_Add> getAll() {
 		List<Produto_Add> produtos = new ArrayList<Produto_Add>();
 		
-		String sql = "SELECT * FROM PRODUTOS";
+		String sql = "SELECT * FROM PRODUTOS ORDER BY DESCRICAO";
 		
 		try {
 			Statement statement = connection.createStatement();

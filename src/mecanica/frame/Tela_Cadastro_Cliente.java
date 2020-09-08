@@ -170,6 +170,12 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        
+        try {
+            Field_Cep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###-###")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }       
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -432,6 +438,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Combo_Placa.setEnabled(true);
 				Btn_editar.setEnabled(false);
 				Field_Cpf.setEnabled(true);
+				Btn_Procurar.setEnabled(true);
+				Combo_Edi_Nome.setEnabled(true);
 				update_tabela();
 				update_Editar_Combo();
 				
@@ -452,13 +460,14 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Btn_Cancelar.setEnabled(false);
 				Btn_Salvar_Veiculo.setEnabled(false);
 				Btn_Veiculo_Cancelar.setEnabled(false);
+				Btn_Procurar.setEnabled(false);
 				Combo_Cliente.setEnabled(false);
 				Combo_Placa.setEnabled(false);
 				Btn_editar.setEnabled(true);
 				Field_Cpf.setEnabled(false);
 				}
 			}
-		}
+			}
 	});
     
       //Funcao de cancelar Cadastro
@@ -492,6 +501,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Combo_Placa.setEnabled(true);
 				Btn_editar.setEnabled(false);
 				Field_Cpf.setEnabled(true);
+				Radio_Casa.setSelected(false);
+				jRadioButton1.setSelected(false);
+				Field_Ed_Cpf.setEnabled(true);
+				Btn_Procurar.setEnabled(true);
 			}else {
 				Mostrar_Cadastro();
 				Btn_Salvar.setEnabled(false);
@@ -502,6 +515,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Combo_Placa.setEnabled(false);
 				Btn_editar.setEnabled(true);
 				Field_Cpf.setEnabled(false);
+				Field_Ed_Cpf.setEnabled(false);
+				Btn_Procurar.setEnabled(false);
 			}
 			
 		}
@@ -678,7 +693,15 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Update_cliente(){
-						
+			Double apt_Casa = 0.0;
+			Double block = 0.0;
+			
+			if(jRadioButton1.isSelected()) apt_Casa = 0.0;
+			if(Radio_Casa.isSelected()) apt_Casa = 1.0;	
+			
+			if(Check_Bloquear.isSelected()) block = 1.0;
+			else block = 0.0;
+		
 			Cliente_add cliente = new Cliente_add();
 			cliente.setNome(Field_Nome.getText());
 			cliente.setCell(Field_Cell.getText());
@@ -690,7 +713,9 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setCep(Field_Cep.getText());
 			cliente.setBairro(Field_Bairro.getText());
 			cliente.setRua(Field_Rua.getText());
+			cliente.setApt_Casa(apt_Casa);
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(block);
 			clienteDAO.update_cliente(cliente);
 			
 			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
@@ -701,6 +726,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 		
 		
 		for(Cliente_add cliente : clienteDAO.getAll()) {
+			
 			if(cliente.getCpf().equals(Field_Ed_Cpf.getText())) {
 				Field_Nome.setText(cliente.getNome());
 				Field_Cell.setText(cliente.getCell());
@@ -713,10 +739,12 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Bairro.setText(cliente.getBairro());
 				Field_Rua.setText(cliente.getRua());
 				Field_Numero.setText(cliente.getNumero());
-				//if(cliente.getApt_Casa() == 1 ) Radio_Casa.isSelected();
-				//if(cliente.getApt_Casa() == 2 ) jRadioButton1.isSelected();
+				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);
+				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
-			
+			Combo_Edi_Nome.setEnabled(false);
 		}
 		if(Field_Cpf.getText().trim().isEmpty() || Field_Cpf.getText().equals("   .   .   -  ")) {
 			JOptionPane.showMessageDialog(this, "Cliente não cadastrado", "Cliente Inválido", JOptionPane.WARNING_MESSAGE);
@@ -741,6 +769,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Bairro.setText(cliente.getBairro());
 				Field_Rua.setText(cliente.getRua());
 				Field_Numero.setText(cliente.getNumero());
+				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);;
+				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);;
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
 		}
 	}
@@ -765,13 +797,13 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Cad_Cliente() {
-		 double C_APt = 0 ;
+		 double C_APt = 0.0 ;
 		
 		if(Radio_Casa.isSelected()){
-			C_APt = 1;
+			C_APt = 1.0;
 		}
 		if(jRadioButton1.isSelected()){
-			C_APt = 2;
+			C_APt = 0.0;
 		}
 		
 			Cliente_add cliente = new Cliente_add();
@@ -787,6 +819,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setRua(Field_Rua.getText());
 			cliente.setApt_Casa(Double.valueOf(C_APt));
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(0.00);
 			clienteDAO.Insert(cliente);
 			Limpa_dados();
 			JOptionPane.showMessageDialog(this,cliente.getNome() + " foi cadastrado"

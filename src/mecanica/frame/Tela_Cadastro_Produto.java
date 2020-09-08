@@ -86,7 +86,6 @@ public class Tela_Cadastro_Produto extends JPanel {
      Field_Porcentagem.setText("0");
      Field_Fornecedor_CNPJ.setEditable(false);
      Field_Fornecedor_Tell.setEditable(false);
-     Field_Cod_Sistema.setEditable(false);
      Btn_salvarEdit.setEnabled(false);
      
      Btn_Cancelar.setBackground(Color.WHITE);
@@ -113,6 +112,7 @@ public class Tela_Cadastro_Produto extends JPanel {
      Btn_Salvar.setToolTipText("Salvar");
      ImageIcon image_Salvar = new ImageIcon(getClass().getResource("/tick.png"));
      Btn_Salvar.setIcon(image_Salvar);
+     
      
      	//Coloca as especificações nos campos da tabela
      	Vector<String> columnNames = new Vector<String>();
@@ -296,6 +296,22 @@ public class Tela_Cadastro_Produto extends JPanel {
              .addContainerGap())
      );
      
+   //Funcao de colocar o cnpj e tell do fornecedor
+   	 Combo_Fornecedor.addActionListener(new ActionListener() {
+   		
+   		@Override
+   		public void actionPerformed(ActionEvent e) {
+   			
+   			String str = "Seleciona";
+   			
+   			if(str.equals(Combo_Fornecedor.getSelectedItem())){
+   					Limpa();
+   				}else{
+   					Mostra_Fornecedor();
+   				}
+   		}
+   	});
+     
      //Funcao de Cancelar Cad
      Btn_Cancelar.addActionListener(new ActionListener() {
 		
@@ -353,26 +369,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 		}
 	});
 	 
-	 //Funcao de colocar o cnpj e tell do fornecedor
-	 Combo_Fornecedor.addActionListener(new ActionListener() {
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-				if(Combo_Fornecedor.getSelectedItem().equals("Seleciona")) {
-					Field_Fornecedor_CNPJ.setText(null);
-					Field_Fornecedor_Tell.setText(null);
-				}else {
-					 for(Fornecedor_add fornecedor : fornecedorDAO.getAll()){
-						 if(Combo_Fornecedor.getSelectedItem().equals(fornecedor.getRazão_Social())){
-							 Field_Fornecedor_CNPJ.setText(fornecedor.getCnpj());
-							 Field_Fornecedor_Tell.setText(fornecedor.getTell());
-						 }
-						 
-					 }
-				}
-			
-		}
-	});
+	 
 	 
 	 //Funcao de update cadastro
 	 Btn_salvarEdit.addActionListener(new ActionListener() {
@@ -390,6 +387,22 @@ public class Tela_Cadastro_Produto extends JPanel {
 	});
 	 }
 	 
+	 private void Limpa(){
+		 	Field_Fornecedor_CNPJ.setText(null);
+			Field_Fornecedor_Tell.setText(null);
+	 }
+	 
+	 private void Mostra_Fornecedor(){
+		 
+		 for(Fornecedor_add fornecedor : fornecedorDAO.getAll()){
+				 if(fornecedor.getRazão_Social().equals(Combo_Fornecedor.getSelectedItem())){
+					 Field_Fornecedor_CNPJ.setText(fornecedor.getCnpj());
+					 Field_Fornecedor_Tell.setText(fornecedor.getTell());	 
+			}
+	 }
+}
+	 
+	 
 	 private void Update_produto(){
 		 
 		 Produto_Add produto = new Produto_Add();
@@ -399,7 +412,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 produto.setData(Field_Data.getText());
 		 produto.setQuantidade(Field_Quantidade.getText());
 		 produto.setPreco_custo(Field_Preco_Custo.getText());
-		 produto.setPreco_Venda(Field_Preco_Venda.getText());
+		 produto.setPreco_Venda(Field_Preco_Venda.getText().replace(",", "."));
 		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
 		 produtoDAO.update_produto(produto);
 		 
@@ -647,11 +660,13 @@ public class Tela_Cadastro_Produto extends JPanel {
 		}
 	 
 	 public void Update_Combo_fornecedor(){
-	
+		 		 	
 		 	Combo_Fornecedor.removeAllItems();
 			Combo_Fornecedor.addItem("Seleciona");
 			
-			 String sql = "SELECT * FROM fornecedor ORDER BY razao_social";
+		 	
+			 String sql = "SELECT * FROM fornecedor order by razao_social";
+			 		
 		    	try {
 					Statement statement = connection.createStatement();
 					ResultSet result = statement.executeQuery(sql);
@@ -666,11 +681,6 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 
 	 }
 	 
-
-		 
-		 
-	 
-
 	 //Variables declaration - do not modify                     
 	 	private javax.swing.JButton Btn_Cancelar;
 	    private javax.swing.JButton Btn_Pesquisar;
