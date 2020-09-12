@@ -4,6 +4,7 @@ public class Funcionario_add {
 	private String Cpf;
 	private String Nome;
 	private String Senha;
+	private Double bloquear;
 	
 	
 	public String getCpf() {
@@ -23,6 +24,12 @@ public class Funcionario_add {
 	}
 	public void setSenha(String senha) {
 		Senha = senha;
+	}
+	public Double getBloquear() {
+		return bloquear;
+	}
+	public void setBloquear(Double bloquear) {
+		this.bloquear = bloquear;
 	}
 	
 	

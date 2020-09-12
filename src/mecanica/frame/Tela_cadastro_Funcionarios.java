@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -222,27 +223,19 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 		 	 
 		 
 		 private void Update_funcionarios() {
+			 Double bloq = 0.00;
+			 
+			 if(Box_Vale.isSelected()) bloq = 1.00;
+			 
 			 
 			 Funcionario_add funcionario = new Funcionario_add();
 			 funcionario.setNome(Field_Nome.getText());
 			 funcionario.setCpf(Field_Cpf.getText());
 			 funcionario.setSenha(Field_senha.getText());
-			 
+			 funcionario.setBloquear(bloq);
 			 funcionarioDAO.update_funcionarios(funcionario);
 			 JOptionPane.showMessageDialog(this, "Atualizado com sucesso", "Atualizado", JOptionPane.WARNING_MESSAGE);
-			 
-		 }
-		 
-		 private void Mostra_cadastro() {
-			 for(Funcionario_add funcionario : funcionarioDAO.getAll()) {
-				 if(funcionario.getCpf().equals(Field_Cpf.getText())) {
-					Field_Nome.setText(funcionario.getNome());
-					Field_Cpf.setText(funcionario.getCpf());
-					Field_senha.setText(funcionario.getSenha());
-					
-				 }
-			 }
-			 
+			 Btn_Buscar.setEnabled(true);
 		 }
 		 
 		 private void erro() {
@@ -254,7 +247,8 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 			 Funcionario_add funcionario = new Funcionario_add();
 			 funcionario.setCpf(Field_Cpf.getText());
 			 funcionario.setNome(Field_Nome.getText());
-			 funcionario.setSenha(Field_senha.getText());		
+			 funcionario.setSenha(Field_senha.getText());
+			 funcionario.setBloquear(0.00);
 			 funcionarioDAO.Insert(funcionario);
 			 JOptionPane.showMessageDialog(this, "Funcionario cadastrado com sucesso! \n Verifique a tabela abaixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
 			
@@ -308,17 +302,18 @@ public class Tela_cadastro_Funcionarios extends JPanel {
 		 
 		 public void preenche_campos() {
 				
-				
 				for(Funcionario_add funcionario : funcionarioDAO.getAll()) {
 					if(funcionario.getCpf().equals(Field_Cpf.getText())) {
 						Field_Nome.setText(funcionario.getNome());
 						Field_Cpf.setText(funcionario.getCpf());
 						Field_senha.setText(funcionario.getSenha());
+						if(funcionario.getBloquear() == 1.00) Box_Vale.setSelected(true);
+						else Box_Vale.setSelected(false);
 						Btn_Buscar.setEnabled(false);
-						
+						Editar =1;
 					}
 				}
-				if(Field_Nome.getText().trim().isEmpty() || Field_Nome.getText().equals("   .   .   -  ")) {
+				if(Field_Nome.getText().trim().isEmpty()) {
 					JOptionPane.showMessageDialog(this, "Funcionario não cadastrado", "Funcionario Inválido", JOptionPane.WARNING_MESSAGE);
 				}
 				

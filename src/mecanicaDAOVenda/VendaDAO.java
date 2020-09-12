@@ -49,6 +49,35 @@ public void Insert(Venda_add venda){
 			}
 		
 	}
+
+public void Insert_Orcamento(Venda_add venda){
+	
+	
+	String sql = " INSERT INTO Orcamento ( cod_Orcamento, cliente_venda, cpf_venda, cod_barras, valor_venda, placa, "
+			+ "num_os, quant, produto, valor_total, data_venda)"  
+		+	"values (?,?,?,?,?,?,?,?,?,?,?)";
+	
+	try {
+		PreparedStatement statement = connection.prepareStatement(sql);
+		int index = 1;
+			statement.setString(index++, venda.getCod_venda());
+			statement.setString(index++, venda.getCliente_venda());
+			statement.setString(index++, venda.getCpf_venda());
+			statement.setString(index++, venda.getCod_barras());
+			statement.setString(index++, venda.getValor_venda());
+			statement.setString(index++, venda.getPlaca());
+			statement.setString(index++, venda.getNum_os());
+			statement.setString(index++, venda.getQuant());
+			statement.setString(index++, venda.getProduto());
+			statement.setDouble(index++, venda.getValor_Total());
+			statement.setDate  (index++, (Date)venda.getData_venda());
+			statement.execute();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+}
 	
 	public List<Venda_add> getAll() {
 		List<Venda_add> vendas = new ArrayList<Venda_add>();

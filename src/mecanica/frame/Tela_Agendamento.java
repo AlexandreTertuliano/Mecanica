@@ -317,7 +317,7 @@ public class Tela_Agendamento extends JPanel {
 				if(result.equals("Wed")) Radio_Quarta.setSelected(true);
 				if(result.equals("Thu")) Radio_quinta.setSelected(true);
 				if(result.equals("Fri")) Radio_sexta.setSelected(true);
-				if(result.equals("Sad")) Radio_sabado.setSelected(true);
+				if(result.equals("Sat")) Radio_sabado.setSelected(true);
 				if(result.equals("Sun")) Radio_domingo.setSelected(true);
 				
 			}

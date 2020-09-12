@@ -73,7 +73,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Btn_Remover = new javax.swing.JButton("Remover");
         Label_Quantidade = new javax.swing.JLabel("Quantidade");
         Field_Quantidade = new javax.swing.JFormattedTextField();
-        field_editavel_total = new javax.swing.JFormattedTextField();
+        field_editavel_total = new javax.swing.JFormattedTextField(0.00);
         Btn_Editar = new javax.swing.JButton("Editar Serviço");
         Btn_fazer_venda = new javax.swing.JButton("Finalizar Serviço");
         Field_Editavel_Cod_Servico = new javax.swing.JFormattedTextField();
@@ -92,8 +92,9 @@ public class Tela_Ordem_Servico extends JPanel {
         Label_valor.setFont(new java.awt.Font("Arial Black", 0, 14));
         Field_Quantidade.setText("1");
         field_editavel_total.setPreferredSize(new java.awt.Dimension(70, 30));
-        Field_Editavel_Cod_Servico.setEnabled(true);
+        Field_Editavel_Cod_Servico.setEnabled(false);
         
+        Btn_Editar.setEnabled(false);
         
         Btn_Adicionar.setBackground(Color.WHITE);
         Btn_Adicionar.setToolTipText("Adcionar");
@@ -393,7 +394,6 @@ public class Tela_Ordem_Servico extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					
 					Pega_num_Servico();
 				}
 			});
@@ -408,8 +408,11 @@ public class Tela_Ordem_Servico extends JPanel {
 						 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_add_Prod_Serv.getModel();
 						 tablemodel_Cadastrados.setRowCount(0);
 						 contador_Table = 0;
-						 field_editavel_total.setText("0.00");
+						 field_editavel_total.setText(null);
 						 Lib_Campos();
+						 Insert_Cod();
+						 Btn_Editar.setEnabled(false);
+						 Total = 0.00;
 					}
 					
 				}
@@ -487,15 +490,33 @@ public class Tela_Ordem_Servico extends JPanel {
 	}
 	
 	private void Gerar_pedido_venda(){
-		  int Numero_linha = 0;
+		  int Numero_linha = Table_servico_aberto.getSelectedRow();
+		  if(Numero_linha == -1)JOptionPane.showMessageDialog(this, "Selecione uma linha da tabela ao lado", "Concluído", JOptionPane.WARNING_MESSAGE);
 		  String Linha = (String)Table_servico_aberto.getModel().getValueAt(Numero_linha, 0);
+		  System.out.println(Numero_linha);
+		  if(Numero_linha > 0 ){
+			  String sql = "insert into ordem_servico_finalizado select * from ordem_servico"
+				 		+ " where cod_serv = '"+Linha+"';"
+				 		+ " Delete from ordem_servico "
+					    + " where cod_serv = '"+Linha+"'";
+						 
+					  
+					  try {
+				    		Statement statement = connection.createStatement();
+							ResultSet result = statement.executeQuery(sql);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					  JOptionPane.showMessageDialog(this, "Venda foi Finalizada ", "Concluído", JOptionPane.WARNING_MESSAGE);
+		  }else{
+			  JOptionPane.showMessageDialog(this, "Serviço não encontrado\n Selecione uma linha da tabela ao lado", "Concluído", JOptionPane.WARNING_MESSAGE);
+		  }
+				
+	}
+	
+	private void Update_servico(){
 		
-		
-		 String sql = "insert into ordem_servico_finalizado select * from ordem_servico"
-		 		+ " where cod_serv = '"+Linha+"';"
-		 		+ " Delete from ordem_servico "
-			    + " where cod_serv = '"+Linha+"'";
-				 
+			String sql = "delete from ordem_servico where cod_serv = '" + Field_Cod_aberto.getText() + "'";
 			  
 			  try {
 		    		Statement statement = connection.createStatement();
@@ -503,26 +524,11 @@ public class Tela_Ordem_Servico extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			  
-			 
-				 JOptionPane.showMessageDialog(this, "Venda foi Finalizada ", "Concluído", JOptionPane.WARNING_MESSAGE);
-
+				 JOptionPane.showMessageDialog(this, "Ordem de serviço " + Field_Cod_aberto.getText() +" sera editada", "Atualizar", JOptionPane.WARNING_MESSAGE);
+				 data();
+				 update_tabela_Servico_Aberto();
+				 Lib_All_update();
 		
-	}
-	
-	private void Update_servico(){
-		String sql = "delete from ordem_servico where cod_serv = '" + Field_Cod_aberto.getText() + "'";
-		  
-		  try {
-	    		Statement statement = connection.createStatement();
-				ResultSet result = statement.executeQuery(sql);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			 JOptionPane.showMessageDialog(this, "Ordem de serviço " + Field_Cod_aberto.getText() +" sera editada", "Atualizar", JOptionPane.WARNING_MESSAGE);
-			 data();
-			 update_tabela_Servico_Aberto();
-			 Lib_All_update();
 	}
 	
 	
@@ -541,6 +547,7 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 				Cad ++;
 			}
+			Btn_Editar.setEnabled(true);
 		}
 	}
 	
@@ -549,7 +556,6 @@ public class Tela_Ordem_Servico extends JPanel {
 		Combo_Placa.setEnabled(false);
 		Combo_Funcionario.setEnabled(false);
 		Table_add_Prod_Serv.setEnabled(false);
-		Field_Editavel_Cod_Servico.setEnabled(false);
 		textArea1.setEnabled(false);
 		Combo_Produto.setEnabled(false);
 		Field_Quantidade.setEnabled(false);
@@ -601,7 +607,6 @@ public class Tela_Ordem_Servico extends JPanel {
 	private void Lib_All_update(){
 		Bloq_Campos();
 		Table_add_Prod_Serv.setEnabled(true);
-		Field_Editavel_Cod_Servico.setEnabled(true);
 		textArea1.setEnabled(true);
 		Combo_Produto.setEnabled(true);
 		Field_Quantidade.setEnabled(true);
@@ -692,18 +697,54 @@ public class Tela_Ordem_Servico extends JPanel {
 			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Excluir", JOptionPane.YES_NO_OPTION);
 			 if(resposta == JOptionPane.YES_OPTION){
 				  if(Numero_linha >= 0){
-					  
+					  Double Subtrai = 0.00;
+					  Total = 0.00;
+					  Total = Double.valueOf(field_editavel_total.getText().replace(",", "."));
 					  Double produto = Double.valueOf((String) Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 1));
 					  Double Qtd = Double.valueOf((String)Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 2));
 					  Double servico = Double.valueOf((String)Table_add_Prod_Serv.getModel().getValueAt(Numero_linha, 4));
-					  Total = Total - ((produto * Qtd ) + servico);
-					  field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
+					  Subtrai =  ((produto * Qtd ) + servico);
+					  field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total-Subtrai).replace(",", "."))));
+					  System.out.println(Numero_linha);
 					  tablemodel_Cadastrados.removeRow(Numero_linha);
 					  contador_Table --;
-					  if(contador_Table == 0 ) Lib_Campos();
+					  if(contador_Table == 0 ) Lib_Campos();  
 				  }
 				}
 		 }
+	}
+	
+	public void Insert_Cod(){
+		
+		String Cod_serv = null;
+		int cod_serv = 0;
+		
+		String sql = "SELECT cod_serv FROM ORDEM_SERVICO";
+    	try {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()){
+				Cod_serv = result.getString("COD_SERV");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	cod_serv = Integer.valueOf(Cod_serv);   	
+        	if(cod_serv <= 9){
+        		cod_serv = Integer.valueOf(Cod_serv) + 1;
+            	Field_Editavel_Cod_Servico.setText("000"+String.valueOf(cod_serv));
+            }
+            else if(cod_serv > 9 && cod_serv < 100){
+            	cod_serv = Integer.valueOf(Cod_serv) + 1;
+            	Field_Editavel_Cod_Servico.setText("00"+String.valueOf(cod_serv));
+            }
+            else if( cod_serv > 100 && cod_serv <= 1000){
+            	cod_serv = Integer.valueOf(Cod_serv) + 1;
+            	Field_Editavel_Cod_Servico.setText(String.valueOf(cod_serv));
+            }
+        
+    	
 	}
 	
 	private boolean Cad_Servico() {
@@ -784,6 +825,8 @@ public class Tela_Ordem_Servico extends JPanel {
 		Combo_Placa.setSelectedItem("Seleciona");
 		Combo_Funcionario.setSelectedItem("Seleciona");
 		Combo_Produto.setSelectedItem("Seleciona");
+		field_editavel_total.setText("0.00");
+		Total = 0.00;
 	}
 	
 	private void soma_valor_serv_prod(){
@@ -791,7 +834,9 @@ public class Tela_Ordem_Servico extends JPanel {
 		Double produto = Double.valueOf(Field_Valor_Produto.getText().replace(",", "."));
 		Double Qtd = Double.valueOf(Field_Quantidade.getText().replace(",", "."));
 		Double servico = Double.valueOf(Field_Valor_serviço.getText().replace(",", "."));
+		Total = Double.valueOf(field_editavel_total.getText().replace(",", "."));
 		Total = Total + ((produto * Qtd ) + servico);
+		System.out.println(Total);
 		field_editavel_total.setText(String.format("%.2f", Double.parseDouble(String.valueOf(Total))));
 		
 	}

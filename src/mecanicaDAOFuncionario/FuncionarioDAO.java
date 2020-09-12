@@ -22,8 +22,8 @@ public FuncionarioDAO() throws SQLException {
 	
 public void Insert(Funcionario_add funcionario) {
 			
-	String sql = "INSERT INTO FUNCIONARIOS ( CPF, NOME, SENHA)" +
-			"VALUES (?,?,?)";
+	String sql = "INSERT INTO FUNCIONARIOS ( CPF, NOME, SENHA, BLOQUEAR)" +
+			"VALUES (?,?,?,?)";
 		
 		try {
 		PreparedStatement statement = connection.prepareStatement(sql);
@@ -31,6 +31,7 @@ public void Insert(Funcionario_add funcionario) {
 			statement.setString(index++, funcionario.getCpf());
 			statement.setString(index++, funcionario.getNome());
 			statement.setString(index++, funcionario.getSenha());
+			statement.setDouble(index++, funcionario.getBloquear());
 			statement.execute();
 			
 		} catch (SQLException e) {
@@ -55,7 +56,7 @@ public List<Funcionario_add> getAll() {
 			funcionario.setCpf(result.getString("CPF"));
 			funcionario.setNome(result.getString("NOME"));
 			funcionario.setSenha(result.getString("SENHA"));
-					
+			funcionario.setBloquear(result.getDouble("BLOQUEAR"));		
 			funcionarios.add(funcionario);
 		}
 		
@@ -69,9 +70,10 @@ public List<Funcionario_add> getAll() {
 public void update_funcionarios(Funcionario_add funcionario) {
 
 	String sql = "UPDATE FUNCIONARIOS "
-			+"SET CPF = '" + funcionario.getCpf()
-			+"',NOME ='" + funcionario.getNome()
+			+"SET " 
+			+"NOME ='" + funcionario.getNome()
 			+"',SENHA ='" + funcionario.getSenha()
+			+"',BLOQUEAR = '"+ funcionario.getBloquear()
 			+"'WHERE CPF = '" + funcionario.getCpf()
 			+"';";
 	
