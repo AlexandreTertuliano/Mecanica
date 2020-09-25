@@ -13,11 +13,13 @@ import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.TabableView;
 
 import mecanica.connection.ConnectionDAO;
@@ -63,7 +65,7 @@ public class Tela_Ordem_Servico extends JPanel {
         Table_servico_aberto = new javax.swing.JTable();
         Label_Selecione_Linha_ou_Cod = new javax.swing.JLabel("Digite o Codigo do serviço :");
         Field_Cod_aberto = new javax.swing.JFormattedTextField();
-        Btn_Busca_Senha = new javax.swing.JButton("Buscar Venda");
+        Btn_Busca_Senha = new javax.swing.JButton("Buscar Serviço");
         textArea1 = new javax.swing.JFormattedTextField();
         Label_valor = new javax.swing.JLabel("Valor Total do serviço : R$");
         Btn_gerar = new javax.swing.JButton("Gerar");
@@ -496,18 +498,14 @@ public class Tela_Ordem_Servico extends JPanel {
 		  System.out.println(Numero_linha);
 		  if(Numero_linha > 0 ){
 			  String sql = "insert into ordem_servico_finalizado select * from ordem_servico"
-				 		+ " where cod_serv = '"+Linha+"';"
-				 		+ " Delete from ordem_servico "
-					    + " where cod_serv = '"+Linha+"'";
-						 
-					  
+				 		+ " where cod_serv = '"+Linha+"';";
 					  try {
 				    		Statement statement = connection.createStatement();
 							ResultSet result = statement.executeQuery(sql);
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-					  JOptionPane.showMessageDialog(this, "Venda foi Finalizada ", "Concluído", JOptionPane.WARNING_MESSAGE);
+					  JOptionPane.showMessageDialog(this, "Serviço foi Finalizado ", "Concluído", JOptionPane.WARNING_MESSAGE);
 		  }else{
 			  JOptionPane.showMessageDialog(this, "Serviço não encontrado\n Selecione uma linha da tabela ao lado", "Concluído", JOptionPane.WARNING_MESSAGE);
 		  }
@@ -967,6 +965,8 @@ public void update_combo_funcionarios(){
 	}
 	
 	public void Update_Combo_Cliente(){
+		Table_servico_aberto.setSelectionBackground(Color.YELLOW);
+        
 		Combo_Nome_Cliente.removeAllItems();
 		Combo_Nome_Cliente.addItem("Seleciona");	
 		 

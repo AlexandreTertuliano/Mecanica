@@ -193,5 +193,39 @@ public void update_Servico(Servico_Add servico, String Cod) {
 				}
 	}
 
+
+public List<Servico_Add> getGroup_Tabela_Servicos_finalizados(String Cod) {
+	List<Servico_Add> servicos = new ArrayList<Servico_Add>();
+	
+
+	String sql = "select * from ordem_servico_finalizado "
+			+ " where cod_serv = '"+Cod+"' ";
+		
+	try {
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+		
+		while (result.next()){
+			Servico_Add servico = new Servico_Add();
+			servico.setProduto(result.getString("produto"));
+			servico.setValor_Produto(result.getString("valor_produto"));
+			servico.setQtd_Produto(result.getString("qtd_prod"));
+			servico.setServico(result.getString("servico"));
+			servico.setValor_servico(result.getString("valor_servico"));
+			servico.setCliente(result.getString("cliente"));
+			servico.setPlaca_Carro(result.getString("placa_carro"));
+			servico.setFuncionario(result.getString("funcionario"));
+			servico.setData(Date.valueOf(result.getString("data_ordem")));
+			servico.setValor_Total(result.getDouble("valor_total"));
+			servicos.add(servico);
+		}
+		
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}
+	
+	return servicos;
+}
+
 	
 }

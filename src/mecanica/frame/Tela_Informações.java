@@ -51,7 +51,7 @@ public class Tela_Informações extends JPanel {
 
 	        Label_qtd_prod.setText("Quantidades de Produtos : ");
 	        Label_titulos_3.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
-	        Label_titulos_3.setText("Clientes em atraso");
+	        //Label_titulos_3.setText("Total a receber");
 
 	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 	        this.setLayout(layout);

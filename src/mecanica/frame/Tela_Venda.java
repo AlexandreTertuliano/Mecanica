@@ -38,6 +38,7 @@ import mecanicaDAO.Produto_Add;
 import mecanicaDAO.Servico_Add;
 import mecanicaDAO.Venda_add;
 import mecanicaDAOProduto.ProdutoDAO;
+import mecanicaDAOServico.ServicoDAO;
 import mecanicaDAOVenda.VendaDAO;
 
 public class Tela_Venda extends JPanel{
@@ -52,6 +53,7 @@ public class Tela_Venda extends JPanel{
         vendaDAO = new VendaDAO();
         produtoDAO = new ProdutoDAO();
         connection = ConnectionDAO.getConnection();
+        servicoDAO = new ServicoDAO();
     }
 	
 	private void initComponents() {
@@ -332,6 +334,7 @@ public class Tela_Venda extends JPanel{
                         .addComponent(jRadioButton3)))
                 .addGap(22, 22, 22))
         );
+        
            
         Btn_Finalizar.addActionListener(new ActionListener() {
 			
@@ -343,6 +346,7 @@ public class Tela_Venda extends JPanel{
 						 tablemodel_Cadastrados.setRowCount(0);
 						 contador_Table = 0;
 						 Field_Preco_Venda.setText("0.00");
+						 update_servico_feito();
 						 Lib_Campos();
 						 Total =0.0;
 						 seleciona_Num_venda();
@@ -367,7 +371,7 @@ public class Tela_Venda extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				Gera_Venda();
 					
 		}
 	});
@@ -450,6 +454,124 @@ public class Tela_Venda extends JPanel{
 		});
         
     }
+	
+	private void update_servico_feito(){
+				
+		String sql_update = "UPDATE ordem_servico_finalizado "
+				+"SET "
+				+ "feito_venda = '1'" 
+				+" WHERE Cod_serv = '" + Field_Ordem.getText() +"';";
+		
+		try{
+			PreparedStatement statement = connection.prepareStatement(sql_update);
+			statement.execute();
+		}catch (SQLException e) {
+			e.printStackTrace();
+			}
+		}
+		
+	
+	private void Gera_Venda(){
+		
+		String Cod_Serv;
+		int feito_venda = 0;
+		int Cad = 0;
+		int verifica = 0;
+		
+		String sql_Orcamento = "select cod_serv, feito_venda from ordem_servico_finalizado "
+				+ "group by cod_serv, feito_venda" ;
+    	try {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql_Orcamento);
+			while(result.next()){
+				Cod_Serv = result.getString("COD_SERV");
+				feito_venda = result.getInt("feito_venda");
+				
+				System.out.println(Cod_Serv + "COD_SERV");
+				System.out.println(feito_venda + "FEITO VENDA");
+				System.out.println();
+				
+				if(Field_Ordem.getText().equals(Cod_Serv)){
+					verifica = 1;
+						if(feito_venda == 1){
+							Cad = 1;
+					}	
+				}			
+			}
+		} 
+    catch (SQLException e) {
+  e.printStackTrace();
+ }
+    	
+    	System.out.println(verifica);
+    	System.out.println(feito_venda);
+    	    	
+    	if(Field_Ordem.getText().trim().isEmpty() || verifica == 0 ){
+			JOptionPane.showMessageDialog(this, "Nenhum Número de serviço foi "
+					+ "encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+			
+		}else if(Cad == 1){
+	    		JOptionPane.showMessageDialog(this, "Este numero de serviço ja foi feita a venda ",
+					 "Erro", JOptionPane.WARNING_MESSAGE);
+	    			Field_Ordem.requestFocus();
+	    	}else{
+	    		Completa_table_Venda();
+	    	}
+		
+    	    	
+    	verifica = 3;	
+		Cad = 3;
+	}
+	
+	private void Completa_table_Venda(){
+		
+		DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable1.getModel();
+		tablemodel_Cadastrados.setRowCount(0);
+		for(Servico_Add servico : servicoDAO.getGroup_Tabela_Servicos_finalizados(Field_Ordem.getText())){
+        	
+    		Object[] data = {
+    				
+    				servico.getProduto(),
+    				"CODIGO BARRAS",
+    				servico.getQtd_Produto(),
+    				servico.getValor_Produto()
+        			
+    		};
+    		contador_Table++;
+    			tablemodel_Cadastrados.addRow(data);
+    			 
+		}
+		
+		for(Servico_Add servico : servicoDAO.getGroup_Tabela_Servicos_finalizados(Field_Ordem.getText())){
+			
+			Field_Total.setText(String.valueOf(servico.getValor_Total()));
+			Combo_Cadastrado.setSelectedItem(servico.getCliente().toString());
+			Field_Placa.setSelectedItem(servico.getPlaca_Carro().toString());
+		}
+		
+		Bloq_Ordem();
+	}
+	
+	private void Bloq_Ordem(){
+		Combo_Cadastrado.setEnabled(false);
+		Field_Cod_Barras.setEnabled(false);
+		Field_Cpf.setEnabled(false);
+		Field_nao_cadastrado.setEnabled(false);
+		Field_Ordem.setEnabled(false);
+		Field_Placa.setEnabled(false);
+		Field_Preco_Venda.setEnabled(false);
+		Field_Quantidade.setEnabled(false);
+		Field_Total.setEnabled(false);
+		Combo_Produto.setEnabled(false);
+		Btn_Add_Produto.setEnabled(false);
+		Btn_Cancelar.setEnabled(false);
+		Btn_Orcamento.setEnabled(false);
+		Btn_Ordem.setEnabled(false);
+		Btn_Remove.setEnabled(false);
+	}
+
+
+	
 	
 	private boolean Cad_Orcamento(){
 		String tipo = "venda";
@@ -575,7 +697,7 @@ public class Tela_Venda extends JPanel{
         	Field_Codigo.setText(String.valueOf(cod_orcamento));
         }
     }
-    
+       
 }
 
 	private void seleciona_Produto(){
@@ -776,6 +898,23 @@ private void Limpa_Dados() {
 		Combo_Produto.setSelectedItem("Seleciona");
 		Field_Cpf.setText(null);
 		Total = 0.00;
+		Btn_Add_Produto.setEnabled(true);
+		Btn_Cancelar.setEnabled(true);
+		Btn_Orcamento.setEnabled(true);
+		Btn_Ordem.setEnabled(true);
+		Btn_Remove.setEnabled(true);
+		Combo_Cadastrado.setEnabled(true);
+		Field_Cod_Barras.setEnabled(true);
+		Field_Cpf.setEnabled(true);
+		Field_nao_cadastrado.setEnabled(true);
+		Field_Ordem.setEnabled(true);
+		Field_Placa.setEnabled(true);
+		Field_Preco_Venda.setEnabled(true);
+		Field_Quantidade.setEnabled(true);
+		Field_Total.setEnabled(true);
+		Combo_Produto.setEnabled(true);
+		Field_Ordem.setText(null);
+		Field_Total.setText(null);
 	}
  
  private void erro() {
@@ -1001,6 +1140,7 @@ private void Limpa_Dados() {
 	    private javax.swing.JCheckBox jRadioButton3;
 	    private VendaDAO vendaDAO;
 	    private ProdutoDAO produtoDAO;
+	    private ServicoDAO servicoDAO;
 	    
     // End of variables declaration 
 }

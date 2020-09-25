@@ -58,7 +58,7 @@ public class Splash {
             //aqui  é que vai preenchendo o carregamento da barra de acordo com o valor
             //passado em pct    
            //
-            splashGraphics.setPaint(Color.GREEN);
+           // splashGraphics.setPaint(Color.GREEN);
             splashGraphics.fillRect(x, y + 1, doneWidth, hgt - 1);
             mySplash.update();
         }

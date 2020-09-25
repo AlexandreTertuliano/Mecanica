@@ -1,4 +1,4 @@
-package mecanica.frame;
+ package mecanica.frame;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -85,7 +85,7 @@ public class MecanicaFrame extends JFrame {
 		northPanel.setBackground(new Color(45,173,199));
 		
 		JButton logoMecanicaButton = new JButton();
-		logoMecanicaButton.setPreferredSize(new Dimension(150, 60));
+		logoMecanicaButton.setPreferredSize(new Dimension(100, 70));
 		logoMecanicaButton.setToolTipText("MECANICA E AUTO-PEÇAS");
 		ImageIcon image1 = new ImageIcon(getClass().getResource("/logoMecanica.png"));
 		logoMecanicaButton.setIcon(image1);
@@ -274,7 +274,7 @@ public class MecanicaFrame extends JFrame {
 				centerPanel.add(Tela_Cliente_receber_valor_marcado);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
-		
+				((mecanica.frame.Tela_Venda) Tela_Venda).seleciona_Num_venda();
 			}
 		});
 		northPanel.add(cliente_Receber_Button);

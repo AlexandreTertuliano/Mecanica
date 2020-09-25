@@ -142,7 +142,8 @@ create table Ordem_Servico_Finalizado(
 	data_ordem Date not null,
 	servico varchar (100) not null,
 	valor_servico varchar (10) not null,
-	Valor_total float not null	
+	Valor_total float not null,
+	Feito_Venda float	
 );
 
 create table recebidos(
