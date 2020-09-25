@@ -84,10 +84,6 @@ public class MecanicaFrame extends JFrame {
 		northPanel.setPreferredSize(new Dimension(1920, 80));
 		northPanel.setBackground(new Color(45,173,199));
 		
-		JButton suporte = new JButton();
-		suporte.setPreferredSize(new Dimension(60, 60));
-		northPanel.add(suporte);
-		
 		JButton logoMecanicaButton = new JButton();
 		logoMecanicaButton.setPreferredSize(new Dimension(150, 60));
 		logoMecanicaButton.setToolTipText("MECANICA E AUTO-PEÇAS");
@@ -236,6 +232,7 @@ public class MecanicaFrame extends JFrame {
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Update_Combo_Produto();
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).update_combo_funcionarios();
 				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).update_tabela_Servico_Aberto();
+				((mecanica.frame.Tela_Ordem_Servico)Tela_Ordem_Servico).Insert_Cod();
 			}
 		});
 		northPanel.add(ordemServicoButton);
@@ -256,6 +253,7 @@ public class MecanicaFrame extends JFrame {
 				((mecanica.frame.Tela_Venda)Tela_Venda).data();
 				((mecanica.frame.Tela_Venda)Tela_Venda).Update_combo_cliente();
 				((mecanica.frame.Tela_Venda)Tela_Venda).Update_combo_produto();
+				((mecanica.frame.Tela_Venda)Tela_Venda).seleciona_Num_venda();
 			}
 		
 		});

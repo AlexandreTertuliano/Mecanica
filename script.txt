@@ -43,8 +43,8 @@ create table Clientes(
 	Cep varchar (20) not null,
 	Bairro varchar (50) not null,
 	Rua varchar (50) not null,
-	Numero varchar (10) not null, 
-	Cidade varchar (30) not null,
+	Numero varchar (30) not null, 
+	Cidade varchar (40) not null,
 	Apt_Casa float,
 
 	Limite float,
@@ -52,18 +52,18 @@ create table Clientes(
 );
 
 create table Placa_Veiculos (
-	placa varchar(10) PRIMARY KEY,
+	placa varchar(15) PRIMARY KEY,
 	cliente varchar (50) not null,
 	Km varchar (50) not null,
 	Modelo varchar (50) not null
 );
 
 create table Produtos(
-	Cod_Barras varchar (15) PRIMARY KEY,
-	Cod_Sistema varchar (6) not null,
+	Cod_Barras varchar (20) PRIMARY KEY,
+	Cod_Sistema varchar (20) not null,
 	Descricao varchar (50) not null,
 	Data_Inclusao varchar (10) not null,
-	Fornecedor varchar (50) ,
+	Fornecedor varchar (50),
 	Quantidade varchar (10) not null,
 	Preco_Custo varchar (10) not null,
 	Preco_Venda varchar (10) not null
@@ -91,8 +91,8 @@ create table Boleto(
 create table Funcionarios(
 	cpf varchar(14) PRIMARY KEY, 
 	Nome varchar(50) not null,
-	Senha varchar(15) not null
-	
+	Senha varchar(15) not null,
+	bloquear float
 );
 
 create table Agendamentos(
@@ -100,7 +100,7 @@ create table Agendamentos(
 	Nome varchar (100) not null,
 	Data_Agenda Date not null,
 	Dia_Semana varchar (15),
-	Servico varchar (500),
+	Servico varchar (1000)
 );
 
 create table Boletos_pago(
@@ -152,16 +152,46 @@ create table recebidos(
 	placa_carro_recebido varchar (10)
 );
 
-delete from Funcionarios;
-delete from Produtos;
-delete from Placa_Veiculos;
-delete from clientes;
-delete from Fornecedor;
-delete from Boleto;
-delete from boletos_pago;
+create table Vendas(
+	cod_venda varchar(10) PRIMARY KEY, 
+	cliente_venda varchar(50) not null,
+	cpf_venda varchar (15) not null,
+	cod_barras varchar (15) not null,
+	valor_venda varchar (10) not null,
+	placa varchar (10) not null,
+	num_os varchar (20),
+	quant varchar (20),
+	produto varchar (50) not null,
+	valor_total float,
+	data_venda Date 
+);
 
-drop table Funcionarios, Produtos, Placa_Veiculos, clientes, Fornecedor, Boleto, boletos_pago, estados;
+create table Orcamento(
+	cod_orcamento varchar(10) PRIMARY KEY, 
+	cliente_venda varchar(50) not null,
+	cpf_venda varchar (15) not null,
+	cod_barras varchar (15) not null,
+	valor_venda varchar (10) not null,
+	placa varchar (10) not null,
+	num_os varchar (20),
+	quant varchar (20),
+	produto varchar (50) not null,
+	valor_total float,
+	data_venda Date 
+);
+
+INSERT INTO VENDAS ( cod_venda, cliente_venda, cpf_venda, cod_barras, 
+valor_venda, placa, num_os, quant, produto, valor_total, data_venda)
+values ('0001','' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,0 ,'2020-09-10' );
+INSERT INTO ORCAMENTO ( cod_orcamento, cliente_venda, cpf_venda, cod_barras, 
+valor_venda, placa, num_os, quant, produto, valor_total, data_venda)
+values ('0000','' ,'' ,'' ,'' ,'' ,'' ,'' ,'' ,0 ,'2020-09-10' );
+INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario,
+Produto, Valor_Produto, 
+Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)
+VALUES ('0000','','','','','','','','', 0 ,'2020-09-11');
 
 
-
-
+drop table agendamentos, boleto, boletos_pago, clientes, estados, fornecedor
+,funcionarios, ordem_servico, ordem_servico_finalizado, placa_veiculos, produtos
+, recebidos, vale, vendas, orcamento

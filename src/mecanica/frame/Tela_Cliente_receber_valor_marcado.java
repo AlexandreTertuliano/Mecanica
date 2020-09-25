@@ -68,7 +68,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	        Btn_Receber = new javax.swing.JButton("Receber");
 	        jScrollPane2 = new javax.swing.JScrollPane();
 	        jTable2 = new javax.swing.JTable();
-	        Label_Movimentacao = new javax.swing.JLabel("Cliente sem movimentação durante 1 mês");
+	        Label_Movimentacao = new javax.swing.JLabel("Ver Recebidos do dia");
 	        Btn_Movimento_1Mes = new javax.swing.JButton("Gerar");
 
 	        Label_Titulo.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
@@ -94,6 +94,15 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 			Vector<? extends Vector> vector = new Vector();
 			jTable1 = new JTable(vector,columnBoleto);
 			jScrollPane1 = new JScrollPane(jTable1);
+			
+			//Coloca as especificações nos campos da tabela
+	        Vector<String> columnNames1 = new Vector<String>();
+			columnNames1.add("Cpf Cliente");
+			columnNames1.add("Placa do carro");
+			columnNames1.add("Valor");
+			Vector<? extends Vector> vector1 = new Vector();
+			jTable2 = new JTable(vector1,columnNames1);
+			jScrollPane2 = new JScrollPane(jTable2);
 
 	        Btn_Buscar_Cpf.setBackground(Color.WHITE);
 	        Btn_Buscar_Cpf.setToolTipText("Salvar");
@@ -243,10 +252,12 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					Cad_recebido();
-					//Valor_Total_devedor();
-					Subtrai();
-					Mensagem_recebido();
+					if(verifica()){
+						Cad_recebido();
+						//Valor_Total_devedor();
+						Subtrai();
+						Mensagem_recebido();
+					}
 				}
 			});
 	        
@@ -263,42 +274,76 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					sql_gerar();
+					Gerar();					
+				}
+			});
+	        
+	        Btn_Bloquear.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
 					
+					bloq_cliente();
 				}
 			});
 	 }
 	 
-	 public void sql_gerar(){
+	 private void Gerar(){
+		 DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) jTable2.getModel();
+	    	tablemodel_Cadastrados.setRowCount(0);
+
+	        	for(Recebidos_Add recebidos : recebidosDAO.sql_gerar()){
+	            	
+	            		Object[] data = {
+	            				recebidos.getCpf(),
+	            				recebidos.getPlaca(),
+	            				recebidos.getValor()
+	            		};
+	            			tablemodel_Cadastrados.addRow(data);
+	            
+	            	}   
+	        	
+	        	
 		 
-		 String data = data();
+	 }
+	 
+	 private void bloq_cliente(){
+		
+		 String sql = "update CLIENTES "
+		 		+ "set "
+		 		+ "bloquear = '1'"
+		 		+ "where cpf ='" +Field_Cpf.getText()+"'";
+			 		
 		 
-		 String sql = "select * from vendas"
-		 		+ "where data_venda > '"+data+"'";
-		 	
-		  try {
+		 try {
 	    		Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-			 JOptionPane.showMessageDialog(this, "Nenhuma "
-			 		+ ""
-			 		+ ""
-			 		+ ""
-			 		+ "", "Excluído", JOptionPane.WARNING_MESSAGE);
-
-		 
-		 
-		 
+			}			 
+		 JOptionPane.showMessageDialog(this, "Cliente bloqueado\nPara desbloquear, precisa ir no cadastro de cliente"
+			 		, "Bloqueado", JOptionPane.WARNING_MESSAGE);
 	 }
+	 
+	 private boolean verifica(){
+		
+		 if(Field_Cpf.getText().trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o CPF", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				Field_Cpf.requestFocus();
+				return false;
+			}
+		
+		 return true;
+	 }
+	 
 	 
 	 private void Mensagem_recebido() {
 		 JOptionPane.showMessageDialog(this, "Valor recebido! "
 		 		+ "Verifique senão ficou negativo o valor TOTAL", "Sucesso", JOptionPane.WARNING_MESSAGE);
 		 Field_Cpf.setText(null);
 		 Field_Placa.setText(null);
-		 //Label_Ed_Total.setText("0.00");
+		 Field_Valor_Pago.setText(null);
+		
 	 }
 	 
 	 private void Cad_recebido() {

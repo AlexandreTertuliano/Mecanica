@@ -492,7 +492,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 		  Combo_Nome.removeAllItems();
 		  Combo_Nome.addItem("Seleciona");
 		  
-		  String sql = "Select * from funcionarios";
+		  String sql = "Select * from funcionarios where bloquear = '1'";
 		  
 		  try {
 				Statement statement = connection.createStatement();
