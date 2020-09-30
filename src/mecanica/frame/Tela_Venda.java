@@ -99,6 +99,7 @@ public class Tela_Venda extends JPanel{
 	        jRadioButton1 = new javax.swing.JCheckBox("Dinheiro");
 	        jRadioButton2 = new javax.swing.JCheckBox("Em conta");
 	        jRadioButton3 = new javax.swing.JCheckBox("Cartão");
+	        Btn_tela_orcamento = new javax.swing.JButton();
 	        Field_Codigo.setEnabled(false);
 	        
 	        ButtonGroup Btn_Grupo = new ButtonGroup();
@@ -139,6 +140,11 @@ public class Tela_Venda extends JPanel{
 	        Btn_Remove.setToolTipText("Remover");
 	        ImageIcon image_Remover = new ImageIcon(getClass().getResource("/minus.png"));
 	        Btn_Remove.setIcon(image_Remover);
+	        
+	        Btn_tela_orcamento.setBackground(Color.WHITE);
+	        Btn_tela_orcamento.setToolTipText("Ver Ordens de Serviço");
+	        ImageIcon image_ver = new ImageIcon(getClass().getResource("/search (1).png"));
+	        Btn_tela_orcamento.setIcon(image_ver);
 	        
 	      //Coloca as especificações nos campos da tabela
 	     	Vector<String> columnVenda = new Vector<String>();
@@ -192,7 +198,10 @@ public class Tela_Venda extends JPanel{
                                     .addComponent(Label_Prdouto)
                                     .addComponent(Label_Cliente)
                                     .addComponent(Label_Cod_barras)))
-                            .addComponent(Field_Ordem, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(Field_Ordem, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Btn_tela_orcamento, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(Btn_Ordem))
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,7 +245,7 @@ public class Tela_Venda extends JPanel{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator2))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(Btn_Orcamento, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_Orcamento, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jRadioButton3)
@@ -303,7 +312,9 @@ public class Tela_Venda extends JPanel{
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(Label_Ordem)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Field_Ordem, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Field_Ordem, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Btn_tela_orcamento, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Btn_Ordem)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -334,8 +345,20 @@ public class Tela_Venda extends JPanel{
                         .addComponent(jRadioButton3)))
                 .addGap(22, 22, 22))
         );
+         
+        Btn_tela_orcamento.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Abre_Ordem_final();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	
+			}
+		});
         
-           
         Btn_Finalizar.addActionListener(new ActionListener() {
 			
         	@Override
@@ -372,7 +395,7 @@ public class Tela_Venda extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Gera_Venda();
-					
+				
 		}
 	});
         
@@ -455,6 +478,13 @@ public class Tela_Venda extends JPanel{
         
     }
 	
+	private void Abre_Ordem_final() throws SQLException{
+		
+		Mecanica_ordem_servico_frame frame = new Mecanica_ordem_servico_frame();
+		frame.setVisible(true);
+		
+	}
+	
 	private void update_servico_feito(){
 				
 		String sql_update = "UPDATE ordem_servico_finalizado "
@@ -486,10 +516,6 @@ public class Tela_Venda extends JPanel{
 			while(result.next()){
 				Cod_Serv = result.getString("COD_SERV");
 				feito_venda = result.getInt("feito_venda");
-				
-				System.out.println(Cod_Serv + "COD_SERV");
-				System.out.println(feito_venda + "FEITO VENDA");
-				System.out.println();
 				
 				if(Field_Ordem.getText().equals(Cod_Serv)){
 					verifica = 1;
@@ -1104,6 +1130,7 @@ private void Limpa_Dados() {
 	    private javax.swing.JButton Btn_Ordem;
 	    private javax.swing.JButton Btn_Orcamento;
 	    private javax.swing.JButton Btn_Remove;
+	    private javax.swing.JButton Btn_tela_orcamento;
 	    private javax.swing.JComboBox<String> Combo_Cadastrado;
 	    private javax.swing.JComboBox<String> Combo_Produto;
 	    private javax.swing.JTextField Field_Cod_Barras;

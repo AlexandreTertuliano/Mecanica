@@ -115,7 +115,6 @@ create table Vale(
 	Valor varchar (10) not null
 	
 ); 
-
 	
 create table Ordem_Servico(
 	Cod_Serv varchar (4) not null,
@@ -142,8 +141,7 @@ create table Ordem_Servico_Finalizado(
 	data_ordem Date not null,
 	servico varchar (100) not null,
 	valor_servico varchar (10) not null,
-	Valor_total float not null,
-	Feito_Venda float	
+	Valor_total float not null	
 );
 
 create table recebidos(
@@ -191,7 +189,10 @@ INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario,
 Produto, Valor_Produto, 
 Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)
 VALUES ('0000','','','','','','','','', 0 ,'2020-09-11');
-
+ALTER TABLE produtos ADD Prod_minumo float null;
+ALTER TABLE ordem_servico ADD servico_fin varchar(5);
+ALTER TABLE ordem_servico_finalizado ADD servico_fin varchar(5);
+ALTER TABLE ordem_servico_finalizado ADD feito_venda float ;
 
 drop table agendamentos, boleto, boletos_pago, clientes, estados, fornecedor
 ,funcionarios, ordem_servico, ordem_servico_finalizado, placa_veiculos, produtos

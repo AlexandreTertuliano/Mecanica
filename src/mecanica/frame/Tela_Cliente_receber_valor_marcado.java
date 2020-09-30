@@ -46,6 +46,14 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	 
 	 
 	 private void initComponents() {
+		 
+		 	/*
+		 	 * Observações
+		 	 * O btn_cancelar_Venda ira ser para imprimir agora
+		 	 * 
+		 	 */
+		 
+		 
 
 		 	Label_Titulo = new javax.swing.JLabel("Vendas a Prazo");
 	        jSeparator1 = new javax.swing.JSeparator();
@@ -57,7 +65,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	        Label_Placa = new javax.swing.JLabel("Digite a placa do Carro");
 	        Field_Placa = new javax.swing.JFormattedTextField();
 	        Btn_Busca_Placa = new javax.swing.JButton("Buscar");
-	        Btn_Cancelar_Venda = new javax.swing.JButton("Excluir");
+	        Btn_Cancelar_Venda = new javax.swing.JButton("Imprimir");
 	        Label_Ed_Total = new javax.swing.JLabel("0.00");
 	        Label_Total = new javax.swing.JLabel("Total");
 	        Label_Titulo_Venda = new javax.swing.JLabel("Controle");
@@ -115,7 +123,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	        
 	        Btn_Cancelar_Venda.setBackground(Color.WHITE);
 	        Btn_Cancelar_Venda.setToolTipText("Excluir Venda");
-	        ImageIcon image_Excluir = new ImageIcon(getClass().getResource("/delete.png"));
+	        ImageIcon image_Excluir = new ImageIcon(getClass().getResource("/print.png"));
 	        Btn_Cancelar_Venda.setIcon(image_Excluir);
 	           
 	        Btn_Bloquear.setBackground(Color.WHITE);
@@ -265,8 +273,9 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					Verifica_Linha();
-					Valor_Total_devedor();
+					
+					imprimir();
+					
 				}
 			});
 	        
@@ -286,6 +295,11 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 					bloq_cliente();
 				}
 			});
+	 }
+	 
+	 private void imprimir(){
+			JOptionPane.showMessageDialog(this, "Campo em programção", "Proxima atualização", JOptionPane.WARNING_MESSAGE);
+
 	 }
 	 
 	 private void Gerar(){
@@ -395,24 +409,6 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 		 
 		 Double total = (Double.valueOf(Label_Ed_Total.getText())) - (Double.valueOf(Field_Valor_Pago.getText())) ;  
 			Label_Ed_Total.setText(String.valueOf(total));
-		 
-	 }
- 
-	 private void Verifica_Linha() {
-		
-		 int Numero_linha = jTable1.getSelectedRow();
-		 if(Numero_linha == -1) {
-			  JOptionPane.showMessageDialog(this, "Conta não encontrada", "Erro", JOptionPane.WARNING_MESSAGE);
-		 }else{
-			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir a Conta?", "Excluir", JOptionPane.YES_NO_OPTION);
-			 if(resposta == JOptionPane.YES_OPTION){
-				  if(Numero_linha >= 0){
-					 Sql_delete();
-					 soma_total();
-					 Preenche_tabela();
-				  }
-				}
-		 }
 		 
 	 }
 	 

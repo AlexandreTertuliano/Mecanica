@@ -317,7 +317,8 @@ public class Tela_Cadastro_Produto extends JPanel {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o cadastro", "Cadastro de Produto", JOptionPane.YES_NO_OPTION);
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o cadastro",
+					"Cadastro de Produto", JOptionPane.YES_NO_OPTION);
 			if(resposta == JOptionPane.YES_OPTION) {
 				Limpa_campos();
 				
@@ -383,6 +384,7 @@ public class Tela_Cadastro_Produto extends JPanel {
 			 Limpa_campos();
 			 update_tabela();
 			 Field_Cod_Barras.setEnabled(true);
+			 Label_Quantidade.setForeground(new Color(55,65,65));
 		}
 	});
 	 }
@@ -416,41 +418,48 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
 		 produtoDAO.update_produto(produto);
 		 
-		 JOptionPane.showMessageDialog(this, "Produto Atualizado com sucesso! \n Verifique a tabela a baixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		 JOptionPane.showMessageDialog(this, "Produto Atualizado com sucesso! \n Verifique a tabela a baixo",
+				 "Sucesso", JOptionPane.WARNING_MESSAGE);
 
 	 }
 	 
 	 private boolean Verifica_update(){
 		
 		 if(Field_Cod_Barras.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Codigo de Barras", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Codigo de Barras",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Cod_Barras.requestFocus();
 				return false;
 		 }
 		 if(Field_Descricao.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha a Descrição do Produto", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha a Descrição do Produto",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Descricao.requestFocus();
 				return false;
 		 }
 		 if(Field_Quantidade.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha Quantidade do Produto", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha Quantidade do Produto",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Quantidade.requestFocus();
 				return false;
 		 }
 		 if(Field_Preco_Custo.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Custo", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Custo",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Preco_Custo.requestFocus();
 				return false;
 		 }
 		 if(Field_Preco_Venda.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Venda", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Venda",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Preco_Venda.requestFocus();
 				return false;
 		 }
 		
 		 for(Produto_Add produto_igual : produtoDAO.getAll()){
 			 if(Field_Descricao.getText().equals(produto_igual.getDescricao())){
-				 JOptionPane.showMessageDialog(this, "Descrição ja usado! Tente outro nome", "Cadastrado", JOptionPane.WARNING_MESSAGE);
+				 JOptionPane.showMessageDialog(this, "Descrição ja usado! Tente outro nome",
+						 "Cadastrado", JOptionPane.WARNING_MESSAGE);
 	    			Field_Descricao.requestFocus();
 	    			return false;
 			 }
@@ -488,13 +497,24 @@ public class Tela_Cadastro_Produto extends JPanel {
 				Field_Preco_Venda.setText(produto.getPreco_Venda());
 				Field_Quantidade.setText(produto.getQuantidade());
 				Combo_Fornecedor.setSelectedItem(produto.getFornecedor());
+				Field_Porcentagem.setText(produto.getQtd_minima());
 			 }
-		 }
+		 }		 
 		 if(Field_Descricao.getText().trim().isEmpty()) {
-			 JOptionPane.showMessageDialog(this, "Produto não cadastrado", "Codigo Inválido", JOptionPane.WARNING_MESSAGE);
+			 JOptionPane.showMessageDialog(this, "Produto não cadastrado",
+					 "Codigo Inválido", JOptionPane.WARNING_MESSAGE);
 			 Field_Cod_Barras
 			 .requestFocus();
+			 Label_Quantidade.setForeground(new Color(55,65,65));
 			 return false;
+		 }
+		 
+		 if((Double.valueOf(Field_Porcentagem.getText()) + 10) < Double.valueOf(Field_Quantidade.getText())){
+			 Label_Quantidade.setForeground(new Color(0,255,0));
+		 }if((Double.valueOf(Field_Porcentagem.getText()) + 10) > Double.valueOf(Field_Quantidade.getText())){
+			 Label_Quantidade.setForeground(new Color(200,200,0));
+		 }if(Double.valueOf(Field_Porcentagem.getText()) > Double.valueOf(Field_Quantidade.getText())){
+			 Label_Quantidade.setForeground(new Color(255,0,0));
 		 }
 		 
 		 Btn_Cancelar.setEnabled(false);
@@ -503,7 +523,8 @@ public class Tela_Cadastro_Produto extends JPanel {
 	 }
 	 
 	 private void erro() {
-		 JOptionPane.showMessageDialog(this, "Por favor, preencha o Campo ao lado", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+		 JOptionPane.showMessageDialog(this, "Por favor, preencha o Campo ao lado",
+				 "Campo vazio", JOptionPane.WARNING_MESSAGE);
 		 Field_Cod_Barras.requestFocus();
 	 }
 	 
@@ -524,7 +545,8 @@ public class Tela_Cadastro_Produto extends JPanel {
 		 produto.setFornecedor(Combo_Fornecedor.getSelectedItem().toString());
 		 produtoDAO.Insert(produto);
 		 
-		 JOptionPane.showMessageDialog(this, "Produto Cadastrado com sucesso! \n Verifique a tabela a baixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		 JOptionPane.showMessageDialog(this, "Produto Cadastrado com sucesso! \n Verifique a tabela a baixo",
+				 "Sucesso", JOptionPane.WARNING_MESSAGE);
 		 		 
 		 
 	 }
@@ -540,7 +562,8 @@ public class Tela_Cadastro_Produto extends JPanel {
 				Field_Preco_Custo.requestFocus();
 		 }
 		 if(Field_Porcentagem.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Valor de Porcentagem Invalido", "Invalido", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Valor de Porcentagem Invalido",
+						"Invalido", JOptionPane.ERROR_MESSAGE);
 				Field_Porcentagem.requestFocus();
 		 }
 		 if(Valor_custo >= 0 && Valor_porcentagem >= 0 ) {
@@ -594,45 +617,53 @@ public class Tela_Cadastro_Produto extends JPanel {
 	 private boolean Verifica() {
 		 
 		 if(Field_Cod_Barras.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Codigo de Barras", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Codigo de Barras",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Cod_Barras.requestFocus();
 				return false;
 		 }
 		 if(Field_Descricao.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha a Descrição do Produto", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha a Descrição do Produto",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Descricao.requestFocus();
 				return false;
 		 }
 		 if(Field_Quantidade.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha Quantidade do Produto", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha Quantidade do Produto",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Quantidade.requestFocus();
 				return false;
 		 }
 		 if(Field_Preco_Custo.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Custo", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Custo",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Preco_Custo.requestFocus();
 				return false;
 		 }
 		 if(Field_Preco_Venda.getText().trim().isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Venda", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Preço de Venda",
+						"Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_Preco_Venda.requestFocus();
 				return false;
 		 }
 		 if(Combo_Fornecedor.getSelectedItem().equals("Seleciona")){
-				JOptionPane.showMessageDialog(this, "Selecione um fornecedor!", "Fornecedor Inválido", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Selecione um fornecedor!",
+						"Fornecedor Inválido", JOptionPane.WARNING_MESSAGE);
 				Combo_Fornecedor.requestFocus();
 				return false;
 		 }
 		 for(Produto_Add produto_igual : produtoDAO.getAll()){
 			 if(Field_Cod_Barras.getText().equals(produto_igual.getCod_Barras())){
-				 JOptionPane.showMessageDialog(this, "Codigo de Barras ja usado!", "Cadastrado", JOptionPane.WARNING_MESSAGE);
+				 JOptionPane.showMessageDialog(this, "Codigo de Barras ja usado!",
+						 "Cadastrado", JOptionPane.WARNING_MESSAGE);
 	    			Field_Cod_Barras.requestFocus();
 	    			return false;
 			 }
 		 }
 		 for(Produto_Add produto_igual : produtoDAO.getAll()){
 			 if(Field_Descricao.getText().equals(produto_igual.getDescricao())){
-				 JOptionPane.showMessageDialog(this, "Descrição ja usado! Tente outro nome", "Cadastrado", JOptionPane.WARNING_MESSAGE);
+				 JOptionPane.showMessageDialog(this, "Descrição ja usado! Tente outro nome",
+						 "Cadastrado", JOptionPane.WARNING_MESSAGE);
 	    			Field_Descricao.requestFocus();
 	    			return false;
 			 }
@@ -676,9 +707,6 @@ public class Tela_Cadastro_Produto extends JPanel {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-		    	
-		    	
-		 
 	 }
 	 
 	 //Variables declaration - do not modify                     

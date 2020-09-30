@@ -23,8 +23,8 @@ private Connection connection;
 	public void Insert(Produto_Add produto) {
 	
 		String sql = "INSERT INTO PRODUTOS ( COD_BARRAS, COD_SISTEMA, DESCRICAO, DATA_INCLUSAO," +
-				"FORNECEDOR,QUANTIDADE, PRECO_CUSTO, PRECO_VENDA)" +
-				"VALUES (?,?,?,?,?,?,?,?)";
+				"FORNECEDOR,QUANTIDADE, PRECO_CUSTO, PRECO_VENDA, PROD_MINUMO)" +
+				"VALUES (?,?,?,?,?,?,?,?,5)";
 		
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
@@ -67,6 +67,7 @@ private Connection connection;
 				produto.setPreco_Venda(result.getString("PRECO_VENDA"));
 				produto.setQuantidade(result.getString("QUANTIDADE"));
 				produto.setFornecedor(result.getString("FORNECEDOR"));
+				produto.setQtd_minima(result.getString("PROD_MINUMO"));
 				produtos.add(produto);
 			}
 			

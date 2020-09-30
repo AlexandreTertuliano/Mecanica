@@ -11,6 +11,7 @@ public class Produto_Add {
 	private String Quantidade;
 	private String preco_custo;
 	private String preco_Venda;
+	private String qtd_minima;
 	
 	public String getCod_Sistema() {
 		return Cod_Sistema;
@@ -59,6 +60,12 @@ public class Produto_Add {
 	}
 	public void setPreco_Venda(String preco_Venda) {
 		this.preco_Venda = preco_Venda;
+	}
+	public String getQtd_minima() {
+		return qtd_minima;
+	}
+	public void setQtd_minima(String qtd_minima) {
+		this.qtd_minima = qtd_minima;
 	}
 	
 	

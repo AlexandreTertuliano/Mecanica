@@ -492,22 +492,30 @@ public class Tela_Ordem_Servico extends JPanel {
 	}
 	
 	private void Gerar_pedido_venda(){
+		
 		  int Numero_linha = Table_servico_aberto.getSelectedRow();
-		  if(Numero_linha == -1)JOptionPane.showMessageDialog(this, "Selecione uma linha da tabela ao lado", "Concluído", JOptionPane.WARNING_MESSAGE);
+		  if(Numero_linha == -1)JOptionPane.showMessageDialog(this, "Selecione uma linha da tabela ao lado",
+				  "Concluído", JOptionPane.WARNING_MESSAGE);
 		  String Linha = (String)Table_servico_aberto.getModel().getValueAt(Numero_linha, 0);
-		  System.out.println(Numero_linha);
+		  
 		  if(Numero_linha > 0 ){
 			  String sql = "insert into ordem_servico_finalizado select * from ordem_servico"
-				 		+ " where cod_serv = '"+Linha+"';";
+				 		+ " where cod_serv = '"+Linha+"';"
+				 		+ " update ordem_servico "
+				 		+ "set "
+				 		+ "servico_fin = 'F' "
+				 		+ "where cod_serv = '"+Linha+"';";
 					  try {
 				    		Statement statement = connection.createStatement();
 							ResultSet result = statement.executeQuery(sql);
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-					  JOptionPane.showMessageDialog(this, "Serviço foi Finalizado ", "Concluído", JOptionPane.WARNING_MESSAGE);
+					  JOptionPane.showMessageDialog(this, "Serviço foi Finalizado ",
+							  "Concluído", JOptionPane.WARNING_MESSAGE);
 		  }else{
-			  JOptionPane.showMessageDialog(this, "Serviço não encontrado\n Selecione uma linha da tabela ao lado", "Concluído", JOptionPane.WARNING_MESSAGE);
+			  JOptionPane.showMessageDialog(this, "Serviço não encontrado\n Selecione uma linha da tabela ao lado",
+					  "Concluído", JOptionPane.WARNING_MESSAGE);
 		  }
 				
 	}
@@ -643,7 +651,6 @@ public class Tela_Ordem_Servico extends JPanel {
     	}  
 		
 		for(Servico_Add servico : servicoDAO.getGroup_Combo_Fields(Cod)){
-			
 			Field_Editavel_Cod_Servico.setText(servico.getCod_Serv());
 			field_editavel_total.setText(String.valueOf(servico.getValor_Total()));
 			Combo_Nome_Cliente.setSelectedItem(servico.getCliente().toString());
@@ -673,7 +680,6 @@ public class Tela_Ordem_Servico extends JPanel {
             				servico.getPlaca_Carro(),
             				servico.getValor_Total(),
             				"A"
-                			
             		};
             			tablemodel_Cadastrados.addRow(data);
             
@@ -872,6 +878,25 @@ public class Tela_Ordem_Servico extends JPanel {
 			Field_Valor_serviço.requestFocus();
 			return false;
 		}
+		String nome = null;
+		String sql = "SELECT * FROM produtos where descricao = '" + Combo_Produto.getSelectedItem() +"'" ;
+    	try {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()){
+				nome = String.valueOf((result.getDouble("prod_minumo")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	if(Double.valueOf(nome) < Double.valueOf(Field_Quantidade.getText())){
+    		JOptionPane.showMessageDialog(this, "Quantidade deste produto não disponivel no estoque."
+    				,"Quantidade", JOptionPane.WARNING_MESSAGE);
+			Field_Quantidade.requestFocus();
+			return false;
+    	}
+		
 		return true;
 	}
 	
@@ -886,9 +911,8 @@ public class Tela_Ordem_Servico extends JPanel {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
-			
-			
 		}
+	    	
 	}
 	
 	private void update_tabela() {

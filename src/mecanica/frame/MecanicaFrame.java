@@ -4,11 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -41,6 +41,7 @@ public class MecanicaFrame extends JFrame {
 	private JPanel Tela_Venda;
 	private JPanel Tela_Cliente_receber_valor_marcado;
 	private JPanel Tela_Informações;
+	private JPanel Tela_Relatorios_e_consultas;
 	
 	public MecanicaFrame() throws SQLException {
 		setSize(1920, 1080);
@@ -71,6 +72,7 @@ public class MecanicaFrame extends JFrame {
 		Tela_Venda = new Tela_Venda();
 		Tela_Cliente_receber_valor_marcado = new Tela_Cliente_receber_valor_marcado();
 		Tela_Informações = new Tela_Informações();
+		Tela_Relatorios_e_consultas = new Tela_Relatorios_e_consultas();
 		
 		createNorthPanel();
 		centerPanel = new JPanel();
@@ -304,17 +306,16 @@ public class MecanicaFrame extends JFrame {
 		relatorioButton.setToolTipText("Relatório");
 		ImageIcon image11 = new ImageIcon(getClass().getResource("/relatorio.png"));
 		relatorioButton.setIcon(image11);
-		/*addMedicamentoButton.addActionListener(new ActionListener() {
+		relatorioButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				listPanel3.updateTable();
 				centerPanel.removeAll();
-				centerPanel.add(addPanel3);
+				centerPanel.add(Tela_Relatorios_e_consultas);
 				centerPanel.revalidate();
-				FarmaciaFrame.this.repaint();
+				MecanicaFrame.this.repaint();
 			}
-		});*/
+		});
 		northPanel.add(relatorioButton);
 		
 		contentPane.add(northPanel, BorderLayout.NORTH);

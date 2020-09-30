@@ -25,10 +25,9 @@ public class ServicoDAO {
 	
 	public void Insert(Servico_Add servico) {
 		
-		String sql = 
-		"INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario, Produto, Valor_Produto, "
-		+ "Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)"
-		+ " VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
+		String sql = "INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario, Produto, Valor_Produto, "
+		+ "Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem, servico_fin)"
+		+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,'A')";
 		
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
@@ -216,6 +215,59 @@ public List<Servico_Add> getGroup_Tabela_Servicos_finalizados(String Cod) {
 			servico.setPlaca_Carro(result.getString("placa_carro"));
 			servico.setFuncionario(result.getString("funcionario"));
 			servico.setData(Date.valueOf(result.getString("data_ordem")));
+			servico.setValor_Total(result.getDouble("valor_total"));
+			servicos.add(servico);
+		}
+		
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}
+	
+	return servicos;
+}
+
+public List<Servico_Add> getGroup_Tela_finalizados() {
+	List<Servico_Add> servicos = new ArrayList<Servico_Add>();
+	
+
+	String sql = "select cod_serv, cliente, valor_total from ordem_servico_finalizado "
+			+ "group by cod_serv, cliente, valor_total";
+		
+	try {
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+		
+		while (result.next()){
+			Servico_Add servico = new Servico_Add();
+			servico.setCod_Serv(result.getString("cod_serv"));
+			servico.setCliente(result.getString("cliente"));
+			servico.setValor_Total(result.getDouble("valor_total"));
+			servicos.add(servico);
+		}
+		
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}
+	
+	return servicos;
+}
+
+public List<Servico_Add> getGroup_Tela_Nao_finalizados() {
+	List<Servico_Add> servicos = new ArrayList<Servico_Add>();
+	
+
+	String sql = "select cod_serv, cliente, valor_total from ordem_servico "
+			+ "where cod_serv != '0000' and servico_fin = 'A' "
+			+ "group by cod_serv, cliente, valor_total";
+		
+	try {
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+		
+		while (result.next()){
+			Servico_Add servico = new Servico_Add();
+			servico.setCod_Serv(result.getString("cod_serv"));
+			servico.setCliente(result.getString("cliente"));
 			servico.setValor_Total(result.getDouble("valor_total"));
 			servicos.add(servico);
 		}
