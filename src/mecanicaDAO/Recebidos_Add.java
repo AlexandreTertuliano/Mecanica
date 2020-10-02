@@ -10,6 +10,7 @@ public class Recebidos_Add {
 	private String Placa;
 	private Date data;
 	private Double valor;
+	private String Nome;
 	
 	
 	public String getCpf() {
@@ -36,5 +37,11 @@ public class Recebidos_Add {
 	}
 	public void setData(Date data) {
 		this.data = data;
+	}
+	public String getNome() {
+		return Nome;
+	}
+	public void setNome(String nome) {
+		Nome = nome;
 	}
 }

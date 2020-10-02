@@ -106,6 +106,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 			//Coloca as especificações nos campos da tabela
 	        Vector<String> columnNames1 = new Vector<String>();
 			columnNames1.add("Cpf Cliente");
+			columnNames1.add("Nome Cliente");
 			columnNames1.add("Placa do carro");
 			columnNames1.add("Valor");
 			Vector<? extends Vector> vector1 = new Vector();
@@ -310,6 +311,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	            	
 	            		Object[] data = {
 	            				recebidos.getCpf(),
+	            				recebidos.getNome(),
 	            				recebidos.getPlaca(),
 	            				recebidos.getValor()
 	            		};
@@ -362,6 +364,14 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 	 
 	 private void Cad_recebido() {
 		 
+		String nome = null;
+		
+		 for(Cliente_add cliente_msm_Cpf : clienteDAO.getAll()) {
+	    		if(Field_Cpf.getText().equals(cliente_msm_Cpf.getCpf())) {
+	    			nome = cliente_msm_Cpf.getNome();
+	    		}
+	    	}
+		 
 		String Data = data();
 		String [] DataSeparada = Data.split("/");
 		LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
@@ -379,6 +389,7 @@ public class Tela_Cliente_receber_valor_marcado extends JPanel {
 		recebidos.setData(Date.valueOf(dia));
 		recebidos.setPlaca(Field_Placa.getText());
 		recebidos.setValor(Double.valueOf(Field_Valor_Pago.getText()));
+		recebidos.setNome(nome);
 		recebidosDAO.Insert(recebidos);
 		
 	 }

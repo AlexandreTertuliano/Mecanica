@@ -15,7 +15,7 @@ public class Servico_Add {
 	private String Valor_servico;
 	private Double Valor_Total;
 	private Date data;
-	
+	private String serv_fin;
 	
 	public String getCod_Serv() {
 		return Cod_Serv;
@@ -82,6 +82,12 @@ public class Servico_Add {
 	}
 	public void setData(Date data) {
 		this.data = data;
+	}
+	public String getServ_fin() {
+		return serv_fin;
+	}
+	public void setServ_fin(String serv_fin) {
+		this.serv_fin = serv_fin;
 	}
 	
 	

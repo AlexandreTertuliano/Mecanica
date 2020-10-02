@@ -97,7 +97,7 @@ public class Tela_Venda extends JPanel{
 	        Field_Ordem = new javax.swing.JFormattedTextField();
 	        Btn_Ordem = new javax.swing.JButton("Gerar");
 	        jRadioButton1 = new javax.swing.JCheckBox("Dinheiro");
-	        jRadioButton2 = new javax.swing.JCheckBox("Em conta");
+	        jRadioButton2 = new javax.swing.JCheckBox("Crediário");
 	        jRadioButton3 = new javax.swing.JCheckBox("Cartão");
 	        Btn_tela_orcamento = new javax.swing.JButton();
 	        Field_Codigo.setEnabled(false);

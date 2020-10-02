@@ -25,8 +25,8 @@ public class FornecedoresDAO {
 		public void Insert(Fornecedor_add fornecedor) {
 			
 			String sql = "INSERT INTO FORNECEDOR ( RAZAO_SOCIAL, CNPJ, TELL, ESTADO, CIDADE, CEP, RUA," +
-					"NUMERO)" +
-					"VALUES (?,?,?,?,?,?,?,?)";
+					"NUMERO, TELL_FIXO)" +
+					"VALUES (?,?,?,?,?,?,?,?,?)";
 			
 			try {
 			PreparedStatement statement = connection.prepareStatement(sql);
@@ -39,6 +39,7 @@ public class FornecedoresDAO {
 				statement.setString(index++, fornecedor.getCep());
 				statement.setString(index++, fornecedor.getRua());
 				statement.setString(index++, fornecedor.getNumero());
+				statement.setString(index++, fornecedor.getFixo());
 				statement.execute();
 				
 			} catch (SQLException e) {
@@ -68,6 +69,7 @@ public class FornecedoresDAO {
 					fornecedor.setCep(result.getString("CEP"));
 					fornecedor.setRua(result.getString("RUA"));
 					fornecedor.setNumero(result.getString("NUMERO"));
+					fornecedor.setFixo(result.getString("TELL_FIXO"));
 					fornecedores.add(fornecedor);
 				}
 				
@@ -90,6 +92,7 @@ public class FornecedoresDAO {
 					+"',CEP ='" + fornecedor.getCep()
 					+"',RUA ='" + fornecedor.getRua()
 					+"',NUMERO ='" + fornecedor.getNumero()
+					+"',TELL_FIXO ='" + fornecedor.getFixo()
 					+"' WHERE CNPJ ='" + fornecedor.getCnpj() 
 					+"'";
 			

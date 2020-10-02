@@ -72,6 +72,7 @@ public class ServicoDAO {
 				servico.setServico(result.getString("SERVICO"));
 				servico.setValor_servico(result.getString("VALOR_SERVICO"));
 				servico.setValor_Total(result.getDouble("VALOR_TOTAL"));
+				servico.setServ_fin(result.getString("SERVICO_FIN"));
 				servicos.add(servico);
 			}
 			
@@ -85,7 +86,10 @@ public class ServicoDAO {
 	public List<Servico_Add> getGroup() {
 		List<Servico_Add> servicos = new ArrayList<Servico_Add>();
 		
-		String sql = "select cod_serv, cliente, placa_carro, valor_total from ordem_servico group by cod_serv, cliente, placa_carro,valor_total order by cod_serv";
+		String sql = "select cod_serv, cliente, placa_carro, valor_total, servico_fin "
+				+ "from ordem_servico group by "
+				+ "cod_serv, cliente, placa_carro,valor_total, servico_fin "
+				+ "order by cod_serv";
 		
 		try {
 			Statement statement = connection.createStatement();
@@ -97,6 +101,7 @@ public class ServicoDAO {
 				servico.setCliente(result.getString("CLIENTE"));
 				servico.setPlaca_Carro(result.getString("PLACA_CARRO"));
 				servico.setValor_Total(result.getDouble("VALOR_TOTAL"));
+				servico.setServ_fin(result.getString("SERVICO_FIN"));
 				servicos.add(servico);
 			}
 			
@@ -231,7 +236,8 @@ public List<Servico_Add> getGroup_Tela_finalizados() {
 	
 
 	String sql = "select cod_serv, cliente, valor_total from ordem_servico_finalizado "
-			+ "group by cod_serv, cliente, valor_total";
+			+ "group by cod_serv, cliente, valor_total"
+			+ " order by cod_serv";
 		
 	try {
 		Statement statement = connection.createStatement();
@@ -258,7 +264,8 @@ public List<Servico_Add> getGroup_Tela_Nao_finalizados() {
 
 	String sql = "select cod_serv, cliente, valor_total from ordem_servico "
 			+ "where cod_serv != '0000' and servico_fin = 'A' "
-			+ "group by cod_serv, cliente, valor_total";
+			+ "group by cod_serv, cliente, valor_total "
+			+ "order by cod_serv";
 		
 	try {
 		Statement statement = connection.createStatement();

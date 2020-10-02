@@ -3,6 +3,8 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -352,6 +354,36 @@ public class Tela_Ordem_Servico extends JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         
+        Table_servico_aberto.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int Numero_linha = Table_servico_aberto.getSelectedRow();	
+				String Linha = (String)Table_servico_aberto.getModel().getValueAt(Numero_linha, 4);
+				  
+				if(Linha.equals("F")){
+					Table_servico_aberto.setSelectionBackground(new Color(255,51,51));
+				}else{
+					Table_servico_aberto.setSelectionBackground(new Color(147,255,51));
+				}
+				Numero_linha = -1;
+			}
+			
+		});
+        
         Btn_Imprimir.addActionListener(new ActionListener() {
 			
 			@Override
@@ -369,6 +401,7 @@ public class Tela_Ordem_Servico extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Gerar_pedido_venda();
 				update_tabela_Servico_Aberto();
+				Insert_Cod();
 			}
 		});
         
@@ -415,6 +448,7 @@ public class Tela_Ordem_Servico extends JPanel {
 						 Insert_Cod();
 						 Btn_Editar.setEnabled(false);
 						 Total = 0.00;
+						 Insert_Cod();
 					}
 					
 				}
@@ -679,7 +713,7 @@ public class Tela_Ordem_Servico extends JPanel {
             				servico.getCliente(),
             				servico.getPlaca_Carro(),
             				servico.getValor_Total(),
-            				"A"
+            				servico.getServ_fin()
             		};
             			tablemodel_Cadastrados.addRow(data);
             
@@ -723,7 +757,7 @@ public class Tela_Ordem_Servico extends JPanel {
 		String Cod_serv = null;
 		int cod_serv = 0;
 		
-		String sql = "SELECT cod_serv FROM ORDEM_SERVICO";
+		String sql = "SELECT cod_serv FROM ORDEM_SERVICO order by cod_serv";
     	try {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
@@ -989,7 +1023,6 @@ public void update_combo_funcionarios(){
 	}
 	
 	public void Update_Combo_Cliente(){
-		Table_servico_aberto.setSelectionBackground(Color.YELLOW);
         
 		Combo_Nome_Cliente.removeAllItems();
 		Combo_Nome_Cliente.addItem("Seleciona");	

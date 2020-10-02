@@ -69,6 +69,13 @@ create table Produtos(
 	Preco_Venda varchar (10) not null
 );
 
+create table Entrada_Produto(
+	Cod_Barras varchar (50),
+	Cod_sistema varchar (50),
+	Data_inclusao Date not null,
+	quantidade varchar (10)
+);
+
 create table Fornecedor(
 	Razao_Social varchar (50) not null,
 	Cnpj varchar (20) not null,
@@ -189,11 +196,17 @@ INSERT INTO ordem_servico (Cod_Serv, Cliente, Placa_Carro, Funcionario,
 Produto, Valor_Produto, 
 Qtd_Prod, servico, Valor_servico, Valor_Total, data_ordem)
 VALUES ('0000','','','','','','','','', 0 ,'2020-09-11');
+
+//Atualizar Sabado dia 03/10/2020
 ALTER TABLE produtos ADD Prod_minumo float null;
 ALTER TABLE ordem_servico ADD servico_fin varchar(5);
 ALTER TABLE ordem_servico_finalizado ADD servico_fin varchar(5);
 ALTER TABLE ordem_servico_finalizado ADD feito_venda float ;
+ALTER TABLE fornecedor ADD tell_fixo Varchar(20);
+ALTER TABLE recebidos ADD nome Varchar(50);
+
+//Fim da Atualização do dia 03/10/2020
 
 drop table agendamentos, boleto, boletos_pago, clientes, estados, fornecedor
 ,funcionarios, ordem_servico, ordem_servico_finalizado, placa_veiculos, produtos
-, recebidos, vale, vendas, orcamento
+, recebidos, vale, vendas, orcamento,entrada_produto

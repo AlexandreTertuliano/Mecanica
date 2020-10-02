@@ -28,8 +28,8 @@ public class RecebidosDAO {
 	
 	public void Insert(Recebidos_Add recebidos) {
 		
-		String sql = "INSERT INTO RECEBIDOS ( DATA_RECEBIDO, VALOR_RECEBIDO, CPF_RECEBIDO, PLACA_CARRO_RECEBIDO ) " +
-				"VALUES (?,?,?,?)";
+		String sql = "INSERT INTO RECEBIDOS ( DATA_RECEBIDO, VALOR_RECEBIDO, CPF_RECEBIDO, PLACA_CARRO_RECEBIDO, NOME ) " +
+				"VALUES (?,?,?,?,?)";
 		
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
@@ -38,6 +38,7 @@ public class RecebidosDAO {
 				statement.setDouble(index++, recebidos.getValor());
 				statement.setString(index++, recebidos.getCpf());
 				statement.setString(index++, recebidos.getPlaca());
+				statement.setString(index++, recebidos.getNome());
 				statement.execute();
 				
 			} catch (SQLException e) {
@@ -64,7 +65,8 @@ public class RecebidosDAO {
 				Recebidos_Add recebido = new Recebidos_Add();
 				recebido.setCpf(result.getString("cpf_recebido"));
 				recebido.setPlaca(result.getString("placa_carro_recebido"));
-				recebido.setValor(Double.valueOf(result.getString("valor_recebido")));				
+				recebido.setValor(Double.valueOf(result.getString("valor_recebido")));	
+				recebido.setNome(result.getString("nome"));
 				recebidos.add(recebido);
 				}
 			} catch (SQLException e) {

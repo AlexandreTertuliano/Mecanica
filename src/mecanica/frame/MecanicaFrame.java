@@ -17,15 +17,15 @@ import javax.swing.JPanel;
 
 public class MecanicaFrame extends JFrame {
 
-	//botao 1 : Logo Mecanica	 
+	//botao 1 : Logo Mecanica	 OK
 	//botao 2 : AddClientes		 OK
 	//botao 3 : AddProdutos		 OK
 	//botao 4 : AddForcedor		 Ok
 	//botao 5 : AddFuncionarios  OK
 	//botao 6 : Boletos e Vales  OK
 	//botao 7 : Ordem de Serviço OK
-	//botao 8 : Caixa
-	//botao 9 : Contas Receber	 
+	//botao 8 : Caixa			 OK
+	//botao 9 : Contas Receber	 OK
 	//botao 10: Agendamento		 OK
 	//botao 11: Relatorio
 	

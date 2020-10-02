@@ -10,6 +10,7 @@ public class Fornecedor_add {
 	private String Cep;
 	private String Rua;
 	private String Numero;
+	private String Fixo;
 	
 	public String getRazão_Social() {
 		return Razão_Social;
@@ -58,6 +59,12 @@ public class Fornecedor_add {
 	}
 	public void setNumero(String numero) {
 		Numero = numero;
+	}
+	public String getFixo() {
+		return Fixo;
+	}
+	public void setFixo(String fixo) {
+		Fixo = fixo;
 	}
 	
 	
