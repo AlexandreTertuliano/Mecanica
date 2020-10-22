@@ -314,6 +314,8 @@ public class MecanicaFrame extends JFrame {
 				centerPanel.add(Tela_Relatorios_e_consultas);
 				centerPanel.revalidate();
 				MecanicaFrame.this.repaint();
+				((mecanica.frame.Tela_Relatorios_e_consultas)Tela_Relatorios_e_consultas).Gerar_clientes();
+				((mecanica.frame.Tela_Relatorios_e_consultas)Tela_Relatorios_e_consultas).Gerar_produtos();
 			}
 		});
 		northPanel.add(relatorioButton);

@@ -1006,22 +1006,35 @@ private void Limpa_Dados() {
 			while(result.next()){
 				Field_Preco_Venda.setText(result.getString("preco_venda"));
 				Field_Cod_Barras.setText(result.getString("cod_barras"));
-				//Field_Codigo.setText(result.getString("cod_sistema"));
-				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-
 	}
+    	
+    	if(Field_Cod_Barras.getText().trim().isEmpty()){
+    		Field_Cod_Barras.setText("0000000000000");
+    	}
 }
  
  private void Mostrar_Cliente(){	
 	 		
 	 		Field_Placa.removeAllItems();
 	 		Field_Placa.addItem("Seleciona");
+	 		
+	 		String Cpf = null;
+			String sql_cpf_placa = "SELECT * FROM clientes ORDER BY nome";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql_cpf_placa);
+				while(result.next()){
+				Cpf = result.getString("CPF");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 	 
 	 
-			String sql = "SELECT * FROM placa_veiculos where cliente = '" + Combo_Cadastrado.getSelectedItem() +"';";
+			String sql = "SELECT * FROM placa_veiculos where cliente = '" + Cpf +"';";
 	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);

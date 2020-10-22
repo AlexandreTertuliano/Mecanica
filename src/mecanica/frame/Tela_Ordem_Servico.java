@@ -972,8 +972,20 @@ public class Tela_Ordem_Servico extends JPanel {
 		Combo_Placa.removeAllItems();
 		Combo_Placa.addItem("Seleciona");	
 		
+		String Cpf = null;
+		String sql_cpf_placa = "SELECT * FROM clientes ORDER BY nome";
+    	try {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql_cpf_placa);
+			while(result.next()){
+			Cpf = result.getString("CPF");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
-			String sql = "SELECT * FROM placa_veiculos where cliente = '" + Combo_Nome_Cliente.getSelectedItem() +"'" ;
+		
+			String sql = "SELECT * FROM placa_veiculos where cliente = '" + Cpf +"'" ;
 	    	try {
 				Statement statement = connection.createStatement();
 				ResultSet result = statement.executeQuery(sql);

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
+import javax.print.attribute.AttributeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -16,6 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Veiculo_add;
@@ -94,7 +98,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         Check_Bloquear = new javax.swing.JCheckBox("Bloquear");
         Label_Verifica_Placa = new javax.swing.JLabel("Verifica Placa");
         Combo_Placa = new javax.swing.JComboBox<>();
-
+        
         Label_Informações_Cliente.setFont(new java.awt.Font("Arial Black", 0, 12));       
         Label_Endereco.setFont(new java.awt.Font("Arial Black", 0, 12));     
         Label_editar.setFont(new java.awt.Font("Arial Black", 0, 12)); 
@@ -693,6 +697,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Update_cliente(){
+		 	
 			Double apt_Casa = 0.0;
 			Double block = 0.0;
 			
@@ -721,6 +726,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
 			
 		}
+	
+   
 	
 	public boolean preenche_campos() {
 		
@@ -831,11 +838,23 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Cad_Veiculo() {
+			String Cpf = null;
+			String sql = "SELECT * FROM clientes ORDER BY nome";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+				Cpf = result.getString("CPF");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
 		Veiculo_add veiculo = new Veiculo_add();
 		veiculo.setModelo(Combo_Modelo_Carro.getText());
 		veiculo.setPlaca(Field_Placa_Carro.getText());
 		veiculo.setKm(Field_Km_Carro.getText());
-		veiculo.setCliente(Combo_Cliente.getSelectedItem().toString());
+		veiculo.setCliente(Cpf);
 		veiculoDAO.Insert(veiculo);
 		Limpa_dados();
 		JOptionPane.showMessageDialog(this,veiculo.getPlaca() + " foi cadastrado"

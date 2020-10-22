@@ -539,7 +539,6 @@ public class Tela_Cadastro_Produto extends JPanel {
 				Field_Preco_Custo.setText(produto.getPreco_custo());
 				Field_Preco_Venda.setText(produto.getPreco_Venda());
 				Field_Quantidade.setText(produto.getQuantidade());
-				Combo_Fornecedor.setSelectedItem(produto.getFornecedor());
 				field_qtd_minima.setText(produto.getQtd_minima());
 			 }
 		 }		 
@@ -575,7 +574,6 @@ public class Tela_Cadastro_Produto extends JPanel {
 				Field_Preco_Custo.setText(produto.getPreco_custo());
 				Field_Preco_Venda.setText(produto.getPreco_Venda());
 				Field_Quantidade.setText(produto.getQuantidade());
-				Combo_Fornecedor.setSelectedItem(produto.getFornecedor());
 				field_qtd_minima.setText(produto.getQtd_minima());
 			 }
 		 }		 
