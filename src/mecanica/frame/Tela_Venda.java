@@ -1,26 +1,17 @@
 package mecanica.frame;
 
-import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.nio.file.attribute.GroupPrincipal;
-import java.security.PublicKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat.Field;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Vector;
-import java.util.function.DoubleToLongFunction;
 import java.time.LocalDate;
 import java.util.Vector;
-
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -28,12 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-
-import com.sun.glass.events.KeyEvent;
-import com.sun.javafx.tk.Toolkit;
-
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Produto_Add;
 import mecanicaDAO.Servico_Add;
 import mecanicaDAO.Venda_add;
@@ -42,7 +28,8 @@ import mecanicaDAOServico.ServicoDAO;
 import mecanicaDAOVenda.VendaDAO;
 
 public class Tela_Venda extends JPanel{
-	
+
+	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	int contador_Table = 0;
 	Double Total = 0.00;

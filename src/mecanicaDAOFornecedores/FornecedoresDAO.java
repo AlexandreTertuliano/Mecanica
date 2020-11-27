@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Fornecedor_add;
 
 public class FornecedoresDAO {

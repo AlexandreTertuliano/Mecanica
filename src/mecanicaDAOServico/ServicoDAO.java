@@ -10,10 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Cliente_add;
-import mecanicaDAO.Funcionario_add;
 import mecanicaDAO.Servico_Add;
-import sun.print.resources.serviceui;
 
 public class ServicoDAO {
 	

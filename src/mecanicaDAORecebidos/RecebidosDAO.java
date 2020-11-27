@@ -1,6 +1,5 @@
 package mecanicaDAORecebidos;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,14 +7,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.DoubleToLongFunction;
-
-import javax.swing.JOptionPane;
 
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Produto_Add;
 import mecanicaDAO.Recebidos_Add;
-import mecanicaDAO.Servico_Add;
 
 public class RecebidosDAO {
 	

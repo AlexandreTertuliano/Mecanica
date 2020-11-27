@@ -7,11 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.List;
-
 import mecanica.connection.ConnectionDAO;
-import mecanicaDAO.Boleto_Add;
 import mecanicaDAO.Vale_add;
 
 public class ValeDAO {

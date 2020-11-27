@@ -13,7 +13,8 @@ import javax.swing.JPanel;
 import mecanica.connection.ConnectionDAO;
 
 public class Tela_Relatorios_e_consultas extends JPanel{
-	
+
+	private static final long serialVersionUID = 1L;
 	private Connection connection;	
 	
 	public Tela_Relatorios_e_consultas() throws SQLException {

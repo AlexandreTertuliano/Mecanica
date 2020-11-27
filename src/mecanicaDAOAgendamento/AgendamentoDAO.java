@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Agendamento_add;
-import mecanicaDAO.Funcionario_add;
 
 public class AgendamentoDAO {
 

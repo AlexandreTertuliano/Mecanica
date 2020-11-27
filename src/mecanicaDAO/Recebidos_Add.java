@@ -2,8 +2,6 @@ package mecanicaDAO;
 
 import java.sql.Date;
 
-import javax.xml.crypto.Data;
-
 public class Recebidos_Add {
 
 	private String cpf;

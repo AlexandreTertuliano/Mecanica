@@ -1,66 +1,112 @@
 package mecanica.app;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.SplashScreen;
-import java.awt.geom.Rectangle2D;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import mecanica.frame.MecanicaFrame;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.net.*;
 
-import com.sun.prism.paint.Color;
+public class Splash extends JFrame {
 
-public class Splash {
+	private static final long serialVersionUID = 1L;
+	private static JLabel lbSplash;          
+	private ImageIcon imSplash;
 
-    private static SplashScreen mySplash;
-    private static Graphics2D splashGraphics;
-    private static Rectangle2D.Double splashProgressArea;
-
-    public static void splashInit() {
-
-        mySplash = SplashScreen.getSplashScreen();
-
-        if (mySplash != null) {
-            //pega as dimensoes da imagem que será usada no splashscreen
-            // para que a barra fique proporcional
-            Dimension ssDim = mySplash.getSize();
-            int height = ssDim.height;
-            int width = ssDim.width;
-            //desenha a área da barra de progresso, você pode alterar as dimensoes pra testar a que mais gostar
-            //  os parametros representam posição horizontal  e vertical (em relação a imagem), altura e largura, respectivamente
-            splashProgressArea = new Rectangle2D.Double(1.0, height * 0.87, width, height * 0.08);
-            //exibe a imagem do splash centralizada na tela
-            splashGraphics = mySplash.createGraphics();
-            //inicia a barra de progresso(pode ser removido)
-            splashProgress(0);
-        }
+	public static void main(String arg[]){
+		
+    Splash s = new Splash();
+    int a = 0;
+          
+    s.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    s.setSize(500,300);
+    s.getContentPane().setBackground(new Color(51,178,255));
+    s.setUndecorated(true);
+    s.setLocationRelativeTo(null);
+    s.setVisible(true);
+    
+    JProgressBar ProgressBar = new JProgressBar();
+    ProgressBar.setStringPainted(true);
+    ProgressBar.setBounds(0, 260, 500, 40);
+    ProgressBar.setBackground(new Color(255,255,255));
+    ProgressBar.setForeground(new Color(45,173,199));
+    s.add(ProgressBar);
+    
+    JButton link1 = new JButton("Site Desenvolvedor");
+    link1.setBounds(0,0,150,20);
+    link1.setBackground(Color.WHITE);
+    link1.setForeground(Color.BLACK);
+    s.add(link1);
+    
+    link1.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try{
+		    	URI link = new URI("https://vinicius-faria.github.io/Profile/");
+		    	Desktop.getDesktop().browse(link);
+		    }catch(Exception erro){
+		            System.out.println(erro);
+		        }
+		}
+	});
+         
+    try {
+	   for(a = 0; a <= 100; a++){
+		   Thread.sleep (30);
+		   ProgressBar.setValue(a);
+		   if(a<=10){
+			    TitledBorder border = BorderFactory.createTitledBorder("Carregando Tabelas");
+			    ProgressBar.setBorder(border);
+		   }
+		   if(10<a){
+			    TitledBorder border = BorderFactory.createTitledBorder("Carregando Clientes/Produtos");
+			    ProgressBar.setBorder(border);
+		   }
+		   if(50<a){
+			    TitledBorder border = BorderFactory.createTitledBorder("Carregando Veiculos");
+			    ProgressBar.setBorder(border);
+		   }
+		   if(80<a){
+			    TitledBorder border = BorderFactory.createTitledBorder("Carregando Contas a Receber");
+			    ProgressBar.setBorder(border);
+		   }
+		   if(100 == a){
+			    TitledBorder border = BorderFactory.createTitledBorder("Concluído");
+			    ProgressBar.setBorder(border);
+		   }
+	   }
     }
+    catch (InterruptedException ex) {}
+   s.dispose();
+  }
+  
+public Splash() {
 
-    public static void splashProgress(int pct) {
-        if (mySplash != null && mySplash.isVisible()) {
-            
-            //preenche a area da barra de progresso com a cor informada
-           // splashGraphics.setPaint(Color.BLACK);
-            splashGraphics.fill(splashProgressArea);
-            
-            //colore bordas na barra de progresso(opcional)
-           // splashGraphics.setPaint(Color.BLUE);
-            splashGraphics.draw(splashProgressArea);
-            
-            //pega o menor valor das coordenadas(horizontal  X e vertical Y) da barra 
-            //será usado para o carregamento(não alterar daqui em diante)
-            int x = (int) splashProgressArea.getMinX();
-            int y = (int) splashProgressArea.getMinY();
-            int wid = (int) splashProgressArea.getWidth();
-            int hgt = (int) splashProgressArea.getHeight();
-            
-            //valor usado para o carregamento da barra
-            int doneWidth = Math.round(pct * wid / 100.f);
-            doneWidth = Math.max(0, Math.min(doneWidth, wid - 1));
-            
-            //aqui  é que vai preenchendo o carregamento da barra de acordo com o valor
-            //passado em pct    
-           //
-           // splashGraphics.setPaint(Color.GREEN);
-            splashGraphics.fillRect(x, y + 1, doneWidth, hgt - 1);
-            mySplash.update();
-        }
-    }
+	setLayout(null);
+    imSplash = new ImageIcon(getClass().getResource("/Splash.png"));
+    lbSplash = new JLabel(imSplash);
+    lbSplash.setBounds(0,0,500,300);
+    add(lbSplash);
+    setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/mechanic.png")));
+     
+  }
+  
+@SuppressWarnings("deprecation")
+public void dispose(){
+	  
+	  MecanicaFrame frame;
+	  
+	  try {
+		frame = new MecanicaFrame();
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.show();
+	}catch (SQLException e) {
+		e.printStackTrace();
+	}
+    super.dispose();
+  }
+    
 }

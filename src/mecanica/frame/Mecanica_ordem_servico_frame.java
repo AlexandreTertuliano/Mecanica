@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 
 public class Mecanica_ordem_servico_frame extends JFrame {
 	
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel centerPanel;
 	private JPanel Tela_ordem_servicos_finalizados;
