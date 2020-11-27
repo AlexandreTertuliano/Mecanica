@@ -1,0 +1,18 @@
+private void Verifica_Linha() {
+		
+		 int Numero_linha = jTable1.getSelectedRow();
+		 if(Numero_linha == -1) {
+			 
+		 }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir a Conta?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+				  if(Numero_linha >= 0){
+					 Sql_delete();
+					 soma_total();
+					 Preenche_tabela();
+				  }
+				}
+		 }
+		 
+	 }
+

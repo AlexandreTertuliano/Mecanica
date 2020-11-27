@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Fornecedor_add;
 import mecanicaDAO.Produto_Add;
 import mecanicaDAOFornecedores.FornecedoresDAO;
@@ -59,10 +60,12 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	        ScrollPane_Cadastros_fornecedor = new javax.swing.JScrollPane();
 	        Table_Cadastros_fornecedor = new javax.swing.JTable();
 	        Btn_Buscar = new javax.swing.JButton();
-	        Label_telefone = new javax.swing.JLabel("Telefone");
+	        Label_telefone = new javax.swing.JLabel("Telefone Celular");
 	        Field_telefone = new javax.swing.JFormattedTextField();
 	        Combo_Estado = new javax.swing.JComboBox<>();
-	        Editar = 0;
+	        Btn_editar = new javax.swing.JButton("Editar");
+	        Label_Fixo = new javax.swing.JLabel("Telefone Fixo");
+	        Field_Fixo = new javax.swing.JFormattedTextField();
 
 	        Label_titulo_fornecedor.setFont(new java.awt.Font("Arial Black", 0, 12)); 
 	        Label_Titulo_Endereco.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -83,6 +86,13 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	        ImageIcon image_buscar = new ImageIcon(getClass().getResource("/search (1).png"));
 	        Btn_Buscar.setIcon(image_buscar);
 	        
+	        Btn_editar.setBackground(Color.WHITE);
+	        Btn_editar.setToolTipText("Salvar");
+	        ImageIcon image_Editar = new ImageIcon(getClass().getResource("/pencil.png"));
+	        Btn_editar.setIcon(image_Editar);
+	        
+	        Btn_editar.setEnabled(false);
+	        
 	        //Coloca as especificações nos campos da tabela
 	     	Vector<String> columnNames = new Vector<String>();
 			columnNames.add("Razão Social");
@@ -92,12 +102,26 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 			Table_Cadastros_fornecedor = new JTable(vector,columnNames);
 			ScrollPane_Cadastros_fornecedor = new JScrollPane(Table_Cadastros_fornecedor);
 	        
+			 try {
+		            Field_Fixo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##)####-####")));
+		        } catch (java.text.ParseException ex) {
+		            ex.printStackTrace();
+		        }
+			
 	        try {
 	            Field_Cnpj.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###.###/####-##")));
 	        } catch (java.text.ParseException ex) {
 	            ex.printStackTrace();
-	        }try {
+	        }
+	        
+	        try {
 	            Field_telefone.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##)#####-####")));
+	        } catch (java.text.ParseException ex) {
+	            ex.printStackTrace();
+	        }
+	        
+	        try {
+	            Field_Cep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###-###")));
 	        } catch (java.text.ParseException ex) {
 	            ex.printStackTrace();
 	        }
@@ -106,15 +130,13 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	        this.setLayout(layout);
 	        layout.setHorizontalGroup(
 	            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-	                    .addGroup(layout.createSequentialGroup()
+	            .addGroup(layout.createSequentialGroup()
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 	                        .addContainerGap()
-	                        .addComponent(ScrollPane_Cadastros_fornecedor, javax.swing.GroupLayout.DEFAULT_SIZE, 1177, Short.MAX_VALUE))
-	                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-	                        .addContainerGap()
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addGroup(layout.createSequentialGroup()
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+	                            .addComponent(ScrollPane_Cadastros_fornecedor)
+	                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
 	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 	                                    .addComponent(Label_Cnpj)
 	                                    .addComponent(Label_Razao_Social)
@@ -125,42 +147,51 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	                                    .addComponent(jSeparator1)
 	                                    .addGroup(layout.createSequentialGroup()
 	                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-	                                            .addComponent(Field_telefone, javax.swing.GroupLayout.Alignment.LEADING)
 	                                            .addComponent(Field_Razao_social, javax.swing.GroupLayout.Alignment.LEADING)
-	                                            .addComponent(Field_Cnpj, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+	                                            .addComponent(Field_Cnpj, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+	                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+	                                                .addComponent(Field_telefone, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                                                .addComponent(Label_Fixo)
+	                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                                                .addComponent(Field_Fixo)))
 	                                        .addGap(30, 30, 30)
 	                                        .addComponent(Btn_Buscar)
 	                                        .addGap(0, 0, Short.MAX_VALUE))))
-	                            .addGroup(layout.createSequentialGroup()
+	                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
 	                                .addGap(19, 19, 19)
 	                                .addComponent(Label_Titulo_Endereco)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 	                                .addComponent(jSeparator2))))
-	                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-	                        .addGap(141, 141, 141)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-	                            .addComponent(Label_numero)
-	                            .addComponent(Label_Rua)
-	                            .addComponent(Label_cep)
-	                            .addComponent(Label_Cidade)
-	                            .addComponent(Label_Estado))
-	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                    .addGroup(layout.createSequentialGroup()
+	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addGroup(layout.createSequentialGroup()
-	                                .addComponent(Btn_cancelar)
-	                                .addGap(18, 18, 18)
-	                                .addComponent(Btn_Salvar))
-	                            .addComponent(Combo_Estado, 0, 406, Short.MAX_VALUE)
-	                            .addComponent(Field_Cidade)
-	                            .addComponent(Field_Cep)
-	                            .addComponent(Field_Rua)
-	                            .addComponent(Field_Numero))
-	                        .addGap(0, 0, Short.MAX_VALUE))
-	                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-	                        .addContainerGap()
-	                        .addComponent(jLabel1)
-	                        .addGap(18, 18, 18)
-	                        .addComponent(jSeparator3)))
+	                                .addGap(141, 141, 141)
+	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+	                                    .addComponent(Label_numero)
+	                                    .addComponent(Label_Rua)
+	                                    .addComponent(Label_cep)
+	                                    .addComponent(Label_Cidade)
+	                                    .addComponent(Label_Estado))
+	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                                    .addGroup(layout.createSequentialGroup()
+	                                        .addComponent(Btn_cancelar)
+	                                        .addGap(18, 18, 18)
+	                                        .addComponent(Btn_Salvar)
+	                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                                        .addComponent(Btn_editar))
+	                                    .addComponent(Combo_Estado, 0, 406, Short.MAX_VALUE)
+	                                    .addComponent(Field_Cidade)
+	                                    .addComponent(Field_Cep)
+	                                    .addComponent(Field_Rua)
+	                                    .addComponent(Field_Numero)))
+	                            .addGroup(layout.createSequentialGroup()
+	                                .addContainerGap()
+	                                .addComponent(jLabel1)
+	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 1137, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	                        .addGap(0, 0, Short.MAX_VALUE)))
 	                .addContainerGap())
 	        );
 	        layout.setVerticalGroup(
@@ -174,68 +205,68 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 	                    .addComponent(Label_Razao_Social)
 	                    .addComponent(Field_Razao_social, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                        .addComponent(Label_Cnpj)
+	                        .addComponent(Field_Cnpj, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                    .addComponent(Btn_Buscar))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_telefone)
+	                    .addComponent(Field_telefone, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addComponent(Label_Fixo)
+	                    .addComponent(Field_Fixo, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(18, 18, 18)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+	                    .addComponent(Label_Titulo_Endereco)
+	                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(4, 4, 4)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_Estado)
+	                    .addComponent(Combo_Estado, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
 	                .addGap(10, 10, 10)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_Cidade)
+	                    .addComponent(Field_Cidade, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(10, 10, 10)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_cep)
+	                    .addComponent(Field_Cep, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(10, 10, 10)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_Rua)
+	                    .addComponent(Field_Rua, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addGap(10, 10, 10)
+	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+	                    .addComponent(Label_numero)
+	                    .addComponent(Field_Numero, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 	                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 	                    .addGroup(layout.createSequentialGroup()
-	                        .addGap(0, 0, Short.MAX_VALUE)
-	                        .addComponent(jLabel1))
-	                    .addGroup(layout.createSequentialGroup()
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                .addComponent(Label_Cnpj)
-	                                .addComponent(Field_Cnpj, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                            .addComponent(Btn_Buscar))
-	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                            .addComponent(Label_telefone)
-	                            .addComponent(Field_telefone, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                        .addGap(3, 3, 3)
-	                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addGroup(layout.createSequentialGroup()
-	                                .addGap(13, 13, 13)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-	                                    .addComponent(Label_Titulo_Endereco)
-	                                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addGap(4, 4, 4)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Label_Estado)
-	                                    .addComponent(Combo_Estado, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addGap(10, 10, 10)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Label_Cidade)
-	                                    .addComponent(Field_Cidade, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addGap(10, 10, 10)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Label_cep)
-	                                    .addComponent(Field_Cep, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addGap(10, 10, 10)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Label_Rua)
-	                                    .addComponent(Field_Rua, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addGap(10, 10, 10)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Label_numero)
-	                                    .addComponent(Field_Numero, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                                    .addComponent(Btn_cancelar)
-	                                    .addComponent(Btn_Salvar)))
-	                            .addGroup(layout.createSequentialGroup()
-	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-	                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                .addComponent(ScrollPane_Cadastros_fornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                .addGap(28, 28, 28))
+	                            .addComponent(Btn_cancelar)
+	                            .addComponent(Btn_Salvar)
+	                            .addComponent(Btn_editar))
+	                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                    .addComponent(jLabel1))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	                .addComponent(ScrollPane_Cadastros_fornecedor, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                .addGap(19, 19, 19))
 	        );
-	        
-	        
 	        //funcao buscar pelo cnpj do fornecedor
 	        Btn_Buscar.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Mostra_Cad();
-					Editar = 1;
+					if(Mostra_Cad()){
+						Btn_Salvar.setEnabled(false);
+						Btn_cancelar.setEnabled(false);
+						Field_Cnpj.setEnabled(false);
+						Btn_editar.setEnabled(true);
+					}
+					
 					
 				}
 			});
@@ -246,14 +277,9 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					
-					if( Editar == 0 && Verifica()) {
+					if(Verifica()) {
 						Cad_Fornecedor();
 						Update_Table_Fornecedor();
-						Limpa_Campos();
-					}
-					if(Editar == 1 ){
-						Update_Fornecedor();
-						Editar = 0;
 						Limpa_Campos();
 					}
 					
@@ -266,10 +292,45 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					Limpa_Campos();
-					Editar = 0;
+					
+				}
+			});
+	        
+	        Btn_editar.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Atualiza_dados();
+					Limpa_Campos();
+					Update_Table_Fornecedor();
+					Btn_Salvar.setEnabled(true);
+					Btn_cancelar.setEnabled(true);
+					Field_Cnpj.setEnabled(true);
+					Btn_editar.setEnabled(false);
 				}
 			});
 	    
+	 }
+	 
+	 private void Atualiza_dados(){
+		 
+		 
+		 Fornecedor_add fornecedor = new Fornecedor_add();
+		 fornecedor.setRazão_Social(Field_Razao_social.getText());
+		 fornecedor.setCnpj(Field_Cnpj.getText());
+		 fornecedor.setEstado(Combo_Estado.getSelectedItem().toString());
+		 fornecedor.setCidade(Field_Cidade.getText());
+		 fornecedor.setCep(Field_Cep.getText());
+		 fornecedor.setCidade(Field_Cidade.getText());
+		 fornecedor.setRua(Field_Rua.getText());
+		 fornecedor.setNumero(Field_Numero.getText());
+		 fornecedor.setTell(Field_telefone.getText());
+		 fornecedor.setFixo(Field_Fixo.getText());
+		 fornecedorDAO.update_Fornecedores(fornecedor);
+		 
+		 JOptionPane.showMessageDialog(this, "Fornecedor Atualizado com sucesso! \n Verifique a tabela a baixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
+		 
+		 
 	 }
 	 
 	 
@@ -299,6 +360,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 		 Field_Rua.setText(null);
 		 Field_telefone.setText(null);	
 		 Combo_Estado.setSelectedItem("Seleciona");
+		 Field_Fixo.setText(null);
 	 }
 
 	 private boolean Verifica() {
@@ -313,11 +375,11 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				Field_Cnpj.requestDefaultFocus();
 				return false;
 		 }
-		 if(Field_telefone.getText().trim().isEmpty()) {
+		 /*if(Field_telefone.getText().trim().isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Por favor, preencha o Telefone", "Campo vazio", JOptionPane.WARNING_MESSAGE);
 				Field_telefone.requestFocus();
 				return false;
-		 }
+		 }*/
 		 if(Combo_Estado.getSelectedItem().equals("Seleciona")) {
 				JOptionPane.showMessageDialog(this, "Por favor, preencha um Estado valido", "Estado Inválido", JOptionPane.WARNING_MESSAGE);
 				Combo_Estado.requestFocus();
@@ -343,6 +405,15 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				Field_Numero.requestFocus();
 				return false;
 		 }
+		 for(Fornecedor_add fornecedor_msm_CNPJ : fornecedorDAO.getAll()) {
+	    		if(Field_Cnpj.getText().equals(fornecedor_msm_CNPJ.getCnpj())) {
+	    			JOptionPane.showMessageDialog(this, "CNPJ ja foi Cadastrado", "Erro", JOptionPane.WARNING_MESSAGE);
+	    			Field_Cnpj.requestFocus();
+	    			return false;
+	    		}
+	    	}
+		 
+		 
 		 return true;
 	 }
 	 
@@ -358,6 +429,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 		 fornecedor.setRua(Field_Rua.getText());
 		 fornecedor.setNumero(Field_Numero.getText());
 		 fornecedor.setTell(Field_telefone.getText());
+		 fornecedor.setFixo(Field_Fixo.getText());
 		 fornecedorDAO.Insert(fornecedor);
 		 
 		 JOptionPane.showMessageDialog(this, "Fornecedor Cadastrado com sucesso! \n Verifique a tabela a baixo", "Sucesso", JOptionPane.WARNING_MESSAGE);
@@ -382,7 +454,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 		 
 	 }
 	 
-	 private void Mostra_Cad(){
+	 private boolean Mostra_Cad(){
 		 
 		 
 		 for(Fornecedor_add fornecedor : fornecedorDAO.getAll()){
@@ -394,14 +466,17 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 				 Field_Cep.setText(fornecedor.getCep());
 				 Field_Rua.setText(fornecedor.getRua());
 				 Field_Numero.setText(fornecedor.getNumero());
-				 
+				 Field_Fixo.setText(fornecedor.getFixo());
 			 }
 		 }
 		 
 		 if(Field_Razao_social.getText().trim().isEmpty()){
 				JOptionPane.showMessageDialog(this, "Fornecedor não cadastrado", "Fornecedor Inválido", JOptionPane.WARNING_MESSAGE);
+				Field_Cnpj.requestFocus();
+				return false;
 		 }
 		 
+		 return true;
 	 }
 	 
 	 private void Update_Fornecedor(){
@@ -415,6 +490,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 		 fornecedor.setCep(Field_Cep.getText());
 		 fornecedor.setRua(Field_Rua.getText());
 		 fornecedor.setNumero(Field_Numero.getText());
+		 fornecedor.setFixo(Field_Fixo.getText());
 		 fornecedorDAO.update_Fornecedores(fornecedor);
 
 		 JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
@@ -427,6 +503,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	 	private javax.swing.JButton Btn_Buscar;
 	    private javax.swing.JButton Btn_Salvar;
 	    private javax.swing.JButton Btn_cancelar;
+	    private javax.swing.JButton Btn_editar;
 	    private javax.swing.JComboBox<String> Combo_Estado;
 	    private javax.swing.JFormattedTextField Field_Cep;
 	    private javax.swing.JFormattedTextField Field_Cidade;
@@ -435,11 +512,13 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	    private javax.swing.JFormattedTextField Field_Razao_social;
 	    private javax.swing.JFormattedTextField Field_Rua;
 	    private javax.swing.JFormattedTextField Field_telefone;
+	    private javax.swing.JFormattedTextField Field_Fixo;
 	    private javax.swing.JLabel Label_Cidade;
 	    private javax.swing.JLabel Label_Cnpj;
 	    private javax.swing.JLabel Label_Estado;
 	    private javax.swing.JLabel Label_Razao_Social;
 	    private javax.swing.JLabel Label_Rua;
+	    private javax.swing.JLabel Label_Fixo;
 	    private javax.swing.JLabel Label_Titulo_Endereco;
 	    private javax.swing.JLabel Label_cep;
 	    private javax.swing.JLabel Label_numero;
@@ -452,7 +531,7 @@ public class Tela_Cadastro_Fornecedor extends JPanel{
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JSeparator jSeparator3;
 	    private FornecedoresDAO fornecedorDAO;
-	    private int Editar = 0;
+	   
 	    // End of variables declaration        
 
 }

@@ -18,6 +18,7 @@ public class Cliente_add {
 	
 	private Double Limite;
 	private Double Bloquear;
+	
 	public String getNome() {
 		return Nome;
 	}

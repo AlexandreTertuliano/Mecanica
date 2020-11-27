@@ -24,8 +24,8 @@ private Connection connection;
 	public void Insert(Cliente_add cliente) {
 		
 		String sql = "INSERT INTO CLIENTES ( NOME, CELL, FIXO, CPF, RG, ESTADO, CIDADE," +
-				"CEP, BAIRRO, RUA, NUMERO)" +
-				"VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+				"CEP, BAIRRO, RUA, APT_CASA, NUMERO, BLOQUEAR)" +
+				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		try {
 		PreparedStatement statement = connection.prepareStatement(sql);
@@ -40,7 +40,9 @@ private Connection connection;
 			statement.setString(index++, cliente.getCep());
 			statement.setString(index++, cliente.getBairro());
 			statement.setString(index++, cliente.getRua());
+			statement.setDouble(index++, cliente.getApt_Casa());
 			statement.setString(index++, cliente.getNumero());
+			statement.setDouble(index++, cliente.getBloquear());
 			statement.execute();
 			
 		} catch (SQLException e) {
@@ -71,9 +73,10 @@ private Connection connection;
 				cliente.setCep(result.getString("CEP"));
 				cliente.setBairro(result.getString("BAIRRO"));
 				cliente.setRua(result.getString("RUA"));
+				cliente.setApt_Casa(result.getDouble("APT_CASA"));
 				cliente.setNumero(result.getString("NUMERO"));
 				//cliente.setLimite(result.getDouble("LIMITE"));
-				//cliente.setBloquear(result.getDouble("BLOQUEAR"));
+				cliente.setBloquear(result.getDouble("BLOQUEAR"));
 				clientes.add(cliente);
 			}
 			
@@ -97,7 +100,9 @@ private Connection connection;
 				+"',CEP ='" + cliente.getCep()
 				+"',BAIRRO ='" + cliente.getBairro()
 				+"',RUA ='" + cliente.getRua()
+				+"',APT_CASA ='" + cliente.getApt_Casa()
 				+"',NUMERO ='" + cliente.getNumero()
+				+"',BLOQUEAR ='" + cliente.getBloquear()
 				+"'WHERE CPF = '"+cliente.getCpf()
 				+"'";
 		

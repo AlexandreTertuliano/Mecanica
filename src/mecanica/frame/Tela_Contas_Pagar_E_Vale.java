@@ -3,11 +3,14 @@ package mecanica.frame;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat.Field;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -15,14 +18,33 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
-import org.postgresql.jdbc2.optional.SimpleDataSource;
+import com.sun.xml.internal.fastinfoset.util.ValueArrayResourceException;
+
+import mecanica.connection.ConnectionDAO;
+import mecanicaDAO.Boleto_Add;
+import mecanicaDAO.Boleto_Pago_add;
+import mecanicaDAO.Cliente_add;
+import mecanicaDAO.Funcionario_add;
+import mecanicaDAO.Vale_add;
+import mecanicaDAOBoletos.BoletosDAO;
+import mecanicaDAOBoletosPagos.Boletos_pagoDAO;
+import mecanicaDAOVale.ValeDAO;
+import sun.text.resources.cldr.FormatData;
 
 public class Tela_Contas_Pagar_E_Vale extends JPanel {
+	
+	private Connection connection;
+	int num = 0;
 
 	
-	public Tela_Contas_Pagar_E_Vale() {
+	public Tela_Contas_Pagar_E_Vale() throws SQLException {
         initComponents();
+        boletoDAO = new BoletosDAO();
+        boletoPagoDAO = new Boletos_pagoDAO();
+        valeDAO = new ValeDAO();
+        connection = ConnectionDAO.getConnection();
     }
 	
 	
@@ -37,7 +59,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	        Label_Data_Vencimento = new javax.swing.JLabel("Data Vencimento");
 	        Field_Data_Vencimento = new javax.swing.JFormattedTextField();;
 	        Label_Num_Parcelas = new javax.swing.JLabel("Numeros de Parcelas");
-	        Field_Num_Parcelas = new javax.swing.JFormattedTextField();;
+	        Field_Num_Parcelas = new javax.swing.JFormattedTextField("1");;
 	        Label_Titulo_Pago = new javax.swing.JLabel("Boletos Cadastrados      ");//Deixar com espaços
 	        jSeparator2 = new javax.swing.JSeparator();
 	        ScrollPane_Boletos = new javax.swing.JScrollPane();
@@ -65,6 +87,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	        Label_total_Pagar = new javax.swing.JLabel("Total a Pagar : ");
 	        Label_total_Editavel_Boletos = new javax.swing.JLabel("0.00");
 	        Combo_Nome = new javax.swing.JComboBox<>();
+	        
 
 
 	        Label_Titulo_Controle_Boleto.setFont(new java.awt.Font("Arial Black", 0, 12));
@@ -114,13 +137,22 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	       
 	       
 	       //Coloca as especificações nos campos da tabela
-	     	Vector<String> columnNames = new Vector<String>();
-			columnNames.add("Descrição");
-			columnNames.add("Data Venciemento");
-			columnNames.add("Valor");
+	     	Vector<String> columnBoleto = new Vector<String>();
+	     	columnBoleto.add("Descrição");
+	     	columnBoleto.add("Data Vencimento");
+	     	columnBoleto.add("Valor");
 			Vector<? extends Vector> vector = new Vector();
-			Table_Boleto = new JTable(vector,columnNames);
+			Table_Boleto = new JTable(vector,columnBoleto);
 			ScrollPane_Boletos = new JScrollPane(Table_Boleto);
+			
+			//Coloca as especificações nos campos da tabela
+	     	Vector<String> columnVales = new Vector<String>();
+	     	columnVales.add("Nome");
+	     	columnVales.add("Data");
+	     	columnVales.add("Valor");
+			Vector<? extends Vector> vector1 = new Vector();
+			Table_Vales = new JTable(vector1, columnVales);
+			ScrollPane_Vales = new JScrollPane(Table_Vales);
 	       
 	        try {
 	            Field_Data_Vencimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
@@ -308,18 +340,35 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 	            );
 	            
+	        //Salvar boleto   
 	        Btn_Salvar_Boleto.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					
 						if(Verifica()){
-						Cad_Boleto();
+							if(Integer.parseInt(Field_Num_Parcelas.getText()) > 1){
+								num = Integer.parseInt(Field_Num_Parcelas.getText());
+								while(num >= 0){
+									if(Verifica_data()){
+										Field_Num_Parcelas.setEditable(false);
+										Field_Descricao.setEditable(false);
+										Field_Num_Parcelas.setText(  String.valueOf(num) );
+										Cad_Boleto();
+										Field_Data_Vencimento.setText(null);
+										num --;
+									}
+								}
+							}
+							Cad_Boleto();
+							Limpa_Campos();
+							Field_Num_Parcelas.setEditable(true);
+							Field_Descricao.setEditable(true);
 						}
-					
 			}
 		});    
 	        
+	        //Cancelar Boleto
 	        Btn_Cancelar_Boleto.addActionListener(new ActionListener() {
 				
 				@Override
@@ -329,6 +378,7 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 				}
 			});
 	        
+	        //Cancelar Vale
 	        Btn_Cancelar_Vale.addActionListener(new ActionListener() {
 				
 				@Override
@@ -338,7 +388,219 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 				}
 			});
 
+	        //Cancelar boleto
+	        Btn_Boleto_Cancelado.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Verificar_linha_boleto_delete();
+				}
+			});
+	        
+	        //Marcar boleto como pago
+	        Btn_Boleto_Pago.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Verifica_linha_boleto_pago();
+					
+				}
+			});
+	        
+	        //---------------Botoes do vale--------------------
+	        
+	        //Cancelar Vale
+	        Btn_Cancelar_Vale.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Limpa_Campos_Vale();
+					
+				}
+			});
+
+	        //Salvar Vale
+	        Btn_Salvar_Vale.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+				if(Verifica_Vale()){	
+					cad_vale();
+					Limpa_Campos_Vale();
+					update_Table_Vale();
+				}
+				}
+			});
+
+	        //Zerar vale
+	        Btn_Zerar_Vale.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(Verifica_Cancelamento_Vales()){
+						String sql = "delete from vale";
+						 try {
+								Statement statement = connection.createStatement();
+								ResultSet result = statement.executeQuery(sql);
+								while(result.next()){
+								}
+							} catch (SQLException w) {
+								w.printStackTrace();
+							}
+					}
+					update_Table_Vale();
+					
+				}
+			});
+	        
 	    }
+	  
+	  private boolean Verifica_Cancelamento_Vales(){
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir o/os Vales?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+					JOptionPane.showMessageDialog(this, "Vales Zerados com sucesso", "Concluído", JOptionPane.INFORMATION_MESSAGE);
+				return true;
+				 
+				}
+			return false;
+		}
+	  
+	  private boolean Verifica_Vale(){
+		  
+		  if(Field_Vale_Valor.getText().trim().isEmpty()){
+				JOptionPane.showMessageDialog(this, "Por favor, preencha o Valor do Vale", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				Field_Vale_Valor.requestFocus();
+				return false;
+		  }
+		  if(Field_Vale_Data.equals("  /  /    ") || Field_Vale_Data.getText().trim().isEmpty()){
+				JOptionPane.showMessageDialog(this, "Por favor, preencha a Data do Vale", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+				Field_Vale_Data.requestFocus();
+				return false;
+		  }
+		  if(Combo_Nome.getSelectedItem().equals("Seleciona")){
+			  	JOptionPane.showMessageDialog(this, "Por favor, selecione um Funcionário valido", "Erro", JOptionPane.WARNING_MESSAGE);
+				Combo_Nome.requestFocus();
+				return false;
+		  }
+		  
+		  return true;
+		  
+	  }
+	  
+	  public void Update_combo_vale(){
+		  Combo_Nome.removeAllItems();
+		  Combo_Nome.addItem("Seleciona");
+		  
+		  String sql = "Select * from funcionarios where bloquear = '1'";
+		  
+		  try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+				Combo_Nome.addItem(result.getString("NOME"));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		  
+	  }
+	  
+	  private boolean Verifica_data(){
+		  if(Field_Data_Vencimento.getText().trim().isEmpty()){
+			 JOptionPane.showMessageDialog(this, "Boleto não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+			 Field_Data_Vencimento.requestFocus();
+			 return false;
+		  }
+		  return true;
+	  }
+	  
+	  private void cad_vale(){
+		  
+		  String Data = Field_Vale_Data.getText();
+		  String [] DataSeparada = Data.split("/");
+		  LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+			 
+		  Vale_add vale = new Vale_add();
+		  vale.setNome(Combo_Nome.getSelectedItem().toString());
+		  vale.setData(Date.valueOf(dia));
+		  vale.setValor(Field_Vale_Valor.getText());
+		  valeDAO.insert(vale);
+		  
+	  }
+	  
+	  private void Verifica_linha_boleto_pago(){
+		  
+		  int Numero_linha = Table_Boleto.getSelectedRow();
+		  if(Numero_linha == -1 ){
+			  JOptionPane.showMessageDialog(this, "Boleto não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+		  }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja marcar esse boleto como pago?", "Pago", JOptionPane.YES_NO_OPTION);
+			  
+			 if(resposta == JOptionPane.YES_OPTION){
+			  if(Numero_linha >= 0){
+				  Sql_Boleto_pago();
+				  update_Table();
+				  soma_boletos();
+			  }
+			 }
+		  }
+	  }
+	  
+	  private void Sql_Boleto_pago(){
+		  int Numero_linha = Table_Boleto.getSelectedRow();
+			  String Descricao = (String)Table_Boleto.getModel().getValueAt(Numero_linha, 0);
+			  Date Data = (Date) Table_Boleto.getModel().getValueAt(Numero_linha, 1);
+			  Double Valor = (Double) Table_Boleto.getModel().getValueAt(Numero_linha, 2);
+			  
+			  Boleto_Pago_add boleto = new Boleto_Pago_add();
+			  boleto.setDescricao(Descricao);
+			  boleto.setData_Vencimento(String.valueOf(Data));
+			  boleto.setValor(Valor);
+			  boletoPagoDAO.insert(boleto);
+			  Sql_Delete();  
+		  
+		  
+	  }
+	  
+	  private void Verificar_linha_boleto_delete(){
+		  
+		 int Numero_linha = Table_Boleto.getSelectedRow();
+		 if(Numero_linha == -1) {
+			  JOptionPane.showMessageDialog(this, "Boleto não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+		 }else{
+			 int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir o boleto?", "Excluir", JOptionPane.YES_NO_OPTION);
+			 if(resposta == JOptionPane.YES_OPTION){
+				  if(Numero_linha >= 0){
+					  Sql_Delete();
+					  update_Table();
+					  soma_boletos();
+				  }
+				}
+		 }
+		 
+		  
+	  }
+	  
+	  private void Sql_Delete(){
+		  int Numero_linha = Table_Boleto.getSelectedRow();
+		  String Descricao = (String)Table_Boleto.getModel().getValueAt(Numero_linha, 0);
+		  Date Data = (Date) Table_Boleto.getModel().getValueAt(Numero_linha, 1);
+		  Double Valor = (Double) Table_Boleto.getModel().getValueAt(Numero_linha, 2);
+		  //System.out.println(Data);
+		  
+		  String sql = "delete from boleto where descricao = '" + Descricao + "' and Data_vencimento = '" + Data + "' and "
+		  		+ " valor = '" + Valor + "'";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			 JOptionPane.showMessageDialog(this, "Boleto " + Descricao +" deletado da Tabela", "Excluído", JOptionPane.WARNING_MESSAGE);
+
+	  }
 	  
 	  private boolean Verifica() {
 		 
@@ -368,15 +630,32 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 		  return true;
 	  }
 	  
-	  private void Cad_Boleto(){
+	  private void Cad_Boleto() {
 		  
-		  
-		  
+		 Double Valor = 0.0;
+		 String Valor_Edt = Field_valor.getText().replace(",", ".");
+		 Valor = Double.valueOf(Valor_Edt);
+		 Valor_Edt = String.format("%.2f", Double.parseDouble(String.valueOf(Valor))).replace(",", ".");
+		 		 
+		 String Data = Field_Data_Vencimento.getText();
+		 String [] DataSeparada = Data.split("/");
+		 LocalDate dia = LocalDate.of(Integer.parseInt(DataSeparada[2]), Integer.parseInt(DataSeparada[1]), Integer.parseInt(DataSeparada[0]));
+		  		 
+		 Boleto_Add boleto = new Boleto_Add();
+		 boleto.setDescricao(Field_Descricao.getText());
+		 boleto.setValor(Double.valueOf(Valor_Edt));
+		 boleto.setData_Vencimento(Date.valueOf(dia));
+		 boleto.setNum_Parcelas(Field_Num_Parcelas.getText());
+		 boletoDAO.Insert(boleto);
+		 
+		 update_Table();
+		 soma_boletos();
 	  }
 	  
 	  private void Limpa_Campos_Vale() {
 		  
 		  Field_Vale_Valor.setText(null);
+		  Combo_Nome.setSelectedItem("Seleciona");
 		  
 	  }
 	  
@@ -385,33 +664,10 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 		  Field_Descricao.setText(null);
 		  Field_Num_Parcelas.setText("1");
 		  Field_valor.setText(null);
+		  data();
 	  }
 	  
-	  public void data_mes() {
-		  LocalDate atual_data = LocalDate.now();
-			 
-		    String data;
-			int mes = atual_data.getMonthValue();
-			int dia = atual_data.getDayOfMonth();
-	
-			if(dia < 10){
-				data = "0" + String.valueOf(dia) + "/";
-			} else {
-				data = String.valueOf(dia) + "/";
-			}
-			if(mes < 10) {
-				data = data + "0" + String.valueOf(mes + 1) +  "/";
-			} else {
-				data = data +  String.valueOf(mes + 1) + "/";
-			}	
-				
-			data = data + String.valueOf(atual_data.getYear());
-			
-			
-			Field_Data_Vencimento.setText(data);
-	  }
-	
-	  public void data_vale() {
+	  public void data() {
 		  LocalDate atual_data = LocalDate.now();
 			 
 		    String data;
@@ -432,11 +688,63 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 			data = data + String.valueOf(atual_data.getYear());
 			
 			Field_Vale_Data.setText(data);
+			Field_Data_Vencimento.setText(data);
 			data_Atual = data;
 	  }
 	
+	  public void update_Table(){
+		  
+		  DefaultTableModel tablemodel_Cadastrados = (DefaultTableModel) Table_Boleto.getModel();
+	    	tablemodel_Cadastrados.setRowCount(0);
+	    	
+	    	for(Boleto_Add boleto : boletoDAO.getAll()){
+	        	Object[] data = {
+	    				boleto.getDescricao(),
+	    				boleto.getData_Vencimento(),
+	    				boleto.getValor()
+	    		};
+	        	
+	    		tablemodel_Cadastrados.addRow(data);
+	    		
+	        	}
+		  
+	  }
+	  
+	  public void update_Table_Vale(){
+		  DefaultTableModel tablemodel_vale = (DefaultTableModel) Table_Vales.getModel();
+	    	tablemodel_vale.setRowCount(0);
+	    	
+	    	for(Vale_add vale : valeDAO.getAll()){
+	        	Object[] vale1 = {
+	    				vale.getNome(),
+	    				vale.getData(),
+	    				vale.getValor()
+	    		};
+	        	
+	        	tablemodel_vale.addRow(vale1);
+	    		
+	        	}
+	  }
+	  
+	  public void soma_boletos(){
+		  
+		  String sql = "select sum (valor) as total from boleto";
+		  
+		  try {
+	    		Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				result.next();
+				 Label_total_Editavel_Boletos.setText(String.valueOf(result.getFloat("TOTAL")));
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		  
+		  
+	  }
+	  
+	  
 	 // Variables declaration - do not modify                     
-	  private javax.swing.JButton Btn_Boleto_Cancelado;
+	  	private javax.swing.JButton Btn_Boleto_Cancelado;
 	    private javax.swing.JButton Btn_Boleto_Pago;
 	    private javax.swing.JButton Btn_Cancelar_Boleto;
 	    private javax.swing.JButton Btn_Cancelar_Vale;
@@ -474,6 +782,9 @@ public class Tela_Contas_Pagar_E_Vale extends JPanel {
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JSeparator jSeparator3;
 	    private String data_Atual;
+	    private BoletosDAO boletoDAO;
+	    private Boletos_pagoDAO boletoPagoDAO;
+	    private ValeDAO valeDAO;
     // End of variables declaration             
 	
 }

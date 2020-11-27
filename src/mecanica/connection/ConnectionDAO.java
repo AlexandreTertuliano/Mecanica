@@ -8,11 +8,11 @@ import java.util.Properties;
 public class ConnectionDAO {
 	
 	private static final String USER = "postgres";
-	private static final String PASSWORD = "123456";
+	private static final String PASSWORD = "abc123";
 	
 	public static Connection getConnection() throws SQLException {
 		//PORTA LINUX 5433
-		String url = "jdbc:postgresql://127.0.0.1:5432/Mecanica";
+		String url = "jdbc:postgresql://127.0.0.1:5432/postgres";
 		
 		Properties properties = new Properties();
 		properties.setProperty("user", USER);

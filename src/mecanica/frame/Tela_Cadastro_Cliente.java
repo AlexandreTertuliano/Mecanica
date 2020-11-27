@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
 
+import javax.print.attribute.AttributeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -16,6 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
 import mecanica.connection.ConnectionDAO;
 import mecanicaDAO.Cliente_add;
 import mecanicaDAO.Veiculo_add;
@@ -63,8 +67,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         Field_Bairro = new javax.swing.JFormattedTextField();
         Field_Rua = new javax.swing.JFormattedTextField();
         Field_Numero = new javax.swing.JFormattedTextField();
-        Radio_Casa = new javax.swing.JRadioButton("Casa");
-        jRadioButton1 = new javax.swing.JRadioButton("Apartamento");
+        Radio_Casa = new javax.swing.JCheckBox("Casa");
+        jRadioButton1 = new javax.swing.JCheckBox("Apartamento");
         Label_editar = new javax.swing.JLabel("Editar Cliente");
         jSeparator4 = new javax.swing.JSeparator();
         Label_Edi_Seleciona = new javax.swing.JLabel("Seleciona Cliente : ");
@@ -94,7 +98,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         Check_Bloquear = new javax.swing.JCheckBox("Bloquear");
         Label_Verifica_Placa = new javax.swing.JLabel("Verifica Placa");
         Combo_Placa = new javax.swing.JComboBox<>();
-
+        
         Label_Informações_Cliente.setFont(new java.awt.Font("Arial Black", 0, 12));       
         Label_Endereco.setFont(new java.awt.Font("Arial Black", 0, 12));     
         Label_editar.setFont(new java.awt.Font("Arial Black", 0, 12)); 
@@ -117,8 +121,8 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         Btn_Procurar.setIcon(image_Lupa);
         
         Btn_editar.setBackground(Color.WHITE);
-        Btn_editar.setToolTipText("Editar");
-        ImageIcon image_editar= new ImageIcon(getClass().getResource("/change.png"));
+        Btn_editar.setToolTipText("Salvar");
+        ImageIcon image_editar= new ImageIcon(getClass().getResource("/pencil.png"));
         Btn_editar.setIcon(image_editar);
         
         Btn_Salvar_Veiculo.setBackground(Color.white);
@@ -129,9 +133,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         Btn_Veiculo_Cancelar.setToolTipText("Cancelar");
         Btn_Veiculo_Cancelar.setIcon(image_Cancel);
         
-        Field_Ed_Cpf.setEnabled(false);
-        Combo_Edi_Nome.setEnabled(false);
-        Combo_Placa.setEnabled(false);
+        //Field_Ed_Cpf.setEnabled(false);
+        //Combo_Edi_Nome.setEnabled(false);
+        //Combo_Placa.setEnabled(false);
+        Btn_editar.setEnabled(false);
         
         ButtonGroup Btn_Grupo = new ButtonGroup();
         Btn_Grupo.add(jRadioButton1);
@@ -169,6 +174,12 @@ import mecanicaDAOVeiculo.VeiculoDAO;
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        
+        try {
+            Field_Cep.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##.###-###")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }       
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -409,35 +420,32 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if(Editar == 0 && Verifica()) {
-						Cad_Cliente();
-				}
-				
-				if(Editar == 1 && Verifica_update()) {
-					if(Field_Nome.getText().equals(Combo_Edi_Nome.getSelectedItem()) || Field_Cpf.getText().equals(Field_Ed_Cpf.getText())) {
-						Update_cliente();
-						Bloquea_Campos();
-						update_tabela();
-						Field_Nome.setEnabled(true);
-						Field_Cpf.setEnabled(true);
-						Field_Placa_Carro.setEnabled(true);
-						Editar = 0;
-					}
+				if(Verifica()) {
+					Cad_Cliente();
 				}
 				
 			}
 		});
         
-      //Funcao do liberar para editar
+      //Funcao salva edição
         Btn_editar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Editar = 1;
-				Field_Nome.setEnabled(false);
-				Field_Cpf.setEnabled(false);
-				Field_Placa_Carro.setEnabled(false);
-				Libera_Campos_edita();
+				Update_cliente();
+				Limpa_dados();
+				Btn_Salvar.setEnabled(true);
+				Btn_Cancelar.setEnabled(true);
+				Btn_Salvar_Veiculo.setEnabled(true);
+				Btn_Veiculo_Cancelar.setEnabled(true);
+				Combo_Cliente.setEnabled(true);
+				Combo_Placa.setEnabled(true);
+				Btn_editar.setEnabled(false);
+				Field_Cpf.setEnabled(true);
+				Btn_Procurar.setEnabled(true);
+				Combo_Edi_Nome.setEnabled(true);
+				update_tabela();
+				update_Editar_Combo();
 				
 			}
 		});
@@ -447,8 +455,23 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			preenche_campos();		
-		}
+			if(Field_Ed_Cpf.getText().trim().isEmpty() || Field_Ed_Cpf.getText().equals("   .   .   -  ")){
+				erro();
+				
+			}else{
+				if(preenche_campos()){	
+				Btn_Salvar.setEnabled(false);
+				Btn_Cancelar.setEnabled(false);
+				Btn_Salvar_Veiculo.setEnabled(false);
+				Btn_Veiculo_Cancelar.setEnabled(false);
+				Btn_Procurar.setEnabled(false);
+				Combo_Cliente.setEnabled(false);
+				Combo_Placa.setEnabled(false);
+				Btn_editar.setEnabled(true);
+				Field_Cpf.setEnabled(false);
+				}
+			}
+			}
 	});
     
       //Funcao de cancelar Cadastro
@@ -459,7 +482,7 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o cadastro", "Cadastro de Cliente", JOptionPane.YES_NO_OPTION);
 			if(resposta == JOptionPane.YES_OPTION) {
 				Limpa_dados();
-				Editar = 0;
+				
 			}
 			
 		}
@@ -474,8 +497,30 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			String str = "Seleciona";
 			if(str.equals(Combo_Edi_Nome.getSelectedItem())){
 				Limpa_dados();
+				Btn_Salvar.setEnabled(true);
+				Btn_Cancelar.setEnabled(true);
+				Btn_Salvar_Veiculo.setEnabled(true);
+				Btn_Veiculo_Cancelar.setEnabled(true);
+				Combo_Cliente.setEnabled(true);
+				Combo_Placa.setEnabled(true);
+				Btn_editar.setEnabled(false);
+				Field_Cpf.setEnabled(true);
+				Radio_Casa.setSelected(false);
+				jRadioButton1.setSelected(false);
+				Field_Ed_Cpf.setEnabled(true);
+				Btn_Procurar.setEnabled(true);
 			}else {
 				Mostrar_Cadastro();
+				Btn_Salvar.setEnabled(false);
+				Btn_Cancelar.setEnabled(false);
+				Btn_Salvar_Veiculo.setEnabled(false);
+				Btn_Veiculo_Cancelar.setEnabled(false);
+				Combo_Cliente.setEnabled(false);
+				Combo_Placa.setEnabled(false);
+				Btn_editar.setEnabled(true);
+				Field_Cpf.setEnabled(false);
+				Field_Ed_Cpf.setEnabled(false);
+				Btn_Procurar.setEnabled(false);
 			}
 			
 		}
@@ -500,18 +545,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(Editar == 0 && Verifica_Veiculos()) {
+			if( Verifica_Veiculos()) {
 				Cad_Veiculo();
-			}if(Editar ==1) {
-				update_Veiculo();
-				Field_Placa_Carro.setEnabled(true);
-				Limpa_dados_Veiculo();
-				Bloquea_Campos();
-				Field_Nome.setEnabled(true);
-				Field_Cpf.setEnabled(true);
-				Editar = 0;
-			}
 			
+			}
 		}
 	});
 	
@@ -523,13 +560,18 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente cancelar o cadastro", "Cadastro de Veiculo", JOptionPane.YES_NO_OPTION);
 			if(resposta == JOptionPane.YES_OPTION) {
 				Limpa_dados_Veiculo();
-				Editar = 0;
+				
 			}
 			
 		}
 	});
 	
 	}	
+	
+	private void erro(){
+		 JOptionPane.showMessageDialog(this, "Por favor, preencha o Campo ao lado", "Campo vazio", JOptionPane.WARNING_MESSAGE);
+		 Field_Ed_Cpf.requestFocus();
+	}
 	
 	private boolean Verifica_update(){
 		
@@ -655,7 +697,16 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Update_cliente(){
-						
+		 	
+			Double apt_Casa = 0.0;
+			Double block = 0.0;
+			
+			if(jRadioButton1.isSelected()) apt_Casa = 0.0;
+			if(Radio_Casa.isSelected()) apt_Casa = 1.0;	
+			
+			if(Check_Bloquear.isSelected()) block = 1.0;
+			else block = 0.0;
+		
 			Cliente_add cliente = new Cliente_add();
 			cliente.setNome(Field_Nome.getText());
 			cliente.setCell(Field_Cell.getText());
@@ -667,17 +718,22 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setCep(Field_Cep.getText());
 			cliente.setBairro(Field_Bairro.getText());
 			cliente.setRua(Field_Rua.getText());
+			cliente.setApt_Casa(apt_Casa);
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(block);
 			clienteDAO.update_cliente(cliente);
 			
 			JOptionPane.showMessageDialog(this,"Dados Atualizados com Sucesso!","Concluido",JOptionPane.PLAIN_MESSAGE);
 			
 		}
 	
-	public void preenche_campos() {
+   
+	
+	public boolean preenche_campos() {
 		
 		
 		for(Cliente_add cliente : clienteDAO.getAll()) {
+			
 			if(cliente.getCpf().equals(Field_Ed_Cpf.getText())) {
 				Field_Nome.setText(cliente.getNome());
 				Field_Cell.setText(cliente.getCell());
@@ -690,12 +746,20 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Bairro.setText(cliente.getBairro());
 				Field_Rua.setText(cliente.getRua());
 				Field_Numero.setText(cliente.getNumero());
+				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);
+				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
+			Combo_Edi_Nome.setEnabled(false);
 		}
 		if(Field_Cpf.getText().trim().isEmpty() || Field_Cpf.getText().equals("   .   .   -  ")) {
 			JOptionPane.showMessageDialog(this, "Cliente não cadastrado", "Cliente Inválido", JOptionPane.WARNING_MESSAGE);
+			Field_Ed_Cpf.requestFocus();
+			return false;
 		}
 		
+		return true;
 	}
 	
 	public void Mostrar_Cadastro() {
@@ -712,6 +776,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 				Field_Bairro.setText(cliente.getBairro());
 				Field_Rua.setText(cliente.getRua());
 				Field_Numero.setText(cliente.getNumero());
+				if(cliente.getApt_Casa() == 1.0 ) Radio_Casa.setSelected(true);;
+				if(cliente.getApt_Casa() == 0.0 ) jRadioButton1.setSelected(true);;
+				if(cliente.getBloquear() == 1.0) Check_Bloquear.setSelected(true);
+				else Check_Bloquear.setSelected(false);
 			}
 		}
 	}
@@ -736,6 +804,14 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Cad_Cliente() {
+		 double C_APt = 0.0 ;
+		
+		if(Radio_Casa.isSelected()){
+			C_APt = 1.0;
+		}
+		if(jRadioButton1.isSelected()){
+			C_APt = 0.0;
+		}
 		
 			Cliente_add cliente = new Cliente_add();
 			cliente.setNome(Field_Nome.getText());
@@ -748,7 +824,9 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 			cliente.setCep(Field_Cep.getText());
 			cliente.setBairro(Field_Bairro.getText());
 			cliente.setRua(Field_Rua.getText());
+			cliente.setApt_Casa(Double.valueOf(C_APt));
 			cliente.setNumero(Field_Numero.getText());
+			cliente.setBloquear(0.00);
 			clienteDAO.Insert(cliente);
 			Limpa_dados();
 			JOptionPane.showMessageDialog(this,cliente.getNome() + " foi cadastrado"
@@ -760,11 +838,23 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	}
 	
 	private void Cad_Veiculo() {
+			String Cpf = null;
+			String sql = "SELECT * FROM clientes ORDER BY nome";
+	    	try {
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while(result.next()){
+				Cpf = result.getString("CPF");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    	
 		Veiculo_add veiculo = new Veiculo_add();
 		veiculo.setModelo(Combo_Modelo_Carro.getText());
 		veiculo.setPlaca(Field_Placa_Carro.getText());
 		veiculo.setKm(Field_Km_Carro.getText());
-		veiculo.setCliente(Combo_Cliente.getSelectedItem().toString());
+		veiculo.setCliente(Cpf);
 		veiculoDAO.Insert(veiculo);
 		Limpa_dados();
 		JOptionPane.showMessageDialog(this,veiculo.getPlaca() + " foi cadastrado"
@@ -983,10 +1073,10 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	    private javax.swing.JLabel Label_Rua;
 	    private javax.swing.JLabel Label_Veiculo;
 	    private javax.swing.JLabel Label_editar;
-	    private javax.swing.JRadioButton Radio_Casa;
+	    private javax.swing.JCheckBox Radio_Casa;
 	    private javax.swing.JScrollPane Scroll_Cadastrados;
 	    private javax.swing.JTable Table_Cadastrados;
-	    private javax.swing.JRadioButton jRadioButton1;
+	    private javax.swing.JCheckBox jRadioButton1;
 	    private javax.swing.JSeparator jSeparator1;
 	    private javax.swing.JSeparator jSeparator2;
 	    private javax.swing.JSeparator jSeparator3;
@@ -996,6 +1086,6 @@ import mecanicaDAOVeiculo.VeiculoDAO;
 	    private javax.swing.JComboBox<String> Combo_Placa;
 	    private ClienteDAO clienteDAO;
 	    private VeiculoDAO veiculoDAO;
-	    private int Editar = 0 ;
+	   
 	    // End of variables declaration    
 }

@@ -1,5 +1,7 @@
 package mecanicaDAO;
 
+import java.util.Date;
+
 public class Produto_Add {
 	
 	
@@ -11,6 +13,8 @@ public class Produto_Add {
 	private String Quantidade;
 	private String preco_custo;
 	private String preco_Venda;
+	private String qtd_minima;
+	private Date Data_entrada;
 	
 	public String getCod_Sistema() {
 		return Cod_Sistema;
@@ -59,6 +63,18 @@ public class Produto_Add {
 	}
 	public void setPreco_Venda(String preco_Venda) {
 		this.preco_Venda = preco_Venda;
+	}
+	public String getQtd_minima() {
+		return qtd_minima;
+	}
+	public void setQtd_minima(String qtd_minima) {
+		this.qtd_minima = qtd_minima;
+	}
+	public Date getData_entrada() {
+		return Data_entrada;
+	}
+	public void setData_entrada(Date data_entrada) {
+		Data_entrada = data_entrada;
 	}
 	
 	
